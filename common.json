@@ -1,0 +1,8 @@
+{
+    "PostReleaseToSlack": [
+        {
+            "module": "VstsAzureHelpers_",
+            "dest": "ps_modules"
+        }
+    ]
+}

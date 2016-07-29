@@ -1,0 +1,16 @@
+{
+  "loc.friendlyName": "Azure SQL Database Restore",
+  "loc.description": "Restores an Azure SQL Database to another Azure SQL Database on the same server.",
+  "loc.instanceNameFormat": "Azure SQL Database Restore: $(TargetSqlDatabaseName)",
+  "loc.input.label.ConnectedServiceName": "Azure RM Subscription",
+  "loc.input.help.ConnectedServiceName": "Azure Resource Manager subscription to target for deploying SQL Dacpac files",
+  "loc.input.label.ResourceGroupName": "Resource Group Name",
+  "loc.input.help.ResourceGroupName": "The Azure Resource Group which contains the Azure SQL Server",
+  "loc.input.label.SqlServerName": "Azure SQL Server Name",
+  "loc.input.label.SqlDatabaseName": "Source Azure SQL Database Name",
+  "loc.input.label.TargetSqlDatabaseName": "Target Azure SQL Database Name",
+  "loc.input.help.TargetSqlDatabaseName": "If exists, will be deleted prior to restore!",
+  "loc.input.label.SqlAdminUser": "Admin user login",
+  "loc.input.label.SqlPassword": "Admin user password",
+  "loc.input.label.LoginToAdd": "SQL Login to add after restore"
+}

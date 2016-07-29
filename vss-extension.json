@@ -1,8 +1,8 @@
 {
     "manifestVersion": 1,
     "id": "gl-vsts-tasks-azure",
-    "name": "Geek Learning VSTS Tasks for Azure",
-    "version": "0.0.17",
+    "name": "Azure VSTS Tasks",
+    "version": "0.0.18",
     "publisher": "geeklearningio",
     "targets": [
         {
@@ -21,36 +21,34 @@
         "publish",
         "swap",
         "start",
-        "stop",
-        "dotnetcore",
-        "slack"
+        "stop"
     ],
     "content": {
         "details": {
             "path": "README.md"
         },
         "license": {
-            "path": "LICENSE.md"
+            "path": "LICENSE.txt"
         }
     },
     "links": {
         "home": {
-            "uri": "http://geeklearning.io/"
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure"
         },
         "getstarted": {
-            "uri": "http://geeklearning.io/"
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure"
         },
         "learn": {
-            "uri": "http://geeklearning.io/"
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure"
         },
         "support": {
-            "uri": "http://geeklearning.io/"
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure"
         },
         "repository": {
-            "uri": "https://github.com/geeklearningio/awesome-vsts-tasks"
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure"
         },
         "issues": {
-            "uri": "https://github.com/geeklearningio/awesome-vsts-tasks/issues"
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure/issues"
         }
     },
     "branding": {

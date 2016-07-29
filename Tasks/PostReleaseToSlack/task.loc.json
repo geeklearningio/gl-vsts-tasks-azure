@@ -1,0 +1,64 @@
+{
+  "id": "E62DC0C0-F11C-49E7-8274-9A8638113238",
+  "name": "PostReleaseToSlack",
+  "friendlyName": "ms-resource:loc.friendlyName",
+  "description": "ms-resource:loc.description",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Geek Learning",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 5
+  },
+  "demands": [
+    "azureps"
+  ],
+  "minimumAgentVersion": "1.95.0",
+  "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
+  "inputs": [
+    {
+      "name": "ConnectedServiceName",
+      "type": "connectedService:Azure:Certificate,UsernamePassword",
+      "label": "ms-resource:loc.input.label.ConnectedServiceName",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceName"
+    },
+    {
+      "name": "WebSiteName",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.WebSiteName",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": ""
+    },
+    {
+      "name": "Slot",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.Slot",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": ""
+    },
+    {
+      "name": "WebHookUrl",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.WebHookUrl",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": ""
+    }
+  ],
+  "execution": {
+    "AzurePowerShell": {
+      "target": "$(currentDirectory)\\PostReleaseToSlack.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  },
+  "helpMarkDown": "ms-resource:loc.helpMarkDown"
+}
