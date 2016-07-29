@@ -1,0 +1,10 @@
+{
+  "name": "gl-vsts-tasks-azure",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+  },
+  "scripts": {
+    "package": "tfx extension create --manifest-globs vss-extension.json"
+  }
+}

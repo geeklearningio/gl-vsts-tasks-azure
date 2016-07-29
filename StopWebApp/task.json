@@ -1,0 +1,55 @@
+{
+    "id": "A3F35BB6-5341-413A-8091-10F93D390BB5",
+    "name": "StopWebApp",
+    "friendlyName": "Stop Azure Web App",
+    "description": "Stop an Azure Web App, or one of its slot",
+    "category": "Deploy",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Geek Learning",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 1
+    },
+    "demands": [
+        "azureps"
+    ],
+    "minimumAgentVersion": "1.95.0",
+    "instanceNameFormat": "Stop Web App: $(WebSiteName) $(Slot)",
+    "inputs": [
+        {
+        "name": "ConnectedServiceName",
+        "type": "connectedService:Azure:Certificate,UsernamePassword",
+        "label": "Azure Subscription",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "Azure subscription to target for deployment."
+        },
+        {
+            "name": "WebSiteName",
+            "type": "string",
+            "label": "Web App Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },        
+        {
+            "name": "Slot",
+            "type": "string",
+            "label": "Slot",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": ""
+        }
+    ],
+    "execution": {
+        "AzurePowerShell": {
+            "target": "$(currentDirectory)\\StopWebApp.ps1",
+            "argumentFormat": "",
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+}

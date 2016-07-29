@@ -1,0 +1,134 @@
+{
+    "manifestVersion": 1,
+    "id": "gl-vsts-tasks-azure",
+    "name": "Geek Learning VSTS Tasks for Azure",
+    "version": "0.0.17",
+    "publisher": "geeklearningio",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services.Cloud"
+        }
+    ],    
+    "description": "Awesome Azure additionnal tasks to help you build and publish your applications on Azure.",
+    "categories": [
+        "Build and release"
+    ],
+    "icons": {
+        "default": "extension-icon.png"        
+    },
+    "tags": [
+        "Azure",
+        "publish",
+        "swap",
+        "start",
+        "stop",
+        "dotnetcore",
+        "slack"
+    ],
+    "content": {
+        "details": {
+            "path": "README.md"
+        },
+        "license": {
+            "path": "LICENSE.md"
+        }
+    },
+    "links": {
+        "home": {
+            "uri": "http://geeklearning.io/"
+        },
+        "getstarted": {
+            "uri": "http://geeklearning.io/"
+        },
+        "learn": {
+            "uri": "http://geeklearning.io/"
+        },
+        "support": {
+            "uri": "http://geeklearning.io/"
+        },
+        "repository": {
+            "uri": "https://github.com/geeklearningio/awesome-vsts-tasks"
+        },
+        "issues": {
+            "uri": "https://github.com/geeklearningio/awesome-vsts-tasks/issues"
+        }
+    },
+    "branding": {
+        "color": "#008B8B",
+        "theme": "light"
+    },   
+    "files": [
+        {
+            "path": "SwapSlots"
+        },
+        {
+            "path": "StartWebApp"
+        },
+        {
+            "path": "StopWebApp"
+        },
+        {
+            "path": "PostReleaseToSlack"
+        },
+        {
+            "path": "RestoreSqlDatabaseToSqlDatabase"
+        }         
+    ],
+    "contributions": [
+        {
+            "id": "swap-slot-task",
+            "type": "ms.vss-distributed-task.task",
+            "description": "Swap two slots of an Azure Web App",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "SwapSlots"
+            }
+        },
+        {
+            "id": "start-webapp-task",
+            "type": "ms.vss-distributed-task.task",
+            "description": "Start an Azure Web App, or one of its slot",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "StartWebApp"
+            }
+        },
+        {
+            "id": "stop-webapp-task",
+            "type": "ms.vss-distributed-task.task",
+            "description": "Stop an Azure Web App, or one of its slot",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "StopWebApp"
+            }
+        },
+        {
+            "id": "post-release-to-slack-task",
+            "type": "ms.vss-distributed-task.task",
+            "description": "Post the new release of an Azure Web App to Slack",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "PostReleaseToSlack"
+            }
+        },
+        {
+            "id": "restore-sql-database-to-sql-database-task",
+            "type": "ms.vss-distributed-task.task",
+            "description": "Restores an Azure SQL Database to another Azure SQL Database on the same server",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "RestoreSqlDatabaseToSqlDatabase"
+            }
+        }
+    ]
+}

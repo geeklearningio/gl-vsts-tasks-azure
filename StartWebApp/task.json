@@ -1,0 +1,55 @@
+{
+    "id": "DF1611D6-6AEE-40B5-8AF6-143AF94D9F3E",
+    "name": "StartWebApp",
+    "friendlyName": "Start Azure Web App",
+    "description": "Start an Azure Web App, or one of its slot",
+    "category": "Deploy",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Geek Learning",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 1
+    },
+    "demands": [
+        "azureps"
+    ],
+    "minimumAgentVersion": "1.95.0",
+    "instanceNameFormat": "Start Web App: $(WebSiteName) $(Slot)",
+    "inputs": [
+        {
+        "name": "ConnectedServiceName",
+        "type": "connectedService:Azure:Certificate,UsernamePassword",
+        "label": "Azure Subscription",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "Azure subscription to target for deployment."
+        },
+        {
+            "name": "WebSiteName",
+            "type": "string",
+            "label": "Web App Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },        
+        {
+            "name": "Slot",
+            "type": "string",
+            "label": "Slot",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": ""
+        }
+    ],
+    "execution": {
+        "AzurePowerShell": {
+            "target": "$(currentDirectory)\\StartWebApp.ps1",
+            "argumentFormat": "",
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+}

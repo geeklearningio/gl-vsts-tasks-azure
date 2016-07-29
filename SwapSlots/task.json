@@ -1,0 +1,63 @@
+{
+    "id": "8698E535-D070-4A41-8C0E-4624D6283F05",
+    "name": "SwapSlots",
+    "friendlyName": "Azure Web App Swap Slots",
+    "description": "Swap two slots of an Azure Web App",
+    "category": "Deploy",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Geek Learning",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 2
+    },
+    "demands": [
+        "azureps"
+    ],
+    "minimumAgentVersion": "1.95.0",
+    "instanceNameFormat": "Swap slots of Web App: $(WebSiteName)",
+    "inputs": [
+        {
+        "name": "ConnectedServiceName",
+        "type": "connectedService:Azure:Certificate,UsernamePassword",
+        "label": "Azure Subscription",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "Azure subscription to target for deployment."
+        },
+        {
+            "name": "WebSiteName",
+            "type": "string",
+            "label": "Web App Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },        
+        {
+            "name": "SourceSlot",
+            "type": "string",
+            "label": "Source Slot",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },
+        {
+            "name": "DestinationSlot",
+            "type": "string",
+            "label": "Destination Slot",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        }
+    ],
+    "execution": {
+        "AzurePowerShell": {
+            "target": "$(currentDirectory)\\SwapSlots.ps1",
+            "argumentFormat": "",
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+}

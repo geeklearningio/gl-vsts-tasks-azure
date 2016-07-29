@@ -1,0 +1,96 @@
+{
+    "id": "56EFEADB-7DF6-4DAC-8163-AF8E07298C8B",
+    "name": "RestoreSqlDatabaseToSqlDatabase",
+    "friendlyName": "Azure SQL Database Restore",
+    "description": "Restores an Azure SQL Database to another Azure SQL Database on the same server.",
+    "category": "Deploy",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Geek Learning",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 4
+    },
+    "demands": [
+        "azureps",
+        "sqlps"
+    ],
+    "minimumAgentVersion": "1.95.0",
+    "instanceNameFormat": "Azure SQL Database Restore: $(TargetSqlDatabaseName)",
+    "inputs": [
+        {
+            "name": "ConnectedServiceName",
+            "type": "connectedService:AzureRM",
+            "label": "Azure RM Subscription",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Azure Resource Manager subscription to target for deploying SQL Dacpac files"
+        },
+        {
+            "name": "ResourceGroupName",
+            "type": "string",
+            "label": "Resource Group Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "The Azure Resource Group which contains the Azure SQL Server"
+        },  
+        {
+            "name": "SqlServerName",
+            "type": "string",
+            "label": "Azure SQL Server Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },       
+        {
+            "name": "SqlDatabaseName",
+            "type": "string",
+            "label": "Source Azure SQL Database Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },    
+        {
+            "name": "TargetSqlDatabaseName",
+            "type": "string",
+            "label": "Target Azure SQL Database Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "If exists, will be deleted prior to restore!"
+        },    
+        {
+            "name": "SqlAdminUser",
+            "type": "string",
+            "label": "Admin user login",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },    
+        {
+            "name": "SqlPassword",
+            "type": "string",
+            "label": "Admin user password",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        },    
+        {
+            "name": "LoginToAdd",
+            "type": "string",
+            "label": "SQL Login to add after restore",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": ""
+        }
+    ],
+    "execution": {
+        "AzurePowerShell": {
+            "target": "$(currentDirectory)\\RestoreSqlDatabaseToSqlDatabase.ps1",
+            "argumentFormat": "",
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+}
