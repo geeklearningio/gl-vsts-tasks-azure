@@ -472,7 +472,7 @@ var QExec = function (commandLine) {
     return defer.promise;
 };
 
-function packageExtension(packageRootPath, workingRootPath) {
+function packageExtension(packageRootPath, workingRootPath, currentEnv) {
     return through.obj(
 		function (extensionJson, encoding, done) {
 			if (!fs.existsSync(extensionJson)) {
@@ -484,7 +484,7 @@ function packageExtension(packageRootPath, workingRootPath) {
 				return callback();
 			}
         
-			var cmdline = 'tfx extension create --root "' + workingRootPath + '" --manifest-globs "' + extensionJson.path + '" --output-path "' + packageRootPath + '"';
+			var cmdline = 'tfx extension create --root "' + workingRootPath + '" --manifest-globs "' + extensionJson.path + '" --output-path "' + packageRootPath + '/' + currentEnv.Name + '.vsix"';
 			QExec(cmdline)
 				.then(function () {
 				})

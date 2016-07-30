@@ -354,6 +354,6 @@ gulp.task('package', ['prepareEnvExtension'], function (done) {
     var environments = require('./environments.json');  
     return es.merge(environments.map(function (env) {
         return gulp.src(path.join(_wkRoot, env.Name, 'vss-extension.json'))
-        .pipe(pkgm.PackageExtension(_pkgRoot, path.join(_wkRoot, env.Name)));
+        .pipe(pkgm.PackageExtension(_pkgRoot, path.join(_wkRoot, env.Name), env));
     }));
 });

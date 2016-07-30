@@ -3,7 +3,8 @@
         "Name": "production",
         "VssExtensionIdSuffix": "",
         "VssExtensionGalleryFlags": [
-            "Public"
+            "Public",
+            "Preview"
         ],
         "DisplayNamesSuffix": "",
         "TaskIds": {
@@ -17,10 +18,7 @@
     {
         "Name": "preview",
         "VssExtensionIdSuffix": "-preview",
-        "VssExtensionGalleryFlags": [
-            "Public",
-            "Preview"
-        ],        
+        "VssExtensionGalleryFlags": [],        
         "DisplayNamesSuffix": " (PREVIEW)",
         "TaskIds": {
             "PostReleaseToSlack": "CEEE81CF-B4BD-4D40-BB6A-AC15EB8CA852",
