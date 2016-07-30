@@ -3,9 +3,8 @@
         "Name": "production",
         "VssExtensionIdSuffix": "",
         "VssExtensionGalleryFlags": [
-            "Public",
-            "Preview"
-        ],
+            "Public"
+       ],
         "DisplayNamesSuffix": "",
         "TaskIds": {
             "PostReleaseToSlack": "E62DC0C0-F11C-49E7-8274-9A8638113238",
@@ -18,8 +17,11 @@
     {
         "Name": "preview",
         "VssExtensionIdSuffix": "-preview",
-        "VssExtensionGalleryFlags": [],        
-        "DisplayNamesSuffix": " (PREVIEW)",
+        "VssExtensionGalleryFlags": [
+            "Public",
+            "Preview"
+        ],        
+        "DisplayNamesSuffix": " (Preview)",
         "TaskIds": {
             "PostReleaseToSlack": "CEEE81CF-B4BD-4D40-BB6A-AC15EB8CA852",
             "RestoreSqlDatabaseToSqlDatabase": "9FF8A021-58DA-4386-91DB-728B064D11FB",
