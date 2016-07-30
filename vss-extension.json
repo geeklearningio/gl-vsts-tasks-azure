@@ -3,10 +3,10 @@
     "id": "gl-vsts-tasks-azure",
     "name": "Azure VSTS Tasks",
     "version": "0.0.18",
-    "publisher": "geeklearningio",
+    "publisher": "geeklearningio",    
     "targets": [
         {
-            "id": "Microsoft.VisualStudio.Services.Cloud"
+            "id": "Microsoft.VisualStudio.Services"
         }
     ],    
     "description": "Awesome Azure additionnal tasks to help you build and publish your applications on Azure.",
@@ -76,7 +76,6 @@
         {
             "id": "swap-slot-task",
             "type": "ms.vss-distributed-task.task",
-            "description": "Swap two slots of an Azure Web App",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
@@ -87,7 +86,6 @@
         {
             "id": "start-webapp-task",
             "type": "ms.vss-distributed-task.task",
-            "description": "Start an Azure Web App, or one of its slot",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
@@ -98,7 +96,6 @@
         {
             "id": "stop-webapp-task",
             "type": "ms.vss-distributed-task.task",
-            "description": "Stop an Azure Web App, or one of its slot",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
@@ -109,7 +106,6 @@
         {
             "id": "post-release-to-slack-task",
             "type": "ms.vss-distributed-task.task",
-            "description": "Post the new release of an Azure Web App to Slack",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
@@ -120,7 +116,6 @@
         {
             "id": "restore-sql-database-to-sql-database-task",
             "type": "ms.vss-distributed-task.task",
-            "description": "Restores an Azure SQL Database to another Azure SQL Database on the same server",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
