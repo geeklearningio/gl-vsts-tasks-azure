@@ -1,9 +1,9 @@
 {
-  "loc.friendlyName": "Stop Azure Web App",
-  "loc.description": "Stop an Azure Web App, or one of its slot",
-  "loc.instanceNameFormat": "Stop Web App: $(WebSiteName) $(Slot)",
-  "loc.input.label.ConnectedServiceName": "Azure Subscription",
-  "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
-  "loc.input.label.WebSiteName": "Web App Name",
-  "loc.input.label.Slot": "Slot"
+    "loc.friendlyName": "Stop Azure Web App",
+    "loc.description": "Stop an Azure Web App, or one of its slot",
+    "loc.instanceNameFormat": "Stop Web App: $(WebSiteName) $(Slot)",
+    "loc.input.label.ConnectedServiceName": "Azure Subscription",
+    "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
+    "loc.input.label.WebSiteName": "Web App Name",
+    "loc.input.label.Slot": "Slot"
 }

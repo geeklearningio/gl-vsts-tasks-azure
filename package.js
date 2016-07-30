@@ -11,6 +11,8 @@ var gulp = require('gulp');
 var request = require('request');
 var unzip = require('gulp-unzip');
 var stream = require('stream');
+var semver = require('semver');
+var exec = require('child_process').exec;
 
 var _strRelPath = path.join('Strings', 'resources.resjson', 'en-US');
 
@@ -126,7 +128,7 @@ var createStrings = function (task, pkgPath, srcPath) {
 	var enPath = path.join(strPath, 'resources.resjson');
 	var enSrcPath = path.join(srcStrPath, 'resources.resjson');
 
-	var enContents = JSON.stringify(strings, null, 2);
+	var enContents = JSON.stringify(strings, null, 4);
 	fs.writeFile(enPath, enContents, function (err) {
 		if (err) {
 			defer.reject(createError('could not create: ' + enPath + ' - ' + err.message));
@@ -135,7 +137,7 @@ var createStrings = function (task, pkgPath, srcPath) {
 
 		var taskPath = path.join(pkgPath, 'task.loc.json');
 
-		var contents = JSON.stringify(task, null, 2);
+		var contents = JSON.stringify(task, null, 4);
 
 		fs.writeFile(taskPath, contents, function (err) {
 			if (err) {
@@ -192,7 +194,7 @@ function locCommon() {
 
             // Create the en-US resjson file.
             var enPath = path.join(strPath, 'resources.resjson');
-            var enContents = JSON.stringify(strings, null, 2);
+            var enContents = JSON.stringify(strings, null, 4);
             fs.writeFile(enPath, enContents, function (err) {
                 if (err) {
                     done(createError('Could not create: ' + enPath + ' - ' + err.message));
@@ -358,5 +360,145 @@ function packageTask(pkgPath, commonDeps, commonSrc) {
 		});
 }
 
+function prepareEnvForTask(workingRootPath, currentEnv, version) {
+    return through.obj(
+		function (taskJson, encoding, done) {
+			if (!fs.existsSync(taskJson)) {
+				new gutil.PluginError('PrepareEnvForTask', 'Task json cannot be found: ' + taskJson.path);
+			}
+
+			if (taskJson.isNull() || taskJson.isDirectory()) {
+				this.push(taskJson);
+				return callback();
+			}
+
+			var dirName = path.dirname(taskJson.path);
+			var folderName = path.basename(dirName);
+			var jsonContents = taskJson.contents.toString();
+			var task = {};
+
+			try {
+				task = JSON.parse(jsonContents);
+			}
+			catch (err) {
+				done(createError(folderName + ' parse error: ' + err.message));
+				return;
+			}			
+
+			task.id = currentEnv.TaskIds[folderName];
+			task.friendlyName += currentEnv.DisplayNamesSuffix;
+						
+			task.version.Major = semver.major(version);
+			task.version.Minor = semver.minor(version);
+			task.version.Patch = semver.patch(version);
+			
+			var contents = JSON.stringify(task, null, 4);
+
+			fs.writeFile(taskJson.path, contents, function (err) {
+				if (err) {
+					done(createError('Could not create: ' + taskJson.path + ' - ' + err.message));
+					return;
+				}
+
+				done();
+			});
+		});
+}
+
+function prepareEnvForExtension(workingRootPath, currentEnv, version) {
+    return through.obj(
+		function (extensionJson, encoding, done) {
+			if (!fs.existsSync(extensionJson)) {
+				new gutil.PluginError('PrepareEnvForExtension', 'VSS-extension json cannot be found: ' + extensionJson.path);
+			}
+
+			if (extensionJson.isNull() || extensionJson.isDirectory()) {
+				this.push(extensionJson);
+				return callback();
+			}
+
+			var dirName = path.dirname(extensionJson.path);
+			var folderName = path.basename(dirName);
+			var jsonContents = extensionJson.contents.toString();
+			var extension = {};
+
+			try {
+				extension = JSON.parse(jsonContents);
+			}
+			catch (err) {
+				done(createError(folderName + ' parse error: ' + err.message));
+				return;
+			}			
+
+			extension.id += currentEnv.VssExtensionIdSuffix;
+			extension.name += currentEnv.DisplayNamesSuffix;						
+			extension.version = semver.major(version).toString() + '.' + semver.minor(version).toString() + '.' + semver.patch(version).toString();
+			extension.galleryFlags = currentEnv.VssExtensionGalleryFlags;
+			
+			var contents = JSON.stringify(extension, null, 4);
+
+			fs.writeFile(extensionJson.path, contents, function (err) {
+				if (err) {
+					done(createError('Could not create: ' + extensionJson.path + ' - ' + err.message));
+					return;
+				}
+
+				done();
+			});
+		});
+}
+
+var QExec = function (commandLine) {
+    var defer = Q.defer();
+
+    gutil.log('running: ' + commandLine)
+    var child = exec(commandLine, function (err, stdout, stderr) {
+        if (err) {
+            defer.reject(err);
+            return;
+        }
+
+        if (stdout) {
+            gutil.log(stdout);
+        }
+
+        if (stderr) {
+            gutil.log(stderr);
+        }
+
+        defer.resolve();
+    });
+
+    return defer.promise;
+};
+
+function packageExtension(packageRootPath, workingRootPath) {
+    return through.obj(
+		function (extensionJson, encoding, done) {
+			if (!fs.existsSync(extensionJson)) {
+				new gutil.PluginError('PackageExtension', 'VSS-extension json cannot be found: ' + extensionJson.path);
+			}
+
+			if (extensionJson.isNull() || extensionJson.isDirectory()) {
+				this.push(extensionJson);
+				return callback();
+			}
+        
+			var cmdline = 'tfx extension create --root "' + workingRootPath + '" --manifest-globs "' + extensionJson.path + '" --output-path "' + packageRootPath + '"';
+			QExec(cmdline)
+				.then(function () {
+				})
+				.then(function () {
+					done();
+				})
+				.fail(function (err) {
+					done(new gutil.PluginError('PackageExtension', err.message));
+				})
+		});
+}
+
 exports.LocCommon = locCommon;
 exports.PackageTask = packageTask;
+exports.PrepareEnvForTask = prepareEnvForTask;
+exports.PrepareEnvForExtension = prepareEnvForExtension;
+exports.PackageExtension = packageExtension;

@@ -1,10 +1,10 @@
 {
-  "loc.friendlyName": "Azure Web App Swap Slots",
-  "loc.description": "Swap two slots of an Azure Web App",
-  "loc.instanceNameFormat": "Swap slots of Web App: $(WebSiteName)",
-  "loc.input.label.ConnectedServiceName": "Azure Subscription",
-  "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
-  "loc.input.label.WebSiteName": "Web App Name",
-  "loc.input.label.SourceSlot": "Source Slot",
-  "loc.input.label.DestinationSlot": "Destination Slot"
+    "loc.friendlyName": "Azure Web App Swap Slots",
+    "loc.description": "Swap two slots of an Azure Web App",
+    "loc.instanceNameFormat": "Swap slots of Web App: $(WebSiteName)",
+    "loc.input.label.ConnectedServiceName": "Azure Subscription",
+    "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
+    "loc.input.label.WebSiteName": "Web App Name",
+    "loc.input.label.SourceSlot": "Source Slot",
+    "loc.input.label.DestinationSlot": "Destination Slot"
 }

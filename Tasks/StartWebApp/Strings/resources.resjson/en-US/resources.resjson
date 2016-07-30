@@ -1,9 +1,9 @@
 {
-  "loc.friendlyName": "Start Azure Web App",
-  "loc.description": "Start an Azure Web App, or one of its slot",
-  "loc.instanceNameFormat": "Start Web App: $(WebSiteName) $(Slot)",
-  "loc.input.label.ConnectedServiceName": "Azure Subscription",
-  "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
-  "loc.input.label.WebSiteName": "Web App Name",
-  "loc.input.label.Slot": "Slot"
+    "loc.friendlyName": "Start Azure Web App",
+    "loc.description": "Start an Azure Web App, or one of its slot",
+    "loc.instanceNameFormat": "Start Web App: $(WebSiteName) $(Slot)",
+    "loc.input.label.ConnectedServiceName": "Azure Subscription",
+    "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
+    "loc.input.label.WebSiteName": "Web App Name",
+    "loc.input.label.Slot": "Slot"
 }

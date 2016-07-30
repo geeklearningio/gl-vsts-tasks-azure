@@ -1,11 +1,10 @@
 // node built-ins
 var cp = require('child_process');
-var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 var os = require('os');
 
-// build/test script
+// build script
 var admZip = require('adm-zip');
 var minimist = require('minimist');
 var mocha = require('gulp-mocha');
@@ -13,6 +12,7 @@ var Q = require('q');
 var semver = require('semver');
 var shell = require('shelljs');
 var syncRequest = require('sync-request');
+var es = require('event-stream');
 
 // gulp modules
 var del = require('del');
@@ -31,40 +31,6 @@ if (semver.lt(process.versions.node, MIN_NODE_VER)) {
     console.error('requires node >= ' + MIN_NODE_VER + '.  installed: ' + process.versions.node);
     process.exit(1);
 }
-
-/*----------------------------------------------------------------------------------------
-Distinct build, test and Packaging Phases:
-
-Build:
-- validate the task.json for each task
-- generate task.loc.json file and strings file for each task.  allows for hand off to loc.
-- compile .ts --> .js
-- "link" in the vsts-task-lib declared in package.json into tasks using node handler
-
-Test:
-- Run Tests (L0, L1) - see docs/runningtests.md
-- copy the mock task-lib to the root of the temp test folder
-- Each test:
-   - copy task to a temp dir.
-   - delete linked copy of task-lib (so it uses the mock one above)
-   - run
-
-Package (only on windows):
-- zip the tasks.
-- if nuget found (windows):
-  - create nuget package
-  - if server url, publish package - this is for our Team Services build 
-----------------------------------------------------------------------------------------*/
-
-//
-// Options
-//
-var mopts = {
-    string: 'suite',
-    default: { suite: '**' }
-};
-
-var options = minimist(process.argv.slice(2), mopts);
 
 //
 // Paths
@@ -171,102 +137,6 @@ gulp.task('build', ['locCommon'], function () {
 
 gulp.task('default', ['build']);
 
-//-----------------------------------------------------------------------------------------------------------------
-// Test Tasks
-//-----------------------------------------------------------------------------------------------------------------
-
-gulp.task('cleanTests', function (cb) {
-    del([_testRoot], cb);
-});
-
-gulp.task('compileTests', ['cleanTests'], function (cb) {
-    var testsPath = path.join(__dirname, 'Tests', '**/*.ts');
-
-    return gulp.src([testsPath, 'definitions/*.d.ts'], { base: './Tests' })
-        .pipe(ts)
-        .on('error', errorHandler)
-        .pipe(gulp.dest(_testRoot));
-});
-
-gulp.task('testLib', ['compileTests'], function (cb) {
-    return gulp.src(['Tests/lib/**/*'])
-        .pipe(gulp.dest(path.join(_testRoot, 'lib')));
-});
-
-gulp.task('copyTestData', ['compileTests'], function (cb) {
-    return gulp.src(['Tests/**/data/**'], { dot: true })
-        .pipe(gulp.dest(_testRoot));
-});
-
-gulp.task('ps1tests', ['compileTests'], function (cb) {
-    return gulp.src(['Tests/**/*.ps1', 'Tests/**/*.json'])
-        .pipe(gulp.dest(_testRoot));
-});
-
-gulp.task('testLib_NodeModules', ['testLib'], function (cb) {
-    return gulp.src(path.join(_testRoot, 'lib/vsts-task-lib/**/*'))
-        .pipe(gulp.dest(path.join(_testRoot, 'lib/node_modules/vsts-task-lib')));
-});
-
-gulp.task('testResources', ['testLib_NodeModules', 'ps1tests', 'copyTestData']);
-
-gulp.task('test', ['testResources'], function () {
-    process.env['TASK_TEST_TEMP'] = _testTemp;
-    shell.rm('-rf', _testTemp);
-    shell.mkdir('-p', _testTemp);
-
-    var suitePath = path.join(_testRoot, options.suite + '/_suite.js');
-    var tfBuild = ('' + process.env['TF_BUILD']).toLowerCase() == 'true'
-    return gulp.src([suitePath])
-        .pipe(mocha({ reporter: 'spec', ui: 'bdd', useColors: !tfBuild }));
-});
-
-gulp.task('bumpjs', function () {
-    var tasksRootFolder = path.resolve(__dirname, 'Tasks');
-
-    var taskFolders = [];
-    fs.readdirSync(tasksRootFolder).forEach(folderName => {
-        if (folderName != 'Common' && fs.statSync(path.join(tasksRootFolder, folderName)).isDirectory()) {
-            taskFolders.push(path.join(tasksRootFolder, folderName));
-        }
-    })
-
-    for (var i = 0; i < taskFolders.length; i++) {
-        var taskFolder = taskFolders[i];
-
-        var taskjson = path.join(taskFolder, 'task.json');
-        var task = require(taskjson);
-
-        if (task.execution['Node']) {
-            task.version.Patch = task.version.Patch + 1;
-            fs.writeFileSync(taskjson, JSON.stringify(task, null, 4));
-        }
-    }
-});
-
-gulp.task('bumpps', function () {
-    var tasksRootFolder = path.resolve(__dirname, 'Tasks');
-
-    var taskFolders = [];
-    fs.readdirSync(tasksRootFolder).forEach(folderName => {
-        if (folderName != 'Common' && fs.statSync(path.join(tasksRootFolder, folderName)).isDirectory()) {
-            taskFolders.push(path.join(tasksRootFolder, folderName));
-        }
-    })
-
-    for (var i = 0; i < taskFolders.length; i++) {
-        var taskFolder = taskFolders[i];
-
-        var taskjson = path.join(taskFolder, 'task.json');
-        var task = require(taskjson);
-
-        if (task.execution['PowerShell3']) {
-            task.version.Patch = task.version.Patch + 1;
-            fs.writeFileSync(taskjson, JSON.stringify(task, null, 4));
-        }
-    }
-});
-
 var cacheArchiveFile = function (url) {
     // Validate the parameters.
     if (!url) {
@@ -353,7 +223,7 @@ var cacheNpmPackage = function (name, version) {
     };
     fs.writeFileSync(
         path.join(_tempPath, 'partial', 'npm', 'package.json'),
-        JSON.stringify(pkg, null, 2));
+        JSON.stringify(pkg, null, 4));
 
     // Validate npm is in the PATH.
     var npmPath = shell.which('npm');
@@ -410,49 +280,80 @@ var cacheNuGetV2Package = function (repository, name, version) {
     cacheArchiveFile(repository.replace(/\/$/, '') + '/package/' + name + '/' + version);
 }
 
-var QExec = function (commandLine) {
-    var defer = Q.defer();
-
-    gutil.log('running: ' + commandLine)
-    var child = exec(commandLine, function (err, stdout, stderr) {
-        if (err) {
-            defer.reject(err);
-            return;
-        }
-
-        if (stdout) {
-            gutil.log(stdout);
-        }
-
-        if (stderr) {
-            gutil.log(stderr);
-        }
-
-        defer.resolve();
-    });
-
-    return defer.promise;
-}
-
 gulp.task('copyToWorkingDirectory', ['build'], function (done) {
     shell.mkdir('-p', _wkRoot);
     
-    return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'README.md'])
-        .pipe(gulp.dest(_wkRoot));
+    var environments = require('./environments.json');
+    
+    return es.merge(environments.map(function (env) {
+        return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'README.md'])
+        .pipe(gulp.dest(path.join(_wkRoot, env.Name)));
+    }));
 });
 
-gulp.task('package', ['copyToWorkingDirectory'], function (done) {
-    shell.mkdir('-p', _pkgRoot);
-    var vssExtensionFilePath = path.join(_wkRoot, 'vss-extension.json');
+gulp.task('prepareEnvTasks', ['copyToWorkingDirectory'], function (done) {   
+    var options = minimist(process.argv.slice(2), {});
+    var version = options.version;
+    if (!version) {
+        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
+        return;
+    }
+
+    if (!semver.valid(version)) {
+        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
+        return;
+    }   
+
+    var environments = require('./environments.json');  
     
-    var cmdline = 'tfx extension create --root "' + _wkRoot + '" --manifest-globs "' + vssExtensionFilePath + '" --output-path "' + _pkgRoot + '"';
-    QExec(cmdline)
-        .then(function () {
-        })
-        .then(function () {
-            done();
-        })
-        .fail(function (err) {
-            done(new gutil.PluginError('PackageTask', err.message));
-        })
+    return es.merge(environments.map(function (env) {
+        return gulp.src(path.join(_wkRoot, env.Name, '**/task*.json'))
+        .pipe(pkgm.PrepareEnvForTask(_wkRoot, env, version));
+    }));
+});
+
+gulp.task('prepareEnvExtension', ['prepareEnvTasks'], function (done) {   
+    var options = minimist(process.argv.slice(2), {});
+    var version = options.version;
+    if (!version) {
+        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
+        return;
+    }
+
+    if (!semver.valid(version)) {
+        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
+        return;
+    }   
+
+    var environments = require('./environments.json');  
+    
+    return es.merge(environments.map(function (env) {
+        return gulp.src(path.join(_wkRoot, env.Name, 'vss-extension.json'))
+        .pipe(pkgm.PrepareEnvForExtension(_wkRoot, env, version));
+    }));
+});
+
+//
+// gulp package --version 1.1.2
+//
+gulp.task('package', ['prepareEnvExtension'], function (done) {       
+    var options = minimist(process.argv.slice(2), {});
+    var version = options.version;
+    if (!version) {
+        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
+        return;
+    }
+
+    if (!semver.valid(version)) {
+        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
+        return;
+    }   
+    
+    shell.mkdir('-p', _pkgRoot);
+    
+    var environments = require('./environments.json');  
+    return es.merge(environments.map(function (env) {
+        return gulp.src(path.join(_wkRoot, env.Name, 'vss-extension.json'))
+        .pipe(pkgm.PackageExtension(_pkgRoot, path.join(_wkRoot, env.Name)));
+    }));
 });

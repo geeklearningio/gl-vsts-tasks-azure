@@ -1,10 +1,10 @@
 {
-  "loc.friendlyName": "Post release to Slack",
-  "loc.description": "Post the new release of an Azure Web App to Slack",
-  "loc.instanceNameFormat": "Post to Slack",
-  "loc.input.label.ConnectedServiceName": "Azure Subscription",
-  "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
-  "loc.input.label.WebSiteName": "Web App Name",
-  "loc.input.label.Slot": "Slot",
-  "loc.input.label.WebHookUrl": "Slack Web Hook Url"
+    "loc.friendlyName": "Post release to Slack",
+    "loc.description": "Post the new release of an Azure Web App to Slack",
+    "loc.instanceNameFormat": "Post to Slack",
+    "loc.input.label.ConnectedServiceName": "Azure Subscription",
+    "loc.input.help.ConnectedServiceName": "Azure subscription to target for deployment.",
+    "loc.input.label.WebSiteName": "Web App Name",
+    "loc.input.label.Slot": "Slot",
+    "loc.input.label.WebHookUrl": "Slack Web Hook Url"
 }
