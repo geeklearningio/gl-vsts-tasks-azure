@@ -1,5 +1,3 @@
-![cistatus](https://geeklearning.visualstudio.com/_apis/public/build/definitions/f841b266-7595-4d01-9ee1-4864cf65aa73/37/badge)
-
 # Build and release tasks for Microsoft Azure
 
 Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.
@@ -13,11 +11,15 @@ Build and Release Management extensions that help you to build and publish your 
 
 [Learn more](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki) about this extension
 
-## To contribute
+## Steps
 
-1. From the root of the repo run `npm install`. This will pull down the necessary modules.
-2. Run `gulp build` to compile the build tasks
-3. Run `gulp package --version <version>` to create the .vsix extension packages (supports multiple environments) that includes the build tasks
+After installing the extension, you can add one (or more) of the tasks to a new or existing [build definition](https://www.visualstudio.com/en-us/docs/build/define/create) or [release definition](https://www.visualstudio.com/en-us/docs/release/author-release-definition/more-release-definition)
+
+![add-task](add-task.png)
+
+## Learn more
+
+The [source](https://github.com/geeklearningio/gl-vsts-tasks-azure) for this extension is on GitHub. Take, fork, and extend.
 
 ## Release Notes
 > **7-31-2016**

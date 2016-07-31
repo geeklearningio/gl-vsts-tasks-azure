@@ -315,7 +315,7 @@ gulp.task('copyToWorkingDirectory', ['build'], function (done) {
     shell.mkdir('-p', _wkRoot);  
     
     return es.merge(environments.map(function (env) {
-        return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'README.md'])
+        return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'overview.md', 'add-task.png'])
         .pipe(gulp.dest(path.join(_wkRoot, env.Name)));
     }));
 });
