@@ -3,7 +3,7 @@
     "name": "SwapSlots",
     "friendlyName": "Azure Web App Slots Swapping",
     "description": "Swap two deployment slots of an Azure Web App",
-    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/SwapSlots) (Version #{Version}#)",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Slots-Swapping) (Version #{Version}#)",
     "category": "Deploy",
     "visibility": [
         "Build",
@@ -118,12 +118,12 @@
     "dataSourceBindings": [
         {
             "target": "WebAppNameARM",
-            "endpointId": "$(ConnectedServiceName)",
+            "endpointId": "$(ConnectedServiceNameARM)",
             "dataSourceName": "AzureRMWebAppNames"
         },
         {
             "target": "SourceSlotNameARM",
-            "endpointId": "$(ConnectedServiceName)",
+            "endpointId": "$(ConnectedServiceNameARM)",
             "dataSourceName": "AzureRMWebAppSlotsId",
             "parameters": {
                 "WebAppName": "$(WebAppName)"
@@ -132,7 +132,7 @@
         },
         {
             "target": "DestinationSlotNameARM",
-            "endpointId": "$(ConnectedServiceName)",
+            "endpointId": "$(ConnectedServiceNameARM)",
             "dataSourceName": "AzureRMWebAppSlotsId",
             "parameters": {
                 "WebAppName": "$(WebAppName)"
