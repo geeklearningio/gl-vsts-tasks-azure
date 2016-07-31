@@ -3,6 +3,7 @@
     "name": "SwapSlots",
     "friendlyName": "Azure Web App Swap Slots",
     "description": "Swap two slots of an Azure Web App",
+    "helpMarkDown": "Version: #{Version}#. [More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/)",
     "category": "Deploy",
     "visibility": [
         "Build",

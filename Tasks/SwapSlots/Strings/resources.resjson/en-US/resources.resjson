@@ -1,5 +1,6 @@
 {
     "loc.friendlyName": "Azure Web App Swap Slots",
+    "loc.helpMarkDown": "Version: #{Version}#. [More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/)",
     "loc.description": "Swap two slots of an Azure Web App",
     "loc.instanceNameFormat": "Swap slots of Web App: $(WebSiteName)",
     "loc.input.label.ConnectedServiceName": "Azure Subscription",

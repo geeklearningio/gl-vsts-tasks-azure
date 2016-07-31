@@ -391,7 +391,10 @@ function prepareEnvForTask(workingRootPath, currentEnv, version) {
 			task.version.Major = version.major;
 			task.version.Minor = version.minor;
 			task.version.Patch = version.patch;
-			
+			if (task.helpMarkDown) {
+				task.helpMarkDown = task.helpMarkDown.replace('#{Version}#', version.getVersionString());
+			}
+
 			var contents = JSON.stringify(task, null, 4);
 
 			fs.writeFile(taskJson.path, contents, function (err) {

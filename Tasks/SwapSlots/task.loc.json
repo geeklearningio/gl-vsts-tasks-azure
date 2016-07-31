@@ -3,6 +3,7 @@
     "name": "SwapSlots",
     "friendlyName": "ms-resource:loc.friendlyName",
     "description": "ms-resource:loc.description",
+    "helpMarkDown": "ms-resource:loc.helpMarkDown",
     "category": "Deploy",
     "visibility": [
         "Build",
@@ -59,6 +60,5 @@
             "argumentFormat": "",
             "workingDirectory": "$(currentDirectory)"
         }
-    },
-    "helpMarkDown": "ms-resource:loc.helpMarkDown"
+    }
 }
