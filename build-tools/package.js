@@ -388,9 +388,9 @@ function prepareEnvForTask(workingRootPath, currentEnv, version) {
 			task.id = currentEnv.TaskIds[folderName];
 			task.friendlyName += currentEnv.DisplayNamesSuffix;
 						
-			task.version.Major = semver.major(version);
-			task.version.Minor = semver.minor(version);
-			task.version.Patch = semver.patch(version);
+			task.version.Major = version.major;
+			task.version.Minor = version.minor;
+			task.version.Patch = version.patch;
 			
 			var contents = JSON.stringify(task, null, 4);
 
@@ -432,7 +432,7 @@ function prepareEnvForExtension(workingRootPath, currentEnv, version) {
 
 			extension.id += currentEnv.VssExtensionIdSuffix;
 			extension.name += currentEnv.DisplayNamesSuffix;						
-			extension.version = semver.major(version).toString() + '.' + semver.minor(version).toString() + '.' + semver.patch(version).toString();
+			extension.version = version.getVersionString();
 			extension.galleryFlags = currentEnv.VssExtensionGalleryFlags;
 			
 			var contents = JSON.stringify(extension, null, 4);

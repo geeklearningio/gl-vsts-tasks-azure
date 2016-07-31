@@ -19,9 +19,11 @@ var del = require('del');
 var gts = require('gulp-typescript');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var pkgm = require('./package');
+var pkgm = require('./build-tools/package');
 var typescript = require('typescript');
 var zip = require('gulp-zip');
+
+var environments = require('./build-tools/environments.json');
 
 // validation
 var NPM_MIN_VER = '3.0.0';
@@ -65,7 +67,7 @@ gulp.task('compileTasks', ['clean'], function (cb) {
             .filter(function (file) {
                 return file.match(/(\/|\\)externals\.json$/);
             })
-            .concat(path.join(__dirname, 'externals.json'));
+            .concat(path.join(__dirname, 'build-tools', 'externals.json'));
         allExternalsJson.forEach(function (externalsJson) {
             // Load the externals.json file.
             console.log('Loading ' + externalsJson);
@@ -126,7 +128,7 @@ gulp.task('locCommon', ['compileTasks'], function () {
 
 gulp.task('build', ['locCommon'], function () {
     // Load the dependency references to the intra-repo modules.
-    var commonDeps = require('./common.json');
+    var commonDeps = require('./build-tools/common.json');
     var commonSrc = path.join(__dirname, 'Tasks/Common');
 
     // Layout the tasks.
@@ -278,12 +280,39 @@ var cacheNuGetV2Package = function (repository, name, version) {
 
     // Cache the archive file.
     cacheArchiveFile(repository.replace(/\/$/, '') + '/package/' + name + '/' + version);
-}
+};
+
+var getSemanticVersion = function(done) {
+    var options = minimist(process.argv.slice(2), {});
+    var version = options.version;
+    if (!version) {
+        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
+        return null;
+    }
+
+    if (!semver.valid(version)) {
+        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
+        return null;
+    }   
+
+    var patch = semver.patch(version) * 1000;
+    var prerelease = semver.prerelease(version);
+    if (prerelease) {
+        patch += prerelease[1];
+    }
+
+    return {
+        major: semver.major(version),
+        minor: semver.minor(version),
+        patch: patch,
+        getVersionString: function() {
+            return this.major.toString() + '.' + this.minor.toString() + '.' + this.patch.toString();
+        }
+    };
+};
 
 gulp.task('copyToWorkingDirectory', ['build'], function (done) {
-    shell.mkdir('-p', _wkRoot);
-    
-    var environments = require('./environments.json');
+    shell.mkdir('-p', _wkRoot);  
     
     return es.merge(environments.map(function (env) {
         return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'README.md'])
@@ -292,20 +321,11 @@ gulp.task('copyToWorkingDirectory', ['build'], function (done) {
 });
 
 gulp.task('prepareEnvTasks', ['copyToWorkingDirectory'], function (done) {   
-    var options = minimist(process.argv.slice(2), {});
-    var version = options.version;
+    var version = getSemanticVersion(done);
     if (!version) {
-        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
         return;
-    }
+    }    
 
-    if (!semver.valid(version)) {
-        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
-        return;
-    }   
-
-    var environments = require('./environments.json');  
-    
     return es.merge(environments.map(function (env) {
         return gulp.src(path.join(_wkRoot, env.Name, '**/task*.json'))
         .pipe(pkgm.PrepareEnvForTask(_wkRoot, env, version));
@@ -313,19 +333,10 @@ gulp.task('prepareEnvTasks', ['copyToWorkingDirectory'], function (done) {
 });
 
 gulp.task('prepareEnvExtension', ['prepareEnvTasks'], function (done) {   
-    var options = minimist(process.argv.slice(2), {});
-    var version = options.version;
+    var version = getSemanticVersion(done);
     if (!version) {
-        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
         return;
-    }
-
-    if (!semver.valid(version)) {
-        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
-        return;
-    }   
-
-    var environments = require('./environments.json');  
+    }    
     
     return es.merge(environments.map(function (env) {
         return gulp.src(path.join(_wkRoot, env.Name, 'vss-extension.json'))
@@ -337,21 +348,8 @@ gulp.task('prepareEnvExtension', ['prepareEnvTasks'], function (done) {
 // gulp package --version 1.1.2
 //
 gulp.task('package', ['prepareEnvExtension'], function (done) {       
-    var options = minimist(process.argv.slice(2), {});
-    var version = options.version;
-    if (!version) {
-        done(new gutil.PluginError('PackageTask', 'supply version with --version'));
-        return;
-    }
-
-    if (!semver.valid(version)) {
-        done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
-        return;
-    }   
-    
     shell.mkdir('-p', _pkgRoot);
-    
-    var environments = require('./environments.json');  
+
     return es.merge(environments.map(function (env) {
         return gulp.src(path.join(_wkRoot, env.Name, 'vss-extension.json'))
         .pipe(pkgm.PackageExtension(_pkgRoot, path.join(_wkRoot, env.Name), env));
