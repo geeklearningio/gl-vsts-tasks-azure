@@ -26,5 +26,18 @@
             "StopWebApp": "4F59C1AE-AA86-4FAA-8E0C-D632C8CC07A7",
             "SwapSlots": "714D2CD7-B76B-4E1D-BE59-B66C4001A89E"
         }
-    }
+    },
+    {
+        "Name": "dev",
+        "VssExtensionIdSuffix": "-dev",
+        "VssExtensionGalleryFlags": [],        
+        "DisplayNamesSuffix": " (Development)",
+        "TaskIds": {
+            "PostReleaseToSlack": "98239163-93C5-4E8E-B8B3-39DF9BBDCF16",
+            "RestoreSqlDatabaseToSqlDatabase": "AEE6A733-4997-40A0-AA39-D23EFC10BBBC",
+            "StartWebApp": "14118FFB-528E-44CC-9F3C-E9078400AC6F",
+            "StopWebApp": "8E2A112A-F09C-4C9D-A73B-41D94B2389E4",
+            "SwapSlots": "D5DABE39-CC68-4B5A-B068-A248DF24A754"
+        }
+    } 
 ]
