@@ -1,5 +1,5 @@
 {
-    "PostReleaseToSlack": [
+    "SwapSlots": [
         {
             "module": "VstsAzureHelpers_",
             "dest": "ps_modules"

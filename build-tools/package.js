@@ -16,7 +16,7 @@ var exec = require('child_process').exec;
 
 var _strRelPath = path.join('Strings', 'resources.resjson', 'en-US');
 
-var _tempPath = path.join(__dirname, '_temp');
+var _tempPath = path.join(__dirname, '..', '_temp');
 
 var createError = function (msg) {
 	return new gutil.PluginError('PackageTask', msg);
