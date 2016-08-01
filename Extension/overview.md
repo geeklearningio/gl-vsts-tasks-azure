@@ -1,6 +1,4 @@
-![cistatus](https://geeklearning.visualstudio.com/_apis/public/build/definitions/f841b266-7595-4d01-9ee1-4864cf65aa73/37/badge)
-
-# Microsoft Azure Build and Release Tasks
+# Build and release tasks for Microsoft Azure
 
 Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.
 
@@ -13,17 +11,16 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 * **Stop Azure Web App**: stop an Azure Web App, or one of its slot
 * **Azure SQL Database Restore**: restore an Azure SQL Database to another Azure SQL Database on the same server
 
-## To contribute
+## Steps
 
-1. From the root of the repo run `npm install`. This will pull down the necessary modules.
-2. Run `gulp build` to compile the build tasks
-3. Run `gulp package --version <version>` to create the .vsix extension packages (supports multiple environments) that includes the build tasks
+After installing the extension, you can add one (or more) of the tasks to a new or existing [build definition](https://www.visualstudio.com/en-us/docs/build/define/create) or [release definition](https://www.visualstudio.com/en-us/docs/release/author-release-definition/more-release-definition)
+
+![add-task](Screenshots/Add-Tasks.png)
+
+## Learn more
+
+The [source](https://github.com/geeklearningio/gl-vsts-tasks-azure) for this extension is on GitHub. Take, fork, and extend.
 
 ## Release Notes
-
 > **7-31-2016**
 > - Added: Azure RM Support
-
-## Contributors
-
-This extension was created by [Geek Learning](http://geeklearning.io/), with help from the community.

@@ -1,0 +1,122 @@
+{
+    "manifestVersion": 1,
+    "id": "gl-vsts-tasks-azure",
+    "name": "Microsoft Azure Build and Release Tasks",
+    "version": "0.0.18",
+    "publisher": "geeklearningio",    
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "description": "Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.",
+    "categories": [
+        "Build and release"
+    ],
+    "icons": {
+        "default": "extension-icon.png"        
+    },
+    "tags": [
+        "Azure",
+        "Resource Manager",
+        "WebApp",
+        "Swap",
+        "Start",
+        "Stop"
+    ],
+    "screenshots": [
+        {
+            "path": "Screenshots/Add-Tasks.png"
+        },
+        {
+            "path": "Screenshots/Configure-SwapSlots.png"
+        }
+    ],
+    "content": {
+        "details": {
+            "path": "overview.md"
+        },
+        "license": {
+            "path": "LICENSE.txt"
+        }
+    },
+    "links": {
+        "getstarted": {
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki"
+        },
+        "support": {
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure/issues"
+        },
+        "repository": {
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure"
+        },
+        "issues": {
+            "uri": "https://github.com/geeklearningio/gl-vsts-tasks-azure/issues"
+        }
+    },
+    "branding": {
+        "color": "#008B8B",
+        "theme": "light"
+    },   
+    "files": [
+        {
+            "path": "Tasks"
+        },
+        {
+            "path": "Screenshots",
+            "addressable": true
+        }
+    ],
+    "contributions": [
+        {
+            "id": "swap-slot-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/SwapSlots"
+            }
+        },
+        {
+            "id": "start-webapp-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/StartWebApp"
+            }
+        },
+        {
+            "id": "stop-webapp-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/StopWebApp"
+            }
+        },
+        {
+            "id": "post-release-to-slack-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/PostReleaseToSlack"
+            }
+        },
+        {
+            "id": "restore-sql-database-to-sql-database-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/RestoreSqlDatabaseToSqlDatabase"
+            }
+        }
+    ]
+}
