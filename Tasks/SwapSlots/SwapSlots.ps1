@@ -6,14 +6,10 @@ Trace-VstsEnteringInvocation $MyInvocation
 try{
 
 	# Get inputs.
-    $ConnectedServiceNameSelector = Get-VstsInput -Name ConnectedServiceNameSelector -Require
-    $ConnectedServiceName = Get-VstsInput -Name ConnectedServiceName
-    $ConnectedServiceNameARM = Get-VstsInput -Name ConnectedServiceNameARM
     $WebAppName = Get-VstsInput -Name WebAppName
-    $WebAppNameARM = Get-VstsInput -Name WebAppNameARM
     $SourceSlot = Get-VstsInput -Name SourceSlot -Require
     $DestinationSlot = Get-VstsInput -Name DestinationSlot -Require
-    $WebAppUri = Get-VstsInput -Name WebAppUri
+    $DestinationUrl = Get-VstsInput -Name DestinationUrl
 
 	# Initialize Azure.
 	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
@@ -21,12 +17,6 @@ try{
 
 	# Import the loc strings.
 	Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json
-
-    if ($ConnectedServiceNameSelector -eq "ConnectedServiceNameARM")
-    {
-        $ConnectedServiceName = $ConnectedServiceNameARM
-        $WebAppName = $WebAppNameARM
-    }
 
     if ([string]::IsNullOrEmpty($WebAppName))
     {
@@ -42,42 +32,51 @@ try{
 	Write-Verbose  "Loading $azureUtility"
 	. $PSScriptRoot/$azureUtility -Force
 
-    $webAppDetails = Get-AzureRMWebAppDetails -webAppName $WebAppName
-    
     $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
     $parametersObject = @{targetSlot  = "$DestinationSlot"}
-    $resourceName = "$WebAppName/$SourceSlot"
     if ($SourceSlot -eq "production")
     {
         $resourceName = "$WebAppName"
+        $resourceType = "Microsoft.Web/sites"
+    }
+    else 
+    {
+        $resourceName = "$WebAppName/$SourceSlot"
+        $resourceType = "Microsoft.Web/sites/slots"
     }
 
-    Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType Microsoft.Web/sites/slots -ResourceName $resourceName -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01 -Force -Verbose
+    Write-Verbose "[Azure Call] Swapping slot: $resourceName with resource type: $resourceType to $DestinationSlot"
+    $result = Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType $resourceType -ResourceName $resourceName -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01 -Force -Verbose
+    Write-Verbose "[Azure Call] Slot swapped: $resourceName with resource type: $resourceType to $DestinationSlot"
 
-    # Switch-AzureWebsiteSlot -Name "$WebAppName" -Slot1 "$SourceSlot" -Slot2 "$DestinationSlot" -Force -Verbose
-
-    $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
-    $deployToSlotFlag = $true
-    if ($DestinationSlot -eq "production")
+    $scheme = "http"
+    $hostName = $result.Properties.HostNames[0]
+    foreach ($hostNameSslState in $result.Properties.HostNameSslStates)
     {
-        $deployToSlotFlag = $false
+        if ($hostName -eq $hostNameSslState.Name)
+        {
+            if (-not $hostNameSslState.SslState -eq 0)
+            {
+                $scheme = "https"
+            }
+
+            break
+        }
     }
 
-    # Get azure webapp hosted url
-    $azureWebsitePublishURL = Get-AzureRMWebAppPublishUrl -webAppName $WebAppName -deployToSlotFlag $deployToSlotFlag -resourceGroupName $resourceGroupName -slotName $DestinationSlot
+    $destinationUrl = "${scheme}://$hostName"
 
-    # Publish azure webApp url
-    Write-Host (Get-VstsLocString -Key "WebappslotsuccessfullyswappedatUrl0" -ArgumentList $azureWebsitePublishURL)
+    Write-Host (Get-VstsLocString -Key "WebappslotsuccessfullyswappedatUrl0" -ArgumentList $destinationUrl)
 
-    # Set ouput vairable with azureWebsitePublishUrl
-    if (-not [string]::IsNullOrEmpty($WebAppUri))
+    # Set ouput variable with $destinationUrl
+    if (-not [string]::IsNullOrEmpty($DestinationUrl))
     {
-        if ([string]::IsNullOrEmpty($azureWebsitePublishURL))
+        if ([string]::IsNullOrEmpty($destinationUrl))
         {
             Throw (Get-VstsLocString -Key "Unabletoretrievewebapppublishurlforwebapp0" -ArgumentList $webAppName)
         }
 
-        Set-VstsTaskVariable -Name $WebAppUri -Value $azureWebsitePublishURL
+        Set-VstsTaskVariable -Name $DestinationUrl -Value $destinationUrl
     }
 
 	Write-Verbose "Completed Azure Web App Slots Swapping Task"

@@ -1,54 +1,5 @@
 # This file implements IAzureUtility for Azure PowerShell version <= 0.9.8
 
-# returns azure webapp 
-function Get-AzureRMWebAppARM
-{
-    param([String] [Parameter(Mandatory = $true)] $Name)
-
-    Switch-AzureMode AzureResourceManager
-
-    $resourceGroupName = Get-WebAppRGName -webAppName $Name
-
-    Write-Verbose "[Azure Call] Getting azure webapp details for webapp with name : $Name and resource group $resourceGroupName "
-    $azureWebApp =  Get-AzureWebApp -Name $Name -ResourceGroupName $resourceGroupName
-    return $azureWebApp
-
-}
-
-function Get-AzureRMWebAppPublishUrlARM
-{
-    param([String][Parameter(Mandatory=$true)] $webAppName,
-          [String][Parameter(Mandatory=$true)] $deployToSlotFlag,
-          [String][Parameter(Mandatory=$false)] $resourceGroupName,
-          [String][Parameter(Mandatory=$false)] $slotName)
-
-    Switch-AzureMode AzureResourceManager
-
-    $resourceGroupName = Get-WebAppRGName -webAppName $webAppName
-
-    if( $deployToSlotFlag -eq $false )
-    {
-        Write-Verbose "[Azure Call] Getting azure webapp publish profile info for webapp with name : $Name and resource group : $resourceGroupName"
-        $azureRMWebAppProfileDetails = Get-AzureWebAppPublishingProfile -Name $webAppName -ResourceGroupName $resourceGroupName
-        Write-Verbose "[Azure Call] Getting azure webapp publish profile info for webapp with name : $Name and resource group : $resourceGroupName"
-    }
-    else
-    { 
-        Write-Verbose "[Azure Call] Getting azure webapp slot publish profile info for webapp with name : $Name , slot : $slotName and resource group : $resourceGroupName"
-        $azureRMWebAppProfileDetails = Get-AzureWebAppPublishingProfile -Name $webAppName -SlotName $slotName -ResourceGroupName $resourceGroupName
-        Write-Verbose "[Azure Call] Getting azure webapp slot publish profile info for webapp with name : $Name , slot : $slotName and resource group : $resourceGroupName"
-    }
-
-    $azureRMWebAppProfileDetails = $azureRMWebAppProfileDetails | Where-Object { $_.PublishMethod -eq 'MSDeploy'}
-
-    if( $azureRMWebAppProfileDetails.Count -eq 0 -or $azureRMWebAppProfileDetails.DestinationAppUri -eq $null ){
-        Throw (Get-VstsLocString -Key "UnabletofindpublishUrlforWebApp0" -ArgumentList $webAppName)
-    }
-
-    return $azureRMWebAppProfileDetails.DestinationAppUri.OriginalString
-   
-}
-
 function Get-WebAppRGName
 {
     param([String] [Parameter(Mandatory = $true)] $webAppName)
@@ -74,37 +25,4 @@ function Get-WebAppRGName
             Throw "Web App: '$webAppName' not found."
         }
     }
-}
-
-function Get-AzureRMWebAppProfileForMSDeployWithProductionSlot
-{
-    param([String][Parameter(Mandatory=$true)] $webAppName,
-          [String][Parameter(Mandatory=$true)] $resourceGroupName)
-
-    Switch-AzureMode AzureResourceManager
-
-    Write-Verbose "`t [Azure Call]Getting publish profile file for azureRM WebApp:'$webAppName' under Production Slot."
-    $webAppProfiles = Get-AzureWebAppPublishingProfile -Name $webAppName -ResourceGroupName $resourceGroupName
-    Write-Verbose "`t [Azure Call]Got publish profile file for azureRM WebApp:'$webAppName' under Production Slot."
-
-    $webAppProfileForMSDeploy = $webAppProfiles | Where-Object { $_.PublishMethod -eq 'MSDeploy'}
-
-    return $webAppProfileForMSDeploy
-}
-
-function Get-AzureRMWebAppProfileForMSDeployWithSpecificSlot
-{
-    param([String][Parameter(Mandatory=$true)] $webAppName,
-          [String][Parameter(Mandatory=$true)] $resourceGroupName,
-          [String][Parameter(Mandatory=$true)] $slotName)
-
-    Switch-AzureMode AzureResourceManager
-
-    Write-Verbose "`t [Azure Call]Getting publish profile file for azureRM WebApp:'$webAppName' under Slot:'$slotName'."
-    $webAppProfiles = Get-AzureWebAppPublishingProfile -Name $webAppName -ResourceGroupName $resourceGroupName -Slot $slotName
-    Write-Verbose "`t [Azure Call]Got publish profile file for azureRM WebApp:'$webAppName' under Slot:'$slotName'."
-
-    $webAppProfileForMSDeploy = $webAppProfiles | Where-Object { $_.PublishMethod -eq 'MSDeploy'}
-
-    return $webAppProfileForMSDeploy
 }

@@ -29,46 +29,15 @@
     ],
     "inputs": [
         {
-            "name": "ConnectedServiceNameSelector",
-            "type": "pickList",
-            "label": "Azure Connection Type",
-            "required": false,
-            "helpMarkDown": "",
-            "defaultValue": "ConnectedServiceName",
-            "options": {
-                "ConnectedServiceName": "Azure Classic",
-                "ConnectedServiceNameARM": "Azure Resource Manager"
-            }
-        },
-        {
             "name": "ConnectedServiceName",
-            "type": "connectedService:Azure",
-            "label": "Azure Classic Subscription",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Azure Classic subscription to target for swapping Web App deployment slots",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
-        },
-        {
-            "name": "ConnectedServiceNameARM",
             "type": "connectedService:AzureRM",
             "label": "Azure RM Subscription",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Azure Resource Manager subscription to target for swapping Web App deployment slots",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
+            "helpMarkDown": "Azure Resource Manager subscription to target for swapping Web App deployment slots"
         },
         {
             "name": "WebAppName",
-            "type": "string",
-            "label": "Web App Name",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Enter the name of an existing Azure Web Application",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
-        },
-        {
-            "name": "WebAppNameARM",
             "type": "pickList",
             "label": "Web App Name",
             "defaultValue": "",
@@ -76,8 +45,7 @@
             "properties": {
                 "EditableOptions": "True"
             },
-            "helpMarkDown": "Enter or Select the name of an existing AzureRM Web Application",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
+            "helpMarkDown": "Enter or Select the name of an existing AzureRM Web Application"
         },                       
         {
             "name": "SourceSlot",
@@ -96,13 +64,13 @@
             "helpMarkDown": ""
         },
         {
-            "name": "WebAppUri",
+            "name": "DestinationUrl",
             "type": "string",
-            "label": "Web App Hosted Url",
+            "label": "Destination Slot Url",
             "required": false,
             "defaultValue": "",
             "groupName": "output",
-            "helpMarkDown": "Provide a name for the variable for the webapp hosted url. The variable can be used as $(variableName) to refer to the hosted url of webapp in subsequent tasks like in the PowerShell on Target Machines task."
+            "helpMarkDown": "Provide a name for the variable for the destination slot url. The variable can be used as $(variableName) to refer to the hosted url of webapp in subsequent tasks like in the PowerShell on Target Machines task."
         }        
     ],
     "dataSourceBindings": [
@@ -118,11 +86,8 @@
         }
     },
     "messages": {
-        "Invalidwebappprovided": "Invalid webapp name provided",
-        "WebappslotsuccessfullyswappedatUrl0": "Webapp slot successfully swapped at Url : {0}",
-        "Unabletoretrievewebapppublishurlforwebapp0": "Unable to retrieve webapp publish url for webapp : '{0}'.",
-        "WebApp0notfound": "Web App: '{0}' not found.",
-        "Unabletofindwebapppublishprofiledetailsforwebapp0": "Unable to find webapp publish profile details for webapp {0}.",
-        "UnabletofindpublishUrlforWebApp0": "Unable to find publish Url for WebApp '{0}'."
+        "Invalidwebappprovided": "Invalid Web App name provided",
+        "WebappslotsuccessfullyswappedatUrl0": "Web App slot successfully swapped at Url : {0}",
+        "Unabletoretrievewebapppublishurlforwebapp0": "Unable to retrieve Web App slot url for webapp : '{0}'."
     }
 }
