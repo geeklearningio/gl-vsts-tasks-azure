@@ -3,6 +3,7 @@
 # Microsoft Azure Build and Release Tasks
 
 Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.
+
 [Learn more](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki) about this extension on the wiki!
 
 ## Tasks included
@@ -25,4 +26,5 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 ## Contributors
 
 This extension was created by [Geek Learning](http://geeklearning.io/), with help from the community.
+
 We'd like to thank [Jesse Houwing](https://github.com/jessehouwing) for inspiring us.

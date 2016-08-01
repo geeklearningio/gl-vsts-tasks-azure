@@ -23,6 +23,14 @@
         "start",
         "stop"
     ],
+    "screenshots": [
+        {
+            "path": "screenshots/Add-Tasks.png"
+        },
+        {
+            "path": "screenshots/Configure-SwapSlots.png"
+        }
+    ],
     "content": {
         "details": {
             "path": "overview.md"
@@ -66,7 +74,7 @@
             "path": "RestoreSqlDatabaseToSqlDatabase"
         },
         {
-            "path": "add-task.png",
+            "path": "screenshots",
             "addressable": true
         }
     ],

@@ -29,55 +29,23 @@
     ],
     "inputs": [
         {
-            "name": "ConnectedServiceNameSelector",
-            "type": "pickList",
-            "label": "ms-resource:loc.input.label.ConnectedServiceNameSelector",
-            "required": false,
-            "helpMarkDown": "",
-            "defaultValue": "ConnectedServiceName",
-            "options": {
-                "ConnectedServiceName": "Azure Classic",
-                "ConnectedServiceNameARM": "Azure Resource Manager"
-            }
-        },
-        {
             "name": "ConnectedServiceName",
-            "type": "connectedService:Azure",
+            "type": "connectedService:AzureRM",
             "label": "ms-resource:loc.input.label.ConnectedServiceName",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceName",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
-        },
-        {
-            "name": "ConnectedServiceNameARM",
-            "type": "connectedService:AzureRM",
-            "label": "ms-resource:loc.input.label.ConnectedServiceNameARM",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceNameARM",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
+            "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceName"
         },
         {
             "name": "WebAppName",
-            "type": "string",
-            "label": "ms-resource:loc.input.label.WebAppName",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "ms-resource:loc.input.help.WebAppName",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
-        },
-        {
-            "name": "WebAppNameARM",
             "type": "pickList",
-            "label": "ms-resource:loc.input.label.WebAppNameARM",
+            "label": "ms-resource:loc.input.label.WebAppName",
             "defaultValue": "",
             "required": true,
             "properties": {
                 "EditableOptions": "True"
             },
-            "helpMarkDown": "ms-resource:loc.input.help.WebAppNameARM",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
+            "helpMarkDown": "ms-resource:loc.input.help.WebAppName"
         },
         {
             "name": "SourceSlot",
@@ -96,19 +64,19 @@
             "helpMarkDown": ""
         },
         {
-            "name": "WebAppUri",
+            "name": "DestinationUrl",
             "type": "string",
-            "label": "ms-resource:loc.input.label.WebAppUri",
+            "label": "ms-resource:loc.input.label.DestinationUrl",
             "required": false,
             "defaultValue": "",
             "groupName": "output",
-            "helpMarkDown": "ms-resource:loc.input.help.WebAppUri"
+            "helpMarkDown": "ms-resource:loc.input.help.DestinationUrl"
         }
     ],
     "dataSourceBindings": [
         {
-            "target": "WebAppNameARM",
-            "endpointId": "$(ConnectedServiceNameARM)",
+            "target": "WebAppName",
+            "endpointId": "$(ConnectedServiceName)",
             "dataSourceName": "AzureRMWebAppNames"
         }
     ],
@@ -120,9 +88,6 @@
     "messages": {
         "Invalidwebappprovided": "ms-resource:loc.messages.Invalidwebappprovided",
         "WebappslotsuccessfullyswappedatUrl0": "ms-resource:loc.messages.WebappslotsuccessfullyswappedatUrl0",
-        "Unabletoretrievewebapppublishurlforwebapp0": "ms-resource:loc.messages.Unabletoretrievewebapppublishurlforwebapp0",
-        "WebApp0notfound": "ms-resource:loc.messages.WebApp0notfound",
-        "Unabletofindwebapppublishprofiledetailsforwebapp0": "ms-resource:loc.messages.Unabletofindwebapppublishprofiledetailsforwebapp0",
-        "UnabletofindpublishUrlforWebApp0": "ms-resource:loc.messages.UnabletofindpublishUrlforWebApp0"
+        "Unabletoretrievewebapppublishurlforwebapp0": "ms-resource:loc.messages.Unabletoretrievewebapppublishurlforwebapp0"
     }
 }

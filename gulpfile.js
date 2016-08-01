@@ -315,12 +315,19 @@ gulp.task('copyToWorkingDirectory', ['build'], function (done) {
     shell.mkdir('-p', _wkRoot);  
     
     return es.merge(environments.map(function (env) {
-        return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'overview.md', 'add-task.png'])
+        return gulp.src([path.join(_buildRoot, '**', '*'), 'vss-extension.json', 'extension-icon.png', 'LICENSE.txt', 'overview.md'])
         .pipe(gulp.dest(path.join(_wkRoot, env.Name)));
     }));
 });
 
-gulp.task('prepareEnvTasks', ['copyToWorkingDirectory'], function (done) {   
+gulp.task('copyScreenshotsToWorkingDirectory', ['copyToWorkingDirectory'], function (done) {
+    return es.merge(environments.map(function (env) {
+        return gulp.src([path.join('screenshots', '*')], { base: './' })
+        .pipe(gulp.dest(path.join(_wkRoot, env.Name)));
+    }));
+});
+
+gulp.task('prepareEnvTasks', ['copyScreenshotsToWorkingDirectory'], function (done) {   
     var version = getSemanticVersion(done);
     if (!version) {
         return;
