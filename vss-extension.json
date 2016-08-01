@@ -18,10 +18,11 @@
     },
     "tags": [
         "Azure",
-        "publish",
-        "swap",
-        "start",
-        "stop"
+        "Resource Manager",
+        "WebApp",
+        "Swap",
+        "Start",
+        "Stop"
     ],
     "screenshots": [
         {

@@ -79,7 +79,7 @@ try{
         Set-VstsTaskVariable -Name $DestinationUrl -Value $destinationUrlValue
     }
 
-	Write-Verbose "Completed Azure Web App Slots Swapping Task"
+	Write-Verbose "Completed Azure Web App Slots Swap Task"
 
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation

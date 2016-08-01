@@ -1,8 +1,9 @@
 {
     "id": "DF1611D6-6AEE-40B5-8AF6-143AF94D9F3E",
     "name": "StartWebApp",
-    "friendlyName": "Start Azure Web App",
+    "friendlyName": "Azure Web App Start",
     "description": "Start an Azure Web App, or one of its slot",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Start) (Version #{Version}#)",
     "category": "Deploy",
     "visibility": [
         "Build",
