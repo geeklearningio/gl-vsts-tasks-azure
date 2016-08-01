@@ -64,9 +64,9 @@ try{
         }
     }
 
-    $destinationUrl = "${scheme}://$hostName"
+    $destinationUrlValue = "${scheme}://$hostName"
 
-    Write-Host (Get-VstsLocString -Key "WebappslotsuccessfullyswappedatUrl0" -ArgumentList $destinationUrl)
+    Write-Host (Get-VstsLocString -Key "WebappslotsuccessfullyswappedatUrl0" -ArgumentList $destinationUrlValue)
 
     # Set ouput variable with $destinationUrl
     if (-not [string]::IsNullOrEmpty($DestinationUrl))
@@ -76,7 +76,7 @@ try{
             Throw (Get-VstsLocString -Key "Unabletoretrievewebapppublishurlforwebapp0" -ArgumentList $webAppName)
         }
 
-        Set-VstsTaskVariable -Name $DestinationUrl -Value $destinationUrl
+        Set-VstsTaskVariable -Name $DestinationUrl -Value $destinationUrlValue
     }
 
 	Write-Verbose "Completed Azure Web App Slots Swapping Task"
