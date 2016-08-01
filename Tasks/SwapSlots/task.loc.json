@@ -18,24 +18,66 @@
     "demands": [
         "azureps"
     ],
-    "minimumAgentVersion": "1.95.0",
+    "minimumAgentVersion": "1.103.0",
     "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
+    "groups": [
+        {
+            "name": "output",
+            "displayName": "ms-resource:loc.group.displayName.output",
+            "isExpanded": true
+        }
+    ],
     "inputs": [
         {
+            "name": "ConnectedServiceNameSelector",
+            "type": "pickList",
+            "label": "ms-resource:loc.input.label.ConnectedServiceNameSelector",
+            "required": false,
+            "helpMarkDown": "",
+            "defaultValue": "ConnectedServiceName",
+            "options": {
+                "ConnectedServiceName": "Azure Classic",
+                "ConnectedServiceNameARM": "Azure Resource Manager"
+            }
+        },
+        {
             "name": "ConnectedServiceName",
-            "type": "connectedService:Azure:Certificate,UsernamePassword",
+            "type": "connectedService:Azure",
             "label": "ms-resource:loc.input.label.ConnectedServiceName",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceName"
+            "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceName",
+            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
         },
         {
-            "name": "WebSiteName",
-            "type": "string",
-            "label": "ms-resource:loc.input.label.WebSiteName",
+            "name": "ConnectedServiceNameARM",
+            "type": "connectedService:AzureRM",
+            "label": "ms-resource:loc.input.label.ConnectedServiceNameARM",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": ""
+            "helpMarkDown": "ms-resource:loc.input.help.ConnectedServiceNameARM",
+            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
+        },
+        {
+            "name": "WebAppName",
+            "type": "string",
+            "label": "ms-resource:loc.input.label.WebAppName",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "ms-resource:loc.input.help.WebAppName",
+            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
+        },
+        {
+            "name": "WebAppNameARM",
+            "type": "pickList",
+            "label": "ms-resource:loc.input.label.WebAppNameARM",
+            "defaultValue": "",
+            "required": true,
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "helpMarkDown": "ms-resource:loc.input.help.WebAppNameARM",
+            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
         },
         {
             "name": "SourceSlot",
@@ -52,13 +94,35 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": ""
+        },
+        {
+            "name": "WebAppUri",
+            "type": "string",
+            "label": "ms-resource:loc.input.label.WebAppUri",
+            "required": false,
+            "defaultValue": "",
+            "groupName": "output",
+            "helpMarkDown": "ms-resource:loc.input.help.WebAppUri"
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "target": "WebAppNameARM",
+            "endpointId": "$(ConnectedServiceNameARM)",
+            "dataSourceName": "AzureRMWebAppNames"
         }
     ],
     "execution": {
-        "AzurePowerShell": {
-            "target": "$(currentDirectory)\\SwapSlots.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)"
+        "PowerShell3": {
+            "target": "SwapSlots.ps1"
         }
+    },
+    "messages": {
+        "Invalidwebappprovided": "ms-resource:loc.messages.Invalidwebappprovided",
+        "WebappslotsuccessfullyswappedatUrl0": "ms-resource:loc.messages.WebappslotsuccessfullyswappedatUrl0",
+        "Unabletoretrievewebapppublishurlforwebapp0": "ms-resource:loc.messages.Unabletoretrievewebapppublishurlforwebapp0",
+        "WebApp0notfound": "ms-resource:loc.messages.WebApp0notfound",
+        "Unabletofindwebapppublishprofiledetailsforwebapp0": "ms-resource:loc.messages.Unabletofindwebapppublishprofiledetailsforwebapp0",
+        "UnabletofindpublishUrlforWebApp0": "ms-resource:loc.messages.UnabletofindpublishUrlforWebApp0"
     }
 }

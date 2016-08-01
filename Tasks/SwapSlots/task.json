@@ -121,15 +121,8 @@
         "Invalidwebappprovided": "Invalid webapp name provided",
         "WebappslotsuccessfullyswappedatUrl0": "Webapp slot successfully swapped at Url : {0}",
         "Unabletoretrievewebapppublishurlforwebapp0": "Unable to retrieve webapp publish url for webapp : '{0}'.",
-        "GettingconnectiondetailsforazureRMWebApp0underSlot1": "Getting connection details for azureRM WebApp:'{0}' under Slot:'{1}'.",
-        "GotconnectiondetailsforazureRMWebApp0underSlot1": "Got connection details for azureRM WebApp:'{0}' under Slot:'{1}'.",
-        "GettingconnectiondetailsforazureRMWebApp0underProductionSlot": "Getting connection details for azureRM WebApp:'{0}' under Production Slot.",
-        "WebApp0doesnotexist": "WebApp '{0}' does not exist.",
-        "GotconnectiondetailsforazureRMWebApp0underProductionSlot": "Got connection details for azureRM WebApp:'{0}' under Production Slot.",
         "WebApp0notfound": "Web App: '{0}' not found.",
         "Unabletofindwebapppublishprofiledetailsforwebapp0": "Unable to find webapp publish profile details for webapp {0}.",
-        "Foundmorethanonefiletodeploywithsearchpattern0Therecanbeonlyone": "Found more than one file to deploy with search pattern {0}. There can be only one.",
-        "Nofileswerefoundtodeploywithsearchpattern0": "No files were found to deploy with search pattern {0}.",
-        "UnabletofindpublishUrlforWebApp0": "Unable to find publish Url for WebApp '{0}'.",
+        "UnabletofindpublishUrlforWebApp0": "Unable to find publish Url for WebApp '{0}'."
     }
 }
