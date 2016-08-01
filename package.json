@@ -4,7 +4,8 @@
   "description": "Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure",
   "main": "gulpfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "node BuildScripts/package.js"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,6 @@
   },
   "homepage": "https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki",
   "devDependencies": {
+    "fs-extra": "0.30.0"
   }
 }

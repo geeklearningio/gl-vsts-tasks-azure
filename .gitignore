@@ -246,3 +246,5 @@ ModelManifest.xml
 
 # PowerShell dependencies
 ps_modules
+
+.BuildOutput
