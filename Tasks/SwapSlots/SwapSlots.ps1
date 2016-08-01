@@ -46,7 +46,13 @@ try{
     
     $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
     $parametersObject = @{targetSlot  = "$DestinationSlot"}
-    Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType Microsoft.Web/sites/slots -ResourceName "$WebAppName/$SourceSlot" -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01 -Force -Verbose
+    $resourceName = "$WebAppName/$SourceSlot"
+    if ($SourceSlot -eq "production")
+    {
+        $resourceName = "$WebAppName"
+    }
+
+    Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType Microsoft.Web/sites/slots -ResourceName $resourceName -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01 -Force -Verbose
 
     # Switch-AzureWebsiteSlot -Name "$WebAppName" -Slot1 "$SourceSlot" -Slot2 "$DestinationSlot" -Force -Verbose
 
@@ -58,8 +64,7 @@ try{
     }
 
     # Get azure webapp hosted url
-    $azureWebsitePublishURL = Get-AzureRMWebAppPublishUrl -webAppName $WebAppName -deployToSlotFlag $deployToSlotFlag `
-                                                                            -resourceGroupName $resourceGroupName -slotName $DestinationSlot
+    $azureWebsitePublishURL = Get-AzureRMWebAppPublishUrl -webAppName $WebAppName -deployToSlotFlag $deployToSlotFlag -resourceGroupName $resourceGroupName -slotName $DestinationSlot
 
     # Publish azure webApp url
     Write-Host (Get-VstsLocString -Key "WebappslotsuccessfullyswappedatUrl0" -ArgumentList $azureWebsitePublishURL)
