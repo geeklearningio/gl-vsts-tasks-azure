@@ -75,7 +75,7 @@
     ],
     "dataSourceBindings": [
         {
-            "target": "WebAppNameARM",
+            "target": "WebAppName",
             "endpointId": "$(ConnectedServiceNameARM)",
             "dataSourceName": "AzureRMWebAppNames"
         }
