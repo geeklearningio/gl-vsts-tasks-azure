@@ -20,6 +20,13 @@
     ],
     "minimumAgentVersion": "1.103.0",
     "instanceNameFormat": "Swap Azure Web App slots: $(SourceSlot) to $(DestinationSlot)",
+    "groups": [
+        {
+            "name": "output",
+            "displayName": "Output",
+            "isExpanded": true
+        }
+    ],
     "inputs": [
         {
             "name": "ConnectedServiceNameSelector",
@@ -78,73 +85,51 @@
             "label": "Source Slot",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
-        },
-        {
-            "name": "SourceSlotNameARM",
-            "type": "pickList",
-            "label": "Source Slot",
-            "defaultValue": "",
-            "required": true,
-            "properties": {
-                "EditableOptions": "True"
-            },
-            "helpMarkDown": "Enter or Select an existing Slot",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
-        },        
+            "helpMarkDown": ""
+        },      
         {
             "name": "DestinationSlot",
             "type": "string",
             "label": "Destination Slot",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceName"
+            "helpMarkDown": ""
         },
         {
-            "name": "DestinationSlotNameARM",
-            "type": "pickList",
-            "label": "Destination Slot",
+            "name": "WebAppUri",
+            "type": "string",
+            "label": "Web App Hosted Url",
+            "required": false,
             "defaultValue": "",
-            "required": true,
-            "properties": {
-                "EditableOptions": "True"
-            },
-            "helpMarkDown": "Enter or Select an existing Slot",
-            "visibleRule": "ConnectedServiceNameSelector = ConnectedServiceNameARM"
-        }
+            "groupName": "output",
+            "helpMarkDown": "Provide a name for the variable for the webapp hosted url. The variable can be used as $(variableName) to refer to the hosted url of webapp in subsequent tasks like in the PowerShell on Target Machines task."
+        }        
     ],
     "dataSourceBindings": [
         {
             "target": "WebAppNameARM",
             "endpointId": "$(ConnectedServiceNameARM)",
             "dataSourceName": "AzureRMWebAppNames"
-        },
-        {
-            "target": "SourceSlotNameARM",
-            "endpointId": "$(ConnectedServiceNameARM)",
-            "dataSourceName": "AzureRMWebAppSlotsId",
-            "parameters": {
-                "WebAppName": "$(WebAppName)"
-            },
-            "resultTemplate": "{\"Value\":\"{{{ #extractResource slots}}}\",\"DisplayValue\":\"{{{ #extractResource slots}}}\"}"
-        },
-        {
-            "target": "DestinationSlotNameARM",
-            "endpointId": "$(ConnectedServiceNameARM)",
-            "dataSourceName": "AzureRMWebAppSlotsId",
-            "parameters": {
-                "WebAppName": "$(WebAppName)"
-            },
-            "resultTemplate": "{\"Value\":\"{{{ #extractResource slots}}}\",\"DisplayValue\":\"{{{ #extractResource slots}}}\"}"
         }
     ],
     "execution": {
-        "AzurePowerShell": {
-            "target": "$(currentDirectory)\\SwapSlots.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)"
+        "PowerShell3": {
+            "target": "SwapSlots.ps1"
         }
+    },
+    "messages": {
+        "Invalidwebappprovided": "Invalid webapp name provided",
+        "WebappslotsuccessfullyswappedatUrl0": "Webapp slot successfully swapped at Url : {0}",
+        "Unabletoretrievewebapppublishurlforwebapp0": "Unable to retrieve webapp publish url for webapp : '{0}'.",
+        "GettingconnectiondetailsforazureRMWebApp0underSlot1": "Getting connection details for azureRM WebApp:'{0}' under Slot:'{1}'.",
+        "GotconnectiondetailsforazureRMWebApp0underSlot1": "Got connection details for azureRM WebApp:'{0}' under Slot:'{1}'.",
+        "GettingconnectiondetailsforazureRMWebApp0underProductionSlot": "Getting connection details for azureRM WebApp:'{0}' under Production Slot.",
+        "WebApp0doesnotexist": "WebApp '{0}' does not exist.",
+        "GotconnectiondetailsforazureRMWebApp0underProductionSlot": "Got connection details for azureRM WebApp:'{0}' under Production Slot.",
+        "WebApp0notfound": "Web App: '{0}' not found.",
+        "Unabletofindwebapppublishprofiledetailsforwebapp0": "Unable to find webapp publish profile details for webapp {0}.",
+        "Foundmorethanonefiletodeploywithsearchpattern0Therecanbeonlyone": "Found more than one file to deploy with search pattern {0}. There can be only one.",
+        "Nofileswerefoundtodeploywithsearchpattern0": "No files were found to deploy with search pattern {0}.",
+        "UnabletofindpublishUrlforWebApp0": "Unable to find publish Url for WebApp '{0}'.",
     }
 }
