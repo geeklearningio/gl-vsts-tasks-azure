@@ -43,10 +43,12 @@ try{
 	. $PSScriptRoot/$azureUtility -Force
 
     $webAppDetails = Get-AzureRMWebAppDetails -webAppName $WebAppName
-
+    
     $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
     $parametersObject = @{targetSlot  = "$DestinationSlot"}
-    Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType Microsoft.Web/sites/slots -ResourceName "$WebAppName/$SourceSlot" -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01
+    Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType Microsoft.Web/sites/slots -ResourceName "$WebAppName/$SourceSlot" -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01 -Force -Verbose
+
+    # Switch-AzureWebsiteSlot -Name "$WebAppName" -Slot1 "$SourceSlot" -Slot2 "$DestinationSlot" -Force -Verbose
 
     $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
     $deployToSlotFlag = $true
