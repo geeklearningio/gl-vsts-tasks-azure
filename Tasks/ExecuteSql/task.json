@@ -56,7 +56,7 @@
         },
         {
             "name": "ScriptPath",
-            "type": "FilePath",
+            "type": "filePath",
             "label": "Script Path",
             "defaultValue": "",
             "required": true,
@@ -160,6 +160,14 @@
             "helpMarkDown": "If selected, then after the task ends, the IP Addresses specified here are deleted from the 'Allowed IP Addresses' list of the Azure SQL Server's Firewall."
         }
     ],
+    "sourceDefinitions": [
+        {
+            "target": "IpDetectionMethod",
+            "endpoint": "/_apis/vslabs/ipAddress/ipDetectionMethods",
+            "selector": "jsonpath:$.value[*]",
+            "authKey": "tfs:DevTestLabs"
+        }
+    ],    
     "execution": {
         "PowerShell3": {
             "target": "ExecuteSql.ps1"
