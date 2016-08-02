@@ -4,12 +4,13 @@
   "description": "Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure",
   "main": "gulpfile.js",
   "scripts": {
+    "pullsubmodules" : "git submodule foreach git pull origin master",
     "postinstall": "node ./BuildScripts/install.js",
     "prebuild": "node ./BuildScripts/prebuild.js",
     "build": "tsc",
     "package": "node ./BuildScripts/package.js",
     "test": "jasmine JASMINE_CONFIG_PATH=./Tests/jasmine.json",
-    "test:chutzpah": "chutzpah.console ./tests/"
+    "test:chutzpah": "chutzpah.console ./tests/"    
   },
   "repository": {
     "type": "git",
