@@ -15,12 +15,15 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 
 ## To contribute
 
-1. From the root of the repo run `npm install`. This will pull down the necessary modules.
-2. Run `gulp build` to compile the build tasks
-3. Run `gulp package --version <version>` to create the .vsix extension packages (supports multiple environments) that includes the build tasks
+1. Globally install tsc (to compile Typescript files) and tfx-cli (to package VSTS extensions): `npm install -g tsc tfx-cli`
+2. From the root of the repo run `npm install`. This will pull down the necessary modules for the different tasks and for the build tools.
+3. Run `npm run build` to compile the build tasks.
+4. Run `npm run package -- --version <version>` to create the .vsix extension packages (supports multiple environments) that includes the build tasks.
 
 ## Release Notes
 
+> **8-1-2016**
+> - New build tools for all GL tasks
 > **7-31-2016**
 > - Added: Azure RM Support
 

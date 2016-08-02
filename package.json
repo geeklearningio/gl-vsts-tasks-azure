@@ -6,10 +6,8 @@
   "scripts": {
     "postinstall": "node ./BuildScripts/install.js",
     "prebuild": "node ./BuildScripts/prebuild.js",
-    "tsbuild": "tsc",
-    "build": "run-s prebuild tsbuild",
+    "build": "tsc",
     "package": "node ./BuildScripts/package.js",
-    "pack": "run-s build package",
     "test": "jasmine JASMINE_CONFIG_PATH=./Tests/jasmine.json",
     "test:chutzpah": "chutzpah.console ./tests/"
   },
@@ -30,7 +28,6 @@
   },
   "homepage": "https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki",
   "devDependencies": {
-    "npm-run-all": "^2.3.0",
     "async": "^2.0.1"
   }
 }
