@@ -13,44 +13,73 @@
     "version": {
         "Major": 0,
         "Minor": 0,
-        "Patch": 1
+        "Patch": 0
     },
     "demands": [
         "azureps"
     ],
-    "minimumAgentVersion": "1.95.0",
-    "instanceNameFormat": "Start Web App: $(WebSiteName) $(Slot)",
+    "minimumAgentVersion": "1.103.0",
+    "instanceNameFormat": "Start Azure Web App: $(WebSiteName) $(Slot)",
+    "groups": [
+        {
+            "name": "output",
+            "displayName": "Output",
+            "isExpanded": true
+        }
+    ],
     "inputs": [
         {
-        "name": "ConnectedServiceName",
-        "type": "connectedService:Azure:Certificate,UsernamePassword",
-        "label": "Azure Subscription",
-        "defaultValue": "",
-        "required": true,
-        "helpMarkDown": "Azure subscription to target for deployment."
+            "name": "ConnectedServiceName",
+            "type": "connectedService:AzureRM",
+            "label": "Azure RM Subscription",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Azure Resource Manager subscription to target for starting the Web App"
         },
         {
-            "name": "WebSiteName",
-            "type": "string",
+            "name": "WebAppName",
+            "type": "pickList",
             "label": "Web App Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": ""
-        },        
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "helpMarkDown": "Enter or Select the name of an existing AzureRM Web Application"
+        },                       
         {
             "name": "Slot",
             "type": "string",
             "label": "Slot",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": ""
+            "helpMarkDown": "If provided, will start the specified slot instead of the Web App itself"
+        },
+        {
+            "name": "StartedUrl",
+            "type": "string",
+            "label": "Started Url",
+            "required": false,
+            "defaultValue": "",
+            "groupName": "output",
+            "helpMarkDown": "Provide a name for the variable for the started url. The variable can be used as $(variableName) to refer to the hosted url of Web App in subsequent tasks like in the PowerShell on Target Machines task."
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "target": "WebAppName",
+            "endpointId": "$(ConnectedServiceName)",
+            "dataSourceName": "AzureRMWebAppNames"
         }
     ],
     "execution": {
-        "AzurePowerShell": {
-            "target": "$(currentDirectory)\\StartWebApp.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)"
+        "PowerShell3": {
+            "target": "StartWebApp.ps1"
         }
+    },
+    "messages": {
+        "Invalidwebappprovided": "Invalid Web App name provided",
+        "WebappsuccessfullystartedatUrl0": "Web App successfully started at Url: {0}",
+        "Unabletoretrievewebappurlforwebapp0": "Unable to retrieve Web App url for Web App: {0}"
     }
 }

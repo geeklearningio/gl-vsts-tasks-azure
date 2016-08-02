@@ -1,8 +1,9 @@
 {
     "id": "A3F35BB6-5341-413A-8091-10F93D390BB5",
     "name": "StopWebApp",
-    "friendlyName": "Stop Azure Web App",
+    "friendlyName": "Azure Web App Stop",
     "description": "Stop an Azure Web App, or one of its slot",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Stop) (Version #{Version}#)",    
     "category": "Deploy",
     "visibility": [
         "Build",
@@ -12,44 +13,73 @@
     "version": {
         "Major": 0,
         "Minor": 0,
-        "Patch": 1
+        "Patch": 0
     },
     "demands": [
         "azureps"
     ],
-    "minimumAgentVersion": "1.95.0",
-    "instanceNameFormat": "Stop Web App: $(WebSiteName) $(Slot)",
+    "minimumAgentVersion": "1.103.0",
+    "instanceNameFormat": "Stop Azure Web App: $(WebSiteName) $(Slot)",
+    "groups": [
+        {
+            "name": "output",
+            "displayName": "Output",
+            "isExpanded": true
+        }
+    ],
     "inputs": [
         {
-        "name": "ConnectedServiceName",
-        "type": "connectedService:Azure:Certificate,UsernamePassword",
-        "label": "Azure Subscription",
-        "defaultValue": "",
-        "required": true,
-        "helpMarkDown": "Azure subscription to target for deployment."
+            "name": "ConnectedServiceName",
+            "type": "connectedService:AzureRM",
+            "label": "Azure RM Subscription",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Azure Resource Manager subscription to target for stopping the Web App"
         },
         {
-            "name": "WebSiteName",
-            "type": "string",
+            "name": "WebAppName",
+            "type": "pickList",
             "label": "Web App Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": ""
-        },        
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "helpMarkDown": "Enter or Select the name of an existing AzureRM Web Application"
+        },                       
         {
             "name": "Slot",
             "type": "string",
             "label": "Slot",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": ""
+            "helpMarkDown": "If provided, will stop the specified slot instead of the Web App itself"
+        },
+        {
+            "name": "StoppedUrl",
+            "type": "string",
+            "label": "Stopped Url",
+            "required": false,
+            "defaultValue": "",
+            "groupName": "output",
+            "helpMarkDown": "Provide a name for the variable for the stopped url. The variable can be used as $(variableName) to refer to the hosted url of Web App in subsequent tasks like in the PowerShell on Target Machines task."
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "target": "WebAppName",
+            "endpointId": "$(ConnectedServiceName)",
+            "dataSourceName": "AzureRMWebAppNames"
         }
     ],
     "execution": {
-        "AzurePowerShell": {
-            "target": "$(currentDirectory)\\StopWebApp.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)"
+        "PowerShell3": {
+            "target": "StopWebApp.ps1"
         }
+    },
+    "messages": {
+        "Invalidwebappprovided": "Invalid Web App name provided",
+        "WebappsuccessfullystoppedatUrl0": "Web App successfully stopped at Url: {0}",
+        "Unabletoretrievewebappurlforwebapp0": "Unable to retrieve Web App url for Web App: {0}"
     }
 }

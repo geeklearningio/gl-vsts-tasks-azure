@@ -13,7 +13,7 @@
     "version": {
         "Major": 0,
         "Minor": 0,
-        "Patch": 2
+        "Patch": 0
     },
     "demands": [
         "azureps"
@@ -70,7 +70,7 @@
             "required": false,
             "defaultValue": "",
             "groupName": "output",
-            "helpMarkDown": "Provide a name for the variable for the destination slot url. The variable can be used as $(variableName) to refer to the hosted url of webapp in subsequent tasks like in the PowerShell on Target Machines task."
+            "helpMarkDown": "Provide a name for the variable for the destination slot url. The variable can be used as $(variableName) to refer to the hosted url of Web App in subsequent tasks like in the PowerShell on Target Machines task."
         }        
     ],
     "dataSourceBindings": [

@@ -6,7 +6,7 @@ Trace-VstsEnteringInvocation $MyInvocation
 try {
 
 	# Get inputs.
-    $WebAppName = Get-VstsInput -Name WebAppName
+    $WebAppName = Get-VstsInput -Name WebAppName -Require
     $SourceSlot = Get-VstsInput -Name SourceSlot -Require
     $DestinationSlot = Get-VstsInput -Name DestinationSlot -Require
     $DestinationUrl = Get-VstsInput -Name DestinationUrl
