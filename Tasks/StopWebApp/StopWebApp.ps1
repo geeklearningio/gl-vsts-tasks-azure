@@ -1,31 +1,83 @@
-[CmdletBinding(DefaultParameterSetName = 'None')]
-param
-(
-    [String] [Parameter(Mandatory = $true)]
-    $ConnectedServiceName,
+[CmdletBinding()]
+param()
 
-    [String] [Parameter(Mandatory = $true)]
-    $WebSiteName,
+Trace-VstsEnteringInvocation $MyInvocation
 
-    [String] [Parameter(Mandatory = $false)]
-    $Slot
-)
+try {
 
-Write-Verbose "Entering script StopWebApp.ps1"
+	# Get inputs.
+    $WebAppName = Get-VstsInput -Name WebAppName -Require
+    $Slot = Get-VstsInput -Name Slot
+    $StoppedUrl = Get-VstsInput -Name StoppedUrl
 
-Write-Host "ConnectedServiceName= $ConnectedServiceName"
-Write-Host "WebSiteName= $WebSiteName"
-Write-Host "Slot= $Slot"
+	# Initialize Azure.
+	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+	Initialize-Azure
 
-if ($Slot)
-{    
-    Write-Host "Stop-AzureWebsiteSlot -Name $WebSiteName -Slot $Slot -Verbose"
-    Stop-AzureWebsite -Name "$WebSiteName" -Slot "$Slot" -Verbose
+	# Import the loc strings.
+	Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json
+
+    if ([string]::IsNullOrEmpty($WebAppName))
+    {
+		Throw (Get-VstsLocString -Key "Invalidwebappprovided")
+	}
+
+	# Load all dependent files for execution
+	. $PSScriptRoot/AzureUtility.ps1
+
+	# Importing required version of azure cmdlets according to azureps installed on machine
+	$azureUtility = Get-AzureUtility
+
+	Write-Verbose  "Loading $azureUtility"
+	. $PSScriptRoot/$azureUtility -Force
+
+    $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
+
+    if ($Slot)
+    {    
+        Write-Verbose "[Azure Call] Stopping slot: $WebAppName / $Slot"
+        $result = Stop-AzureRmWebAppSlot -ResourceGroupName $resourceGroupName -Name $WebAppName -Slot $Slot -Verbose
+        Write-Verbose "[Azure Call] Slot stopped: $WebAppName / $Slot"
+    }
+    else
+    {
+        Write-Verbose "[Azure Call] Stopping Web App: $WebAppName"
+        $result = Stop-AzureRmWebApp -ResourceGroupName $resourceGroupName -Name $WebAppName -Verbose
+        Write-Verbose "[Azure Call] Web App stopped: $WebAppName"
+    }
+
+    $scheme = "http"
+    $hostName = $result.HostNames[0]
+    foreach ($hostNameSslState in $result.HostNameSslStates)
+    {
+        if ($hostName -eq $hostNameSslState.Name)
+        {
+            if (-not $hostNameSslState.SslState -eq 0)
+            {
+                $scheme = "https"
+            }
+
+            break
+        }
+    }
+
+    $urlValue = "${scheme}://$hostName"
+
+    Write-Host (Get-VstsLocString -Key "WebappsuccessfullystoppedatUrl0" -ArgumentList $urlValue)
+
+    # Set ouput variable with $destinationUrl
+    if (-not [string]::IsNullOrEmpty($StoppedUrl))
+    {
+        if ([string]::IsNullOrEmpty($StoppedUrl))
+        {
+            Throw (Get-VstsLocString -Key "Unabletoretrievewebappurlforwebapp0" -ArgumentList $webAppName)
+        }
+
+        Set-VstsTaskVariable -Name $StoppedUrl -Value $urlValue
+    }
+
+	Write-Verbose "Completed Azure Web App Stop Task"
+
+} finally {
+    Trace-VstsLeavingInvocation $MyInvocation
 }
-else
-{
-    Write-Host "Stop-AzureWebsiteSlot -Name $WebSiteName -Verbose"
-    Stop-AzureWebsite -Name "$WebSiteName" -Verbose    
-}
-
-Write-Verbose "Leaving script StopWebApp.ps1"
