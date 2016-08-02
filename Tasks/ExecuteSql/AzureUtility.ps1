@@ -1,6 +1,6 @@
 function Get-AgentStartIPAddress
 {
-    $connection = Get-Endpoint -Name SystemVssConnection
+    $connection = Get-VstsEndpoint -Name SystemVssConnection
 
     # getting start ip address from dtl service
     Write-Verbose "Getting external ip address by making call to dtl service"
@@ -58,7 +58,7 @@ function Get-ConnectionType
 {
     param([String] [Parameter(Mandatory=$true)] $connectedServiceName)
 
-    $serviceEndpoint = Get-Endpoint -Name "$ConnectedServiceName"
+    $serviceEndpoint = Get-VstsEndpoint -Name "$ConnectedServiceName"
     $connectionType = $serviceEndpoint.Authorization.Scheme
 
     Write-Verbose "Connection type used is $connectionType"

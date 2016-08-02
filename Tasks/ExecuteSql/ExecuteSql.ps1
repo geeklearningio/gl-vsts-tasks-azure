@@ -20,6 +20,10 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule
 
+    Import-Module "Microsoft.TeamFoundation.DistributedTask.Task.Internal"
+    Import-Module "Microsoft.TeamFoundation.DistributedTask.Task.Common"
+    Import-Module "Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs"
+
 	# Initialize Azure.
 	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
 	Initialize-Azure
