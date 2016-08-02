@@ -26,9 +26,6 @@
     ],
     "screenshots": [
         {
-            "path": "Screenshots/Add-Tasks.png"
-        },
-        {
             "path": "Screenshots/Configure-SwapSlots.png"
         },
         {
@@ -62,7 +59,7 @@
     },
     "branding": {
         "color": "#008B8B",
-        "theme": "light"
+        "theme": "dark"
     },   
     "files": [
         {

@@ -1,12 +1,12 @@
+![Icon](https://github.com/geeklearningio/gl-vsts-tasks-azure/blob/master/Extension/extension-icon.png)
+
 # Microsoft Azure Build and Release Tasks
+
+![cistatus](https://geeklearning.visualstudio.com/_apis/public/build/definitions/f841b266-7595-4d01-9ee1-4864cf65aa73/37/badge)
 
 Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.
 
 [Learn more](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki) about this extension on the wiki!
-
-![cistatus](https://geeklearning.visualstudio.com/_apis/public/build/definitions/f841b266-7595-4d01-9ee1-4864cf65aa73/37/badge)
-
-![Icon](https://github.com/geeklearningio/gl-vsts-tasks-azure/blob/master/Extension/extension-icon.png)
 
 ## Tasks included
 
@@ -33,3 +33,7 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 ## Contributors
 
 This extension was created by [Geek Learning](http://geeklearning.io/), with help from the community.
+
+## Attributions
+
+* Lightning by Carla Dias from the Noun Project

@@ -1,0 +1,168 @@
+{
+    "id": "A93D571D-F32C-4FE7-A63A-3599DDDD5279",
+    "name": "ExecuteSql",
+    "friendlyName": "Azure SQL Execute Query",
+    "description": "Execute a SQL query on an Azure SQL Database",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query) (Version #{Version}#)",
+    "category": "Deploy",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Geek Learning",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "demands": [
+        "azureps",
+        "sqlps"
+    ],
+    "minimumAgentVersion": "1.103.0",
+    "instanceNameFormat": "Execute SQL on $(DatabaseName)",
+    "groups": [
+        {
+            "name": "target",
+            "displayName": "Target",
+            "isExpanded": true
+        },
+        {
+            "name": "firewall",
+            "displayName": "Firewall",
+            "isExpanded": false
+        }
+    ],    
+    "inputs": [
+        {
+            "name": "ConnectedServiceName",
+            "type": "connectedService:AzureRM",
+            "label": "Azure RM Subscription",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Azure Resource Manager subscription to target for executing SQL"
+        },
+        {
+            "name": "ScriptType",
+            "type": "pickList",
+            "label": "Type",
+            "defaultValue": "FilePath",
+            "required": true,
+            "helpMarkDown": "Type of the script: File Path or Inline Script",
+            "options": {
+                "InlineScript": "Inline Script",
+                "FilePath": "File Path"
+            }
+        },
+        {
+            "name": "ScriptPath",
+            "type": "FilePath",
+            "label": "Script Path",
+            "defaultValue": "",
+            "required": true,
+            "visibleRule": "ScriptType = FilePath",
+            "helpMarkDown": "Path of the script to execute. Should be fully qualified path or relative to the default working directory."
+        },
+        {
+            "name": "Arguments",
+            "type": "string",
+            "label": "Arguments",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Arguments passed to the SQLCMD script with the -v option. Should be formatted like 'Var1=\"Value2\" Var2=\"Value2\"'. It can then be used with the $(Var1) syntax in the script."
+        },
+        {
+            "name": "InlineScript",
+            "type": "multiLine",
+            "label": "Inline Script",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "",
+            "visibleRule": "ScriptType = InlineScript",
+            "properties": {
+                "resizable": "true",
+                "rows": "10",
+                "maxLength": "500"
+            }
+        },
+        {
+            "name": "ServerName",
+            "type": "string",
+            "label": "Azure SQL Server Name",
+            "required": true,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Azure SQL Server name like, FabrikamSQL.database.windows.net,1433 or FabrikamSQL.database.windows.net."
+        },
+        {
+            "name": "DatabaseName",
+            "type": "string",
+            "label": "Database Name",
+            "required": true,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Name of the Azure SQL Database."
+        },
+        {
+            "name": "SqlUsername",
+            "type": "string",
+            "label": "Server Admin Login",
+            "required": false,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Specify the Azure SQL Server administrator login."
+        },
+        {
+            "name": "SqlPassword",
+            "type": "string",
+            "label": "Password",
+            "required": false,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Password for the Azure SQL Server administrator.<br>It can accept variable defined in Build/Release Definitions as '$(passwordVariable').<br>You may mark variable type as 'secret' to secure it."
+        },
+        {
+            "name": "IpDetectionMethod",
+            "type": "pickList",
+            "label": "Specify Firewall Rules Using",
+            "required": true,
+            "groupName": "firewall",
+            "defaultValue": "IPAddressRange",
+            "helpMarkDown": "For the task to run, the IP Address of the automation agent has to be added to the 'Allowed IP Addresses' in the Azure SQL Server's Firewall. Provide the IP Address range of the automation agents, or select to auto-detect in case of hosted automation agent."
+        },
+        {
+            "name": "StartIpAddress",
+            "type": "string",
+            "label": "Start IP Address",
+            "required": true,
+            "groupName": "firewall",
+            "defaultValue": "",
+            "visibleRule": "IpDetectionMethod = IPAddressRange",
+            "helpMarkDown": "The starting IP Address of the automation agent machine pool like 196.21.30.50."
+        },
+        {
+            "name": "EndIpAddress",
+            "type": "string",
+            "label": "End IP Address",
+            "required": true,
+            "groupName": "firewall",
+            "defaultValue": "",
+            "visibleRule": "IpDetectionMethod = IPAddressRange",
+            "helpMarkDown": "The ending IP Address of the automation agent machine pool like 196.21.30.65."
+        },
+        {
+            "name": "DeleteFirewallRule",
+            "type": "boolean",
+            "label": "Delete Rule After Task Ends",
+            "required": false,
+            "groupName": "firewall",
+            "defaultValue": "true",
+            "helpMarkDown": "If selected, then after the task ends, the IP Addresses specified here are deleted from the 'Allowed IP Addresses' list of the Azure SQL Server's Firewall."
+        }
+    ],
+    "execution": {
+        "PowerShell3": {
+            "target": "ExecuteSql.ps1"
+        }
+    }
+}
