@@ -1,8 +1,6 @@
 function Get-AgentStartIPAddress
 {
-    param([Object] [Parameter(Mandatory = $true)] $taskContext)
-
-    $connection = Get-VssConnection -TaskContext $taskContext
+    $connection = Get-Endpoint -Name SystemVssConnection
 
     # getting start ip address from dtl service
     Write-Verbose "Getting external ip address by making call to dtl service"
@@ -15,8 +13,7 @@ function Get-AgentIPAddress
 {
     param([String] $startIPAddress,
           [String] $endIPAddress,
-          [String] [Parameter(Mandatory = $true)] $ipDetectionMethod,
-          [Object] [Parameter(Mandatory = $true)] $taskContext)
+          [String] [Parameter(Mandatory = $true)] $ipDetectionMethod)
 
     [HashTable]$IPAddress = @{}
     if($ipDetectionMethod -eq "IPAddressRange")
@@ -26,7 +23,7 @@ function Get-AgentIPAddress
     }
     elseif($ipDetectionMethod -eq "AutoDetect")
     {
-        $IPAddress.StartIPAddress = Get-AgentStartIPAddress -TaskContext $taskContext
+        $IPAddress.StartIPAddress = Get-AgentStartIPAddress
         $IPAddress.EndIPAddress = $IPAddress.StartIPAddress
     }
 
@@ -59,10 +56,9 @@ function Get-AzureUtility
 
 function Get-ConnectionType
 {
-    param([String] [Parameter(Mandatory=$true)] $connectedServiceName,
-          [Object] [Parameter(Mandatory=$true)] $taskContext)
+    param([String] [Parameter(Mandatory=$true)] $connectedServiceName)
 
-    $serviceEndpoint = Get-ServiceEndpoint -Name "$ConnectedServiceName" -Context $taskContext
+    $serviceEndpoint = Get-Endpoint -Name "$ConnectedServiceName"
     $connectionType = $serviceEndpoint.Authorization.Scheme
 
     Write-Verbose "Connection type used is $connectionType"

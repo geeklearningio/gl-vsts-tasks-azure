@@ -37,7 +37,7 @@ try {
     Write-Verbose "Server friendly name is $serverFriendlyName"
 
     # Getting start and end IP address for agent machine
-    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod -taskContext $distributedTaskContext
+    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
     Write-Verbose ($ipAddress | Format-List | Out-String)
 
     $startIp =$ipAddress.StartIPAddress
@@ -52,7 +52,7 @@ try {
         Import-Module ./$azureUtility -Force
 
         # Getting connection type (Certificate/UserNamePassword/SPN) used for the task
-        $connectionType = Get-ConnectionType -connectedServiceName $ConnectedServiceName -taskContext $distributedTaskContext
+        $connectionType = Get-ConnectionType -connectedServiceName $ConnectedServiceName
 
         # creating firewall rule for agent on sql server
         $firewallSettings = Create-AzureSqlDatabaseServerFirewallRule -startIP $startIp -endIP $endIp -serverName $serverFriendlyName -connectionType $connectionType
