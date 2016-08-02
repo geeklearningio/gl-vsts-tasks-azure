@@ -24,7 +24,7 @@
         {
             "name": "output",
             "displayName": "Output",
-            "isExpanded": true
+            "isExpanded": false
         }
     ],
     "inputs": [

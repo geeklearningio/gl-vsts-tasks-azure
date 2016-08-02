@@ -19,12 +19,12 @@
         "azureps"
     ],
     "minimumAgentVersion": "1.103.0",
-    "instanceNameFormat": "Stop Azure Web App: $(WebSiteName) $(Slot)",
+    "instanceNameFormat": "Stop Azure Web App: $(WebAppName) $(Slot)",
     "groups": [
         {
             "name": "output",
             "displayName": "Output",
-            "isExpanded": true
+            "isExpanded": false
         }
     ],
     "inputs": [

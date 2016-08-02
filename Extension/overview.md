@@ -7,8 +7,8 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 ## Tasks included
 
 * **[Azure Web App Slots Swap](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Slots-Swap)**: Swap two deployment slots of an Azure Web App
-* **Start Azure Web App**: start an Azure Web App, or one of its slot
-* **Stop Azure Web App**: stop an Azure Web App, or one of its slot
+* **[Azure Web App Start](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Start)**: Start an Azure Web App, or one of its slot
+* **[Azure Web App Stop](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Stop)**: Stop an Azure Web App, or one of its slot
 * **Azure SQL Database Restore**: restore an Azure SQL Database to another Azure SQL Database on the same server
 
 ## Steps
