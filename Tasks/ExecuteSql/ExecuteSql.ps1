@@ -20,7 +20,15 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule
 
-    Import-Module "Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs"
+    # Import the Task.Common and Task.Internal dll that has all the cmdlets we need for Build
+    $agentWorkerModulesPath = "$($env:AGENT_HOMEDIRECTORY)\agent\worker\Modules"
+    $agentDistributedTaskInternalModulePath = "$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Task.Internal\Microsoft.TeamFoundation.DistributedTask.Task.Internal.dll"
+    $agentDistributedTaskCommonModulePath = "$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Task.Common\Microsoft.TeamFoundation.DistributedTask.Task.Common.dll"
+    $agentDistributedTaskDevTestLabsModulePath = "$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs.dll"
+    
+    Import-Module $agentDistributedTaskInternalModulePath
+    Import-Module $agentDistributedTaskCommonModulePath
+    Import-Module agentDistributedTaskDevTestLabsModulePath
 
 	# Initialize Azure.
 	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
