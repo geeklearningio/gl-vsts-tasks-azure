@@ -1,55 +1,68 @@
 function Get-AgentStartIPAddress
 {
-    $endpoint = Get-VstsEndpoint -Name SystemVssConnection
-    $credentials = Get-VstsVssCredentials
-    
-    $agentWorkerModulesPath = "$($env:AGENT_HOMEDIRECTORY)\agent\worker"    
+    $data = (Invoke-WebRequest -Uri "whatismyip.org" -UseBasicParsing).Content
 
-    $SystemNetHttpFormatting = [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\System.Net.Http.Formatting.dll")
-    $NewtonsoftJson = [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Newtonsoft.Json.dll")
-
-    $OnAssemblyResolve = [System.ResolveEventHandler] {
-        param($sender, $e)
-
-        if ($e.Name.StartsWith("Newtonsoft.Json"))
-        { 
-            return $NewtonsoftJson 
-        }
-
-        if ($e.Name.StartsWith("System.Net.Http.Formatting"))
-        {
-            return $SystemNetHttpFormatting
-        }
-
-        foreach ($a in [System.AppDomain]::CurrentDomain.GetAssemblies())
-        {
-            if ($a.FullName -eq $e.Name)
-            {
-                return $a
-            }
-        }
-
-        return $null
+    $ipRegex=‘(?<Address>((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))’
+    if ($data -Match $ipRegex)
+    {
+        $startIP = $Matches.Address
+    }
+    else
+    {
+        throw (Get-VstsLocString -Key "Cannot retrieve Agent Start IP")
     }
 
-    [System.AppDomain]::CurrentDomain.add_AssemblyResolve($OnAssemblyResolve)
 
-    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Interfaces.dll")
-    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.WebApi.dll")
-    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Common.dll")
-    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.Common.dll")
+    # $endpoint = Get-VstsEndpoint -Name SystemVssConnection
+    # $credentials = Get-VstsVssCredentials
     
-    Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Internal\Microsoft.TeamFoundation.DistributedTask.Task.Internal.dll"
-    Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Common\Microsoft.TeamFoundation.DistributedTask.Task.Common.dll"
-    Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs.dll"
+    # $agentWorkerModulesPath = "$($env:AGENT_HOMEDIRECTORY)\agent\worker"    
 
-    $connection = New-Object Microsoft.VisualStudio.Services.WebApi.VssConnection -ArgumentList @($endpoint.Url, $credentials)
+    # $SystemNetHttpFormatting = [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\System.Net.Http.Formatting.dll")
+    # $NewtonsoftJson = [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Newtonsoft.Json.dll")
 
-    # getting start ip address from dtl service
-    Write-Verbose "Getting external ip address by making call to dtl service"
-    $startIP = Get-ExternalIpAddress -Connection $connection
+    # $OnAssemblyResolve = [System.ResolveEventHandler] {
+    #     param($sender, $e)
 
-    [System.AppDomain]::CurrentDomain.remove_AssemblyResolve($OnAssemblyResolve)
+    #     if ($e.Name.StartsWith("Newtonsoft.Json"))
+    #     { 
+    #         return $NewtonsoftJson 
+    #     }
+
+    #     if ($e.Name.StartsWith("System.Net.Http.Formatting"))
+    #     {
+    #         return $SystemNetHttpFormatting
+    #     }
+
+    #     foreach ($a in [System.AppDomain]::CurrentDomain.GetAssemblies())
+    #     {
+    #         if ($a.FullName -eq $e.Name)
+    #         {
+    #             return $a
+    #         }
+    #     }
+
+    #     return $null
+    # }
+
+    # [System.AppDomain]::CurrentDomain.add_AssemblyResolve($OnAssemblyResolve)
+
+    # [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Interfaces.dll")
+    # [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.WebApi.dll")
+    # [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Common.dll")
+    # [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.Common.dll")
+    
+    # Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Internal\Microsoft.TeamFoundation.DistributedTask.Task.Internal.dll"
+    # Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Common\Microsoft.TeamFoundation.DistributedTask.Task.Common.dll"
+    # Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs.dll"
+
+    # $connection = New-Object Microsoft.VisualStudio.Services.WebApi.VssConnection -ArgumentList @($endpoint.Url, $credentials)
+
+    # # getting start ip address from dtl service
+    # Write-Verbose "Getting external ip address by making call to dtl service"
+    # $startIP = Get-ExternalIpAddress -Connection $connection
+
+    # [System.AppDomain]::CurrentDomain.remove_AssemblyResolve($OnAssemblyResolve)
 
     return $startIP
 }

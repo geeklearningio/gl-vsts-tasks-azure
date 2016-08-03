@@ -22,7 +22,7 @@ function Get-AzureSqlDatabaseServerRGName
         {
             Write-Verbose "[Azure RM Call] Sql Database Server: $serverName not found"
 
-            Throw (Get-LocalizedString -Key "Sql Database Server: '{0}' not found." -ArgumentList $serverName)
+            Throw (Get-VstsLocString -Key "Sql Database Server: '{0}' not found." -ArgumentList $serverName)
         }
     }
 }
@@ -50,7 +50,7 @@ function Create-AzureSqlDatabaseServerFirewallRuleARM
         $exceptionMessage = $_.Exception.Message.ToString()
         Write-Verbose "ExceptionMessage: $exceptionMessage" -Verbose
 
-        Throw (Get-LocalizedString -Key "IPAddress mentioned is not a valid IPv4 address.")
+        Throw (Get-VstsLocString -Key "IPAddress mentioned is not a valid IPv4 address.")
     }
 
     return $azureSqlDatabaseServerFirewallRule
