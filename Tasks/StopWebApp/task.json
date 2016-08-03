@@ -78,7 +78,6 @@
         }
     },
     "messages": {
-        "Invalidwebappprovided": "Invalid Web App name provided",
         "WebappsuccessfullystoppedatUrl0": "Web App successfully stopped at Url: {0}",
         "Unabletoretrievewebappurlforwebapp0": "Unable to retrieve Web App url for Web App: {0}"
     }

@@ -86,7 +86,6 @@
         }
     },
     "messages": {
-        "Invalidwebappprovided": "Invalid Web App name provided",
         "WebappslotsuccessfullyswappedatUrl0": "Web App slot successfully swapped at Url : {0}",
         "Unabletoretrievewebapppublishurlforwebapp0": "Unable to retrieve Web App slot url for webapp : '{0}'."
     }

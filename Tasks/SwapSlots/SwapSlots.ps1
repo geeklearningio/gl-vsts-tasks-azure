@@ -12,27 +12,13 @@ try {
     $DestinationUrl = Get-VstsInput -Name DestinationUrl
 
 	# Initialize Azure.
-	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
 	Initialize-Azure
 
 	# Import the loc strings.
 	Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json
 
-    if ([string]::IsNullOrEmpty($WebAppName))
-    {
-		Throw (Get-VstsLocString -Key "Invalidwebappprovided")
-	}
-
-	# Load all dependent files for execution
-	. $PSScriptRoot/AzureUtility.ps1
-
-	# Importing required version of azure cmdlets according to azureps installed on machine
-	$azureUtility = Get-AzureUtility
-
-	Write-Verbose  "Loading $azureUtility"
-	. $PSScriptRoot/$azureUtility -Force
-
-    $resourceGroupName = Get-WebAppRGName -webAppName $WebAppName
+    $resourceGroupName = Get-WebAppResourceGroupName -webAppName $WebAppName
     $parametersObject = @{targetSlot  = "$DestinationSlot"}
     if ($SourceSlot -eq "production")
     {

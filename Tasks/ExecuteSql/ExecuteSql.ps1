@@ -4,7 +4,6 @@ param()
 Trace-VstsEnteringInvocation $MyInvocation
 
 try {
-
 	# Get inputs.
     $ScriptType = Get-VstsInput -Name ScriptType -Require
     $ScriptPath = Get-VstsInput -Name ScriptPath   
@@ -20,38 +19,26 @@ try {
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule
 
 	# Initialize Azure.
-	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
 	Initialize-Azure
+
+    # Import SQL Powershell cmdlets.
+    Import-Module sqlps
 
 	# Import the loc strings.
 	Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
-
-	# Load all dependent files for execution
-	. $PSScriptRoot/AzureUtility.ps1
-
-    $ErrorActionPreference = 'Stop'
 
     $ServerName = $ServerName.ToLower()
     $serverFriendlyName = $ServerName.split(".")[0]
     Write-Verbose "Server friendly name is $serverFriendlyName"
 
-    # Getting start and end IP address for agent machine
+    # Getting start and end IP address for agent machine.
     $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
     Write-Verbose ($ipAddress | Format-List | Out-String)
 
-    $startIp =$ipAddress.StartIPAddress
-    $endIp = $ipAddress.EndIPAddress
-
-    try
-    {
-        # Importing required version of azure cmdlets according to azureps installed on machine
-        $azureUtility = Get-AzureUtility
-
-        Write-Verbose "Loading $azureUtility"
-        Import-Module ./$azureUtility -Force
-
-        # creating firewall rule for agent on sql server
-        $firewallSettings = Create-AzureSqlDatabaseServerFirewallRule -startIP $startIp -endIP $endIp -serverName $serverFriendlyName
+    try {
+        # Creating firewall rule for agent on SQL server.
+        $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
         Write-Verbose ($firewallSettings | Format-List | Out-String)
 
         $firewallRuleName = $firewallSettings.RuleName
@@ -69,13 +56,10 @@ try {
         Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
 
     } finally {
-        # deleting firewall rule for agent on sql server
-        Delete-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName `
-                                                -isFirewallConfigured $isFirewallConfigured -deleteFireWallRule $DeleteFirewallRule
+        Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName -isFirewallConfigured $isFirewallConfigured -deleteFireWallRule $DeleteFirewallRule
     }
 
 	Write-Verbose "Completed Azure SQL Execute Query Task"
-
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }
