@@ -9,14 +9,14 @@ try {
     $ScriptPath = Get-VstsInput -Name ScriptPath   
     $Arguments = Get-VstsInput -Name Arguments
     $InlineScript = Get-VstsInput -Name InlineScript
-    $ServerName = Get-VstsInput -Name ServerName
-    $DatabaseName = Get-VstsInput -Name DatabaseName
-    $SqlUsername = Get-VstsInput -Name SqlUsername
-    $SqlPassword = Get-VstsInput -Name SqlPassword
-    $IpDetectionMethod = Get-VstsInput -Name IpDetectionMethod
+    $ServerName = Get-VstsInput -Name ServerName -Require
+    $DatabaseName = Get-VstsInput -Name DatabaseName -Require
+    $SqlUsername = Get-VstsInput -Name SqlUsername -Require
+    $SqlPassword = Get-VstsInput -Name SqlPassword -Require
+    $IpDetectionMethod = Get-VstsInput -Name IpDetectionMethod -Require
     $StartIpAddress = Get-VstsInput -Name StartIpAddress
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
-    $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule
+    $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule -Require
 
 	# Initialize Azure.
 	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
@@ -43,13 +43,14 @@ try {
 
         $firewallRuleName = $firewallSettings.RuleName
         $isFirewallConfigured = $firewallSettings.IsConfigured
-
-        Write-Verbose "[Azure Call] Executing SQL query on $DatabaseName"
-        
+    
         $variableParameter = $null
         if ($Arguments) {
-            $variableParameter = "$Arguments"
+            $variableParameter = ($Arguments -split '[\r\n]') |? {$_}
+            Write-Verbose "Variable Parameters: $variableParameter"
         }
+
+        Write-Verbose "[Azure Call] Executing SQL query on $DatabaseName"
 
         if ($ScriptType -eq "FilePath") {
             Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -Verbose

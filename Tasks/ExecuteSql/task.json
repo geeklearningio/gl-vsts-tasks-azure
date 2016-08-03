@@ -64,12 +64,16 @@
             "helpMarkDown": "Path of the script to execute. Should be fully qualified path or relative to the default working directory."
         },
         {
-            "name": "Arguments",
-            "type": "string",
-            "label": "Arguments",
+            "name": "Variables",
+            "type": "multiLine",
+            "label": "Variables",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Arguments passed to the SQLCMD script with the -v option. Should be formatted like 'Var1=\"Value2\" Var2=\"Value2\"'. It can then be used with the $(Var1) syntax in the script."
+            "helpMarkDown": "Variables passed to the SQLCMD script with the -v option. Should be formatted like 'Var1=Value1', with one variable per line. It can then be used with the SQLCMD $(Var1) syntax in the script.",
+            "properties": {
+                "resizable": "true",
+                "rows": "3"
+            }
         },
         {
             "name": "InlineScript",
