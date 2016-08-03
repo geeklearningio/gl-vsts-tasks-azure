@@ -4,7 +4,7 @@ param()
 Trace-VstsEnteringInvocation $MyInvocation
 
 try {
-	# Get inputs.
+    # Get inputs.
     $ScriptType = Get-VstsInput -Name ScriptType -Require
     $ScriptPath = Get-VstsInput -Name ScriptPath   
     $Variables = Get-VstsInput -Name Variables
@@ -18,15 +18,15 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule -Require
 
-	# Initialize Azure.
-	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
-	Initialize-Azure
+    # Initialize Azure.
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+    Initialize-Azure
 
     # Import SQL Powershell cmdlets.
     Import-Module sqlps
 
-	# Import the loc strings.
-	Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
+    # Import the loc strings.
+    Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
     $ServerName = $ServerName.ToLower()
     $serverFriendlyName = $ServerName.split(".")[0]
@@ -53,10 +53,10 @@ try {
         Write-Verbose "[Azure Call] Executing SQL query on $DatabaseName"
 
         if ($ScriptType -eq "FilePath") {
-            Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -Verbose
+            Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
         else {
-            Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -Verbose
+            Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
 
         Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
@@ -65,7 +65,7 @@ try {
         Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName -isFirewallConfigured $isFirewallConfigured -deleteFireWallRule $DeleteFirewallRule
     }
 
-	Write-Verbose "Completed Azure SQL Execute Query Task"
+    Write-Verbose "Completed Azure SQL Execute Query Task"
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }
