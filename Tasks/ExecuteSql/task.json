@@ -48,7 +48,7 @@
             "label": "Type",
             "defaultValue": "FilePath",
             "required": true,
-            "helpMarkDown": "Type of the script: File Path or Inline Script",
+            "helpMarkDown": "Type of the script: File Path, Inline Script or Predefined Script.",
             "options": {
                 "FilePath": "File Path",
                 "InlineScript": "Inline Script",
@@ -73,9 +73,9 @@
             "visibleRule": "ScriptType = PredefinedScript",
             "helpMarkDown": "Predefined script to execute. You can see the required variables for each predefined script on the [wiki](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query).",
             "options": {
-                "CreateUser": "CreateUser.sql",
-                "CreateDbOwner": "CreateDbOwner.sql",
-                "AddRoleMember": "AddRoleMember.sql"
+                "CreateUser": "Create User",
+                "AddRoleMember": "Add Role Member",
+                "CreateDbOwner": "Create Database Owner"
             }            
         },
         {

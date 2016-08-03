@@ -61,7 +61,7 @@ try {
         }
         else {            
             $variableParameter.Add("WorkingFolder='$PSScriptRoot\SqlPredefinedScripts'")
-            Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose            
+            Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose            
         }
 
         Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
