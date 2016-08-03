@@ -13,6 +13,7 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 * **[Azure Web App Slots Swap](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Slots-Swap)**: Swap two deployment slots of an Azure Web App
 * **[Azure Web App Start](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Start)**: Start an Azure Web App, or one of its slot
 * **[Azure Web App Stop](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Stop)**: Stop an Azure Web App, or one of its slot
+* **[Azure SQL Execute Query](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query)**: Execute a SQL query on an Azure SQL Database
 * **Azure SQL Database Restore**: restore an Azure SQL Database to another Azure SQL Database on the same server
 
 ## To contribute
@@ -25,6 +26,7 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 ## Release Notes
 
 > **8-1-2016**
+> - Added: Azure SQL Execute Query
 > - New build tools for all GL tasks
 
 > **7-31-2016**

@@ -46,7 +46,7 @@ try {
     Write-Verbose "Server friendly name is $serverFriendlyName"
 
     # Getting start and end IP address for agent machine
-    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod -taskContext $distributedTaskContext
+    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
     Write-Verbose ($ipAddress | Format-List | Out-String)
 
     $startIp =$ipAddress.StartIPAddress
