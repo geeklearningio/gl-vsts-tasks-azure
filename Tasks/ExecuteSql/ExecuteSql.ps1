@@ -59,8 +59,13 @@ try {
         elseif ($ScriptType -eq "InlineScript") {
             Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
-        else {            
-            $variableParameter.Add("WorkingFolder='$PSScriptRoot\SqlPredefinedScripts'")
+        else {     
+            $workingFolderVariable = @("WorkingFolder='$PSScriptRoot\SqlPredefinedScripts'")
+            if ($variableParameter -isnot [system.array]) {
+                $variableParameter = @($variableParameter)
+            }
+
+            $variableParameter = $variableParameter + $workingFolderVariable
             Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose            
         }
 
