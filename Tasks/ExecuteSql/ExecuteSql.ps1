@@ -46,11 +46,16 @@ try {
 
         Write-Verbose "[Azure Call] Executing SQL query on $DatabaseName"
         
+        $variableParameter = $null
+        if ($Arguments) {
+            $variableParameter = "$Arguments"
+        }
+
         if ($ScriptType -eq "FilePath") {
-            Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable "$Arguments" -Verbose
+            Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -Verbose
         }
         else {
-            Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable "$Arguments" -Verbose
+            Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -Verbose
         }
 
         Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
