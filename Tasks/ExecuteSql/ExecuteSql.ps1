@@ -7,7 +7,7 @@ try {
 	# Get inputs.
     $ScriptType = Get-VstsInput -Name ScriptType -Require
     $ScriptPath = Get-VstsInput -Name ScriptPath   
-    $Arguments = Get-VstsInput -Name Arguments
+    $Variables = Get-VstsInput -Name Variables
     $InlineScript = Get-VstsInput -Name InlineScript
     $ServerName = Get-VstsInput -Name ServerName -Require
     $DatabaseName = Get-VstsInput -Name DatabaseName -Require
@@ -45,8 +45,8 @@ try {
         $isFirewallConfigured = $firewallSettings.IsConfigured
     
         $variableParameter = $null
-        if ($Arguments) {
-            $variableParameter = ($Arguments -split '[\r\n]') |? {$_}
+        if ($Variables) {
+            $variableParameter = ($Variables -split '[\r\n]') |? {$_}
             Write-Verbose "Variable Parameters: $variableParameter"
         }
 

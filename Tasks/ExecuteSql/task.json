@@ -72,7 +72,7 @@
             "helpMarkDown": "Variables passed to the SQLCMD script with the -v option. Should be formatted like 'Var1=Value1', with one variable per line. It can then be used with the SQLCMD $(Var1) syntax in the script.",
             "properties": {
                 "resizable": "true",
-                "rows": "3"
+                "rows": "2"
             }
         },
         {
