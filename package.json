@@ -4,6 +4,7 @@
   "description": "Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure",
   "main": "gulpfile.js",
   "scripts": {
+    "clean" : "node ./BuildScripts/clean.js",
     "pullsubmodules" : "git submodule foreach git pull origin master",
     "postinstall": "node ./BuildScripts/install.js",
     "prebuild": "node ./BuildScripts/prebuild.js",

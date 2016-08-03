@@ -27,10 +27,10 @@
     ],
     "screenshots": [
         {
-            "path": "Screenshots/Configure-SwapSlots.png"
+            "path": "Screenshots/Configure-ExecuteSql.png"
         },
         {
-            "path": "Screenshots/Configure-StartWebApp.png"
+            "path": "Screenshots/Configure-SwapSlots.png"
         },
         {
             "path": "Screenshots/Configure-StopWebApp.png"

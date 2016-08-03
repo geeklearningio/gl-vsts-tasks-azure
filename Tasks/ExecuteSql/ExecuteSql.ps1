@@ -6,8 +6,9 @@ Trace-VstsEnteringInvocation $MyInvocation
 try {
     # Get inputs.
     $ScriptType = Get-VstsInput -Name ScriptType -Require
-    $ScriptPath = Get-VstsInput -Name ScriptPath   
-    $Variables = Get-VstsInput -Name Variables
+    $ScriptPath = Get-VstsInput -Name ScriptPath
+    $PredefinedScript = Get-VstsInput -Name PredefinedScript   
+    $Variables = Get-VstsInput -Name Variables    
     $InlineScript = Get-VstsInput -Name InlineScript
     $ServerName = Get-VstsInput -Name ServerName -Require
     $DatabaseName = Get-VstsInput -Name DatabaseName -Require
@@ -43,8 +44,8 @@ try {
 
         $firewallRuleName = $firewallSettings.RuleName
         $isFirewallConfigured = $firewallSettings.IsConfigured
-    
-        $variableParameter = $null
+            
+        $variableParameter = @()
         if ($Variables) {
             $variableParameter = ($Variables -split '[\r\n]') |? {$_}
             Write-Verbose "Variable Parameters: $variableParameter"
@@ -55,8 +56,12 @@ try {
         if ($ScriptType -eq "FilePath") {
             Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
-        else {
+        elseif ($ScriptType -eq "InlineScript") {
             Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
+        }
+        else {            
+            $variableParameter.Add("WorkingFolder='$PSScriptRoot\SqlPredefinedScripts'")
+            Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose            
         }
 
         Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
