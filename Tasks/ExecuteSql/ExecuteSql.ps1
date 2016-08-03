@@ -6,7 +6,6 @@ Trace-VstsEnteringInvocation $MyInvocation
 try {
 
 	# Get inputs.
-    $ConnectedServiceName = Get-VstsInput -Name ConnectedServiceName -Require
     $ScriptType = Get-VstsInput -Name ScriptType -Require
     $ScriptPath = Get-VstsInput -Name ScriptPath   
     $Arguments = Get-VstsInput -Name Arguments
@@ -20,15 +19,15 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule
 
-    # Import the Task.Common and Task.Internal dll that has all the cmdlets we need for Build
-    $agentWorkerModulesPath = "$($env:AGENT_HOMEDIRECTORY)\agent\worker\Modules"
-    $agentDistributedTaskInternalModulePath = "$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Task.Internal\Microsoft.TeamFoundation.DistributedTask.Task.Internal.dll"
-    $agentDistributedTaskCommonModulePath = "$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Task.Common\Microsoft.TeamFoundation.DistributedTask.Task.Common.dll"
-    $agentDistributedTaskDevTestLabsModulePath = "$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs.dll"
+    $agentWorkerModulesPath = "$($env:AGENT_HOMEDIRECTORY)\agent\worker"    
+    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Interfaces.dll")
+    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.WebApi.dll")
+    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Common.dll")
+    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.Common.dll")
     
-    Import-Module $agentDistributedTaskInternalModulePath
-    Import-Module $agentDistributedTaskCommonModulePath
-    Import-Module agentDistributedTaskDevTestLabsModulePath
+    Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Internal\Microsoft.TeamFoundation.DistributedTask.Task.Internal.dll"
+    Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Common\Microsoft.TeamFoundation.DistributedTask.Task.Common.dll"
+    Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs\Microsoft.TeamFoundation.DistributedTask.Task.DevTestLabs.dll"
 
 	# Initialize Azure.
 	Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
@@ -47,7 +46,7 @@ try {
     Write-Verbose "Server friendly name is $serverFriendlyName"
 
     # Getting start and end IP address for agent machine
-    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
+    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod -taskContext $distributedTaskContext
     Write-Verbose ($ipAddress | Format-List | Out-String)
 
     $startIp =$ipAddress.StartIPAddress
@@ -61,11 +60,8 @@ try {
         Write-Verbose "Loading $azureUtility"
         Import-Module ./$azureUtility -Force
 
-        # Getting connection type (Certificate/UserNamePassword/SPN) used for the task
-        $connectionType = Get-ConnectionType -connectedServiceName $ConnectedServiceName
-
         # creating firewall rule for agent on sql server
-        $firewallSettings = Create-AzureSqlDatabaseServerFirewallRule -startIP $startIp -endIP $endIp -serverName $serverFriendlyName -connectionType $connectionType
+        $firewallSettings = Create-AzureSqlDatabaseServerFirewallRule -startIP $startIp -endIP $endIp -serverName $serverFriendlyName
         Write-Verbose ($firewallSettings | Format-List | Out-String)
 
         $firewallRuleName = $firewallSettings.RuleName
@@ -84,7 +80,7 @@ try {
 
     } finally {
         # deleting firewall rule for agent on sql server
-        Delete-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName -connectionType $connectionType `
+        Delete-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName `
                                                 -isFirewallConfigured $isFirewallConfigured -deleteFireWallRule $DeleteFirewallRule
     }
 

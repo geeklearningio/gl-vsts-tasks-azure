@@ -1,30 +1,5 @@
 # This file implements IAzureUtility for Azure PowerShell version >= 1.0.0
 
-function Create-AzureSqlDatabaseServerFirewallRuleRDFE
-{
-    param([String] [Parameter(Mandatory = $true)] $startIPAddress,
-          [String] [Parameter(Mandatory = $true)] $endIPAddress,
-          [String] [Parameter(Mandatory = $true)] $serverName,
-          [String] [Parameter(Mandatory = $true)] $firewallRuleName)
-
-    try
-    {
-        Write-Verbose "[Azure RDFE Call] Creating firewall rule $firewallRuleName"  -Verbose
-        $azureSqlDatabaseServerFirewallRule = New-AzureSqlDatabaseServerFirewallRule -StartIPAddress $startIPAddress -EndIPAddress $endIPAddress -ServerName $serverName `
-                                                                                    -RuleName $firewallRuleName -ErrorAction Stop
-        Write-Verbose "[Azure RDFE Call] Firewall rule $firewallRuleName created"  -Verbose
-    }
-    catch [System.ServiceModel.CommunicationException]
-    {
-        $exceptionMessage = $_.Exception.Message.ToString()
-        Write-Verbose "ExceptionMessage: $exceptionMessage" -Verbose
-
-        Throw (Get-LocalizedString -Key "Either IPAddress mentioned is not a valid IPv4 address or Sql database server: '{0}' does not exist." -ArgumentList $serverName)
-    }
-
-    return $azureSqlDatabaseServerFirewallRule
-}
-
 function Get-AzureSqlDatabaseServerRGName
 {
     param([String] [Parameter(Mandatory = $true)] $serverName)
@@ -57,7 +32,6 @@ function Create-AzureSqlDatabaseServerFirewallRuleARM
           [String] [Parameter(Mandatory = $true)] $serverName,
           [String] [Parameter(Mandatory = $true)] $firewallRuleName)
 
-     # get azure storage account resource group name
     $azureResourceGroupName = Get-AzureSqlDatabaseServerRGName -serverName $serverName
     Write-Verbose "For azure sql database server: '$serverName' resourcegroup name is '$azureResourceGroupName'." -Verbose
 
@@ -78,22 +52,11 @@ function Create-AzureSqlDatabaseServerFirewallRuleARM
     return $azureSqlDatabaseServerFirewallRule
 }
 
-function Delete-AzureSqlDatabaseServerFirewallRuleRDFE
-{
-    param([String] [Parameter(Mandatory = $true)] $serverName,
-          [String] [Parameter(Mandatory = $true)] $firewallRuleName)
-
-    Write-Verbose "[Azure RDFE Call] Deleting firewall rule $firewallRuleName on azure database server: $serverName" -Verbose
-    Remove-AzureSqlDatabaseServerFirewallRule -ServerName $serverName -RuleName $firewallRuleName -Force -ErrorAction Stop
-    Write-Verbose "[Azure RDFE Call] Firewall rule $firewallRuleName deleted on azure database server: $serverName" -Verbose
-}
-
 function Delete-AzureSqlDatabaseServerFirewallRuleARM
 {
     param([String] [Parameter(Mandatory = $true)] $serverName,
           [String] [Parameter(Mandatory = $true)] $firewallRuleName)
 
-    # get azure storage account resource group name
     $azureResourceGroupName = Get-AzureSqlDatabaseServerRGName -serverName $serverName
     Write-Verbose "For azure sql database server: '$serverName' resourcegroup name is '$azureResourceGroupName'." -Verbose
 
