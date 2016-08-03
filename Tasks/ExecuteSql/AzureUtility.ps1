@@ -1,6 +1,9 @@
 function Get-AgentStartIPAddress
 {
-    $connection = Get-VstsEndpoint -Name SystemVssConnection
+    $endpoint = Get-VstsEndpoint -Name SystemVssConnection
+    $credentials = Get-VstsVssCredentials
+    
+    $connection = New-Object Microsoft.VisualStudio.Services.WebApi.VssConnection -ArgumentList @($endpoint.Url, $credentials)
 
     # getting start ip address from dtl service
     Write-Verbose "Getting external ip address by making call to dtl service"

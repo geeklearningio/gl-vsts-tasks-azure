@@ -20,10 +20,31 @@ try {
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule
 
     $agentWorkerModulesPath = "$($env:AGENT_HOMEDIRECTORY)\agent\worker"    
+    $NewtonsoftJson = [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Newtonsoft.Json.dll")
+
+    $OnAssemblyResolve = [System.ResolveEventHandler] {
+    param($sender, $e)
+
+    if ($e.Name -eq "Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed") { return $NewtonsoftJson }
+
+    foreach ($a in [System.AppDomain]::CurrentDomain.GetAssemblies())
+    {
+        if ($a.FullName -eq $e.Name)
+        {
+        return $a
+        }
+    }
+
+    return $null
+    }
+
+    [System.AppDomain]::CurrentDomain.add_AssemblyResolve($OnAssemblyResolve)
+
     [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Interfaces.dll")
     [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.WebApi.dll")
     [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.TeamFoundation.DistributedTask.Agent.Common.dll")
     [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\Microsoft.VisualStudio.Services.Common.dll")
+    [reflection.assembly]::LoadFrom("$agentWorkerModulesPath\System.Net.Http.Formatting.dll")
     
     Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Internal\Microsoft.TeamFoundation.DistributedTask.Task.Internal.dll"
     Import-Module "$agentWorkerModulesPath\Modules\Microsoft.TeamFoundation.DistributedTask.Task.Common\Microsoft.TeamFoundation.DistributedTask.Task.Common.dll"

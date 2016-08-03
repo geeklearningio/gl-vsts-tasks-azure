@@ -22,7 +22,8 @@
         "WebApp",
         "Swap",
         "Start",
-        "Stop"
+        "Stop",
+        "SQL"
     ],
     "screenshots": [
         {
