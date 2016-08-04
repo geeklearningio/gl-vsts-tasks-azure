@@ -28,13 +28,10 @@
     ],
     "screenshots": [
         {
-            "path": "Screenshots/Configure-ExecuteSql.png"
+            "path": "Screenshots/TestBuild.png"
         },
         {
-            "path": "Screenshots/Configure-SwapSlots.png"
-        },
-        {
-            "path": "Screenshots/Configure-StopWebApp.png"
+            "path": "Screenshots/Add-Tasks.png"
         }
     ],
     "content": {
