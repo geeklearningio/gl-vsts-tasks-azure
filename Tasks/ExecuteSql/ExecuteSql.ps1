@@ -44,23 +44,24 @@ try {
 
         $firewallRuleName = $firewallSettings.RuleName
         $isFirewallConfigured = $firewallSettings.IsConfigured
-            
-        $variableParameter = @()
-        if ($Variables) {
-            $variableParameter = ($Variables -split '[\r\n]') |? {$_}
-        }
-
-        $workingFolderVariable = @("WorkingFolder=$PSScriptRoot\SqlPredefinedScripts")
-        if ($variableParameter -isnot [system.array]) {
-            $variableParameter = @($variableParameter)
-        }
-
-        $variableParameter = $variableParameter + $workingFolderVariable
 
         if ($ScriptType -eq "PredefinedScript") {
             $ScriptType = "FilePath"
             $ScriptPath = "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql"
         }
+
+        $variableParameter = @()
+        if ($Variables) {
+            $variableParameter = ($Variables -split '[\r\n]') |? {$_}
+        }
+
+        $workingFolder = Split-Path $ScriptPath
+        $workingFolderVariable = @("WorkingFolder=$workingFolder")
+        if ($variableParameter -isnot [system.array]) {
+            $variableParameter = @($variableParameter)
+        }
+
+        $variableParameter = $variableParameter + $workingFolderVariable
 
         if ($ScriptType -eq "FilePath") {
             Write-Verbose "[Azure Call] Executing SQL query $ScriptPath on $DatabaseName with variables $variableParameter"
