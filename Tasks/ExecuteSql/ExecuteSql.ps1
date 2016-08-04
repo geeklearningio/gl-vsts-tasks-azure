@@ -48,25 +48,27 @@ try {
         $variableParameter = @()
         if ($Variables) {
             $variableParameter = ($Variables -split '[\r\n]') |? {$_}
-            Write-Verbose "Variable Parameters: $variableParameter"
         }
 
-        Write-Verbose "[Azure Call] Executing SQL query on $DatabaseName"
+        $workingFolderVariable = @("WorkingFolder=$PSScriptRoot\SqlPredefinedScripts")
+        if ($variableParameter -isnot [system.array]) {
+            $variableParameter = @($variableParameter)
+        }
+
+        $variableParameter = $variableParameter + $workingFolderVariable
+
+        if ($ScriptType -eq "PredefinedScript") {
+            $ScriptType = "FilePath"
+            $ScriptPath = "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql"
+        }
 
         if ($ScriptType -eq "FilePath") {
+            Write-Verbose "[Azure Call] Executing SQL query $ScriptPath on $DatabaseName with variables $variableParameter"
             Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
-        elseif ($ScriptType -eq "InlineScript") {
+        else {
+            Write-Verbose "[Azure Call] Executing inline SQL query on $DatabaseName with variables $variableParameter"
             Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
-        }
-        else {     
-            $workingFolderVariable = @("WorkingFolder='$PSScriptRoot\SqlPredefinedScripts'")
-            if ($variableParameter -isnot [system.array]) {
-                $variableParameter = @($variableParameter)
-            }
-
-            $variableParameter = $variableParameter + $workingFolderVariable
-            Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose            
         }
 
         Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
