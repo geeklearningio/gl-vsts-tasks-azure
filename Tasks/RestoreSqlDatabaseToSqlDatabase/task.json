@@ -16,8 +16,7 @@
         "Patch": 0
     },
     "demands": [
-        "azureps",
-        "sqlps"
+        "azureps"
     ],
     "minimumAgentVersion": "1.103.0",
     "instanceNameFormat": "Restore $(SourceDatabaseName) on $(TargetDatabaseName)",

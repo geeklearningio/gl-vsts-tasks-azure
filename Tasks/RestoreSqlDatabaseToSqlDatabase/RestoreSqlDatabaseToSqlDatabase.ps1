@@ -45,7 +45,7 @@ try {
     Write-Verbose "[Azure Call] Azure SQL Database details got for source $SourceDatabaseName :"
     Write-Verbose ($sourceDatabase | Format-List | Out-String)
 
-    $date = Get-Date
+    $date = (Get-Date).AddMinutes(-1)
 
     Write-Verbose "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName"
     Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $date -ResourceGroupName $sourceDatabase.ResourceGroupName `
