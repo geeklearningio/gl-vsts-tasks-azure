@@ -1,72 +1,55 @@
-[CmdletBinding(DefaultParameterSetName = 'None')]
-param
-(
-    [String] [Parameter(Mandatory = $true)]
-    $ConnectedServiceName,
-    
-    [String] [Parameter(Mandatory = $true)]
-    $ResourceGroupName,
+[CmdletBinding()]
+param()
 
-    [String] [Parameter(Mandatory = $true)]
-    $SqlServerName,
+Trace-VstsEnteringInvocation $MyInvocation
 
-    [String] [Parameter(Mandatory = $true)]
-    $SqlDatabaseName,
+try {
+    # Get inputs.
+    $ServerName = Get-VstsInput -Name ServerName -Require
+    $SourceDatabaseName = Get-VstsInput -Name SourceDatabaseName -Require
+    $TargetDatabaseName = Get-VstsInput -Name TargetDatabaseName -Require
 
-    [String] [Parameter(Mandatory = $true)]
-    $TargetSqlDatabaseName,
+    # Initialize Azure.
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+    Initialize-Azure
 
-    [String] [Parameter(Mandatory = $true)]
-    $SqlAdminUser,
+    # Import SQL Azure Powershell cmdlets.
+    Import-Module AzureRM.Sql
 
-    [String] [Parameter(Mandatory = $true)]
-    $SqlPassword,
+    # Import the loc strings.
+    Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
-    [String] [Parameter(Mandatory = $true)]
-    $LoginToAdd
-)
+    $ServerName = $ServerName.ToLower()
+    $serverFriendlyName = $ServerName.split(".")[0]
+    Write-Verbose "Server friendly name is $serverFriendlyName"
 
-Write-Verbose "Entering script RestoreSqlDatabaseToSqlDatabase.ps1"
+    $resourceGroupName = Get-AzureSqlDatabaseServerResourceGroupName -serverName $serverFriendlyName
 
-Write-Host "ConnectedServiceName = $ConnectedServiceName"
-Write-Host "ResourceGroupName= $ResourceGroupName"
-Write-Host "SqlServerName= $SqlServerName"
-Write-Host "SqlDatabaseName= $SqlDatabaseName"
-Write-Host "TargetSqlDatabaseName= $TargetSqlDatabaseName"
-Write-Host "SqlAdminUser= $SqlAdminUser"
-Write-Host "SqlPassword= $SqlPassword"
-Write-Host "LoginToAdd= $LoginToAdd"
+    Write-Verbose "[Azure Call] Getting Azure SQL Database details for target $TargetDatabaseName"
+    $targetDatabase = Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $TargetDatabaseName -ErrorAction Stop -Verbose
+    Write-Verbose "[Azure Call] Azure SQL Database details got for target $TargetDatabaseName :"
+    Write-Verbose ($targetDatabase | Format-List | Out-String)
 
-Import-Module AzureRM.Sql
-Import-Module sqlps
+    if ($targetDatabase){
+        Write-Verbose "[Azure Call] Azure SQL Database $TargetDatabaseName exists: removing it!"
+        Remove-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $TargetDatabaseName -Force -ErrorAction Stop -Verbose
+        Write-Verbose "[Azure Call] Azure SQL Database $TargetDatabaseName removed"
+    }
 
-Write-Host "Get-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $TargetSqlDatabaseName -ErrorAction SilentlyContinue"
-$TargetDatabase = Get-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $TargetSqlDatabaseName -ErrorAction SilentlyContinue
-Write-Host "TargetDatabase= $TargetDatabase"
+    Write-Verbose "[Azure Call] Getting Azure SQL Database details for source $SourceDatabaseName"
+    $sourceDatabase = Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $SourceDatabaseName
+    Write-Verbose "[Azure Call] Azure SQL Database details got for source $SourceDatabaseName :"
+    Write-Verbose ($sourceDatabase | Format-List | Out-String)
 
-if ($TargetDatabase){
-    Write-Host "Remove-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $TargetSqlDatabaseName -Force"
-    Remove-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $TargetSqlDatabaseName -Force
+    $date = Get-Date
+
+    Write-Verbose "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName"
+    Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $date -ResourceGroupName $sourceDatabase.ResourceGroupName `
+        -ServerName $serverFriendlyName -TargetDatabaseName $TargetDatabaseName -ResourceId $sourceDatabase.ResourceID `
+        -Edition $sourceDatabase.Edition -ServiceObjectiveName $sourceDatabase.CurrentServiceObjectiveName -ErrorAction Stop -Verbose
+    Write-Verbose "[Azure Call] Azure SQL Database $SourceDatabaseName restored to $TargetDatabaseName"
+
+    Write-Verbose "Completed Azure SQL Database Restore Task"
+} finally {
+    Trace-VstsLeavingInvocation $MyInvocation
 }
-
-Write-Host "Get-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $SqlDatabaseName"
-$Database = Get-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $SqlServerName -DatabaseName $SqlDatabaseName
-Write-Host "Database= $Database"
-
-$Date = Get-Date
-Write-Host "Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $Date -ResourceGroupName $Database.ResourceGroupName -ServerName $Database.ServerName -TargetDatabaseName $TargetSqlDatabaseName -ResourceId $Database.ResourceID -Edition 'Standard' -ServiceObjectiveName 'S0'"
-Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $Date -ResourceGroupName $Database.ResourceGroupName -ServerName $Database.ServerName -TargetDatabaseName $TargetSqlDatabaseName -ResourceId $Database.ResourceID -Edition "Standard" -ServiceObjectiveName "S0"
-
-$sql =	@"
-			CREATE USER $LoginToAdd
-			FOR LOGIN $LoginToAdd
-			WITH DEFAULT_SCHEMA = dbo
-			GO
-			EXEC sp_addrolemember N'db_owner', N'$LoginToAdd'
-			GO
-"@
-
-Write-Host "Invoke-Sqlcmd -Query '$sql' -Database $TargetSqlDatabaseName -ServerInstance 'tcp:$SqlServerName.database.windows.net' -EncryptConnection -Username $SqlAdminUser -Password $SqlPassword -Verbose"
-Invoke-Sqlcmd -Query "$sql" -Database $TargetSqlDatabaseName -ServerInstance "tcp:$SqlServerName.database.windows.net" -EncryptConnection -Username $SqlAdminUser -Password $SqlPassword -Verbose
-
-Write-Verbose "Leaving script RestoreSqlDatabaseToSqlDatabase.ps1"

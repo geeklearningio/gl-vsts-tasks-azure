@@ -23,7 +23,8 @@
         "Swap",
         "Start",
         "Stop",
-        "SQL"
+        "SQL",
+        "Restore"
     ],
     "screenshots": [
         {

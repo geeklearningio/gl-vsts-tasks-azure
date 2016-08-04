@@ -14,7 +14,7 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 * **[Azure Web App Start](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Start)**: Start an Azure Web App, or one of its slot
 * **[Azure Web App Stop](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Stop)**: Stop an Azure Web App, or one of its slot
 * **[Azure SQL Execute Query](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query)**: Execute a SQL query on an Azure SQL Database
-* **Azure SQL Database Restore**: restore an Azure SQL Database to another Azure SQL Database on the same server
+* **[Azure SQL Database Restore](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Restore)**: Restore an Azure SQL Database to another Azure SQL Database on the same server using the latest point-in-time backup
 
 ## To contribute
 
@@ -38,4 +38,11 @@ This extension was created by [Geek Learning](http://geeklearning.io/), with hel
 
 ## Attributions
 
-* Lightning by Carla Dias from the Noun Project
+* [AzureWebPowerShellDeployment icon from the VSTS Tasks project](https://github.com/Microsoft/vsts-tasks)
+* [SqlAzureDacpacDeployment icon from the VSTS Tasks project](https://github.com/Microsoft/vsts-tasks)
+* [Lightning by Carla Dias from the Noun Project](https://thenounproject.com/search/?q=lightning&i=542899)
+* [Restore by Arthur Shlain from the Noun Project](https://thenounproject.com/search/?q=restore&i=52760)
+* [Trade by Michelle Fosse from the Noun Project](https://thenounproject.com/search/?q=swap&i=560173)
+* [Stop by NAS from the Noun Project](https://thenounproject.com/search/?q=stop&i=55668)
+* [Play by NAS from the Noun Project](https://thenounproject.com/search/?q=play&i=55667)
+* [Checkmarks by Matt Saling from the Noun Project](https://thenounproject.com/search/?q=Checkmarks&i=202337)
