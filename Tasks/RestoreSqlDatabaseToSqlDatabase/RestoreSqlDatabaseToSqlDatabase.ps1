@@ -26,14 +26,18 @@ try {
     $resourceGroupName = Get-AzureSqlDatabaseServerResourceGroupName -serverName $serverFriendlyName
 
     Write-Verbose "[Azure Call] Getting Azure SQL Database details for target $TargetDatabaseName"
-    $targetDatabase = Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $TargetDatabaseName -ErrorAction Stop -Verbose
-    Write-Verbose "[Azure Call] Azure SQL Database details got for target $TargetDatabaseName :"
-    Write-Verbose ($targetDatabase | Format-List | Out-String)
+    $targetDatabase = Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $TargetDatabaseName -ErrorAction SilentlyContinue -Verbose
 
     if ($targetDatabase){
+        Write-Verbose "[Azure Call] Azure SQL Database details got for target $TargetDatabaseName :"
+        Write-Verbose ($targetDatabase | Format-List | Out-String)
+
         Write-Verbose "[Azure Call] Azure SQL Database $TargetDatabaseName exists: removing it!"
         Remove-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $TargetDatabaseName -Force -ErrorAction Stop -Verbose
         Write-Verbose "[Azure Call] Azure SQL Database $TargetDatabaseName removed"
+    }
+    else {
+        Write-Verbose "[Azure Call] Target Azure SQL Database $TargetDatabaseName does not exists. Continuing..."
     }
 
     Write-Verbose "[Azure Call] Getting Azure SQL Database details for source $SourceDatabaseName"
