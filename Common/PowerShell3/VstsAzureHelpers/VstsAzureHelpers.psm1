@@ -15,6 +15,7 @@ Import-VstsLocStrings -LiteralPath $PSScriptRoot/module.json
 . $PSScriptRoot/InitializeFunctions.ps1
 . $PSScriptRoot/ImportFunctions.ps1
 . $PSScriptRoot/HelperFunctions.ps1
+. $PSScriptRoot/FindSqlPackagePath.ps1
 
 function Initialize-Azure {
     [CmdletBinding()]
@@ -132,6 +133,10 @@ function Get-WebAppResourceGroupName {
     return Get-ResourceGroupName -resourceName $webAppName -resourceType "Microsoft.Web/sites"
 }
 
+function Get-SqlPackagePath {
+    $sqlPackage = Get-SqlPackageOnTargetMachine 
+    return $sqlPackage
+}
 
 Export-ModuleMember -Function Initialize-Azure
 Export-ModuleMember -Function Get-AgentIPAddress
@@ -139,3 +144,4 @@ Export-ModuleMember -Function Add-AzureSqlDatabaseServerFirewallRule
 Export-ModuleMember -Function Remove-AzureSqlDatabaseServerFirewallRule
 Export-ModuleMember -Function Get-AzureSqlDatabaseServerResourceGroupName
 Export-ModuleMember -Function Get-WebAppResourceGroupName
+Export-ModuleMember -Function Get-SqlPackagePath

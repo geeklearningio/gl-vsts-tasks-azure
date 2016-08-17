@@ -1,9 +1,9 @@
 {
-    "id": "A93D571D-F32C-4FE7-A63A-3599DDDD5279",
-    "name": "ExecuteSql",
-    "friendlyName": "Azure SQL Execute Query",
-    "description": "Execute a SQL query on an Azure SQL Database",
-    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query) (Version #{Version}#)",
+    "id": "fc7c81bb-92a2-4750-a0c9-d0d88c749ac0",
+    "name": "SqlMultiDacpacDeployment",
+    "friendlyName": "Azure SQL Database Incremental Deployment",
+    "description": "Deploy an Azure SQL Database using multiple DACPAC and performing incremental deployments based on current DAC version",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Incremental-Deployment) (Version #{Version}#)",    
     "category": "Deploy",
     "visibility": [
         "Build",
@@ -17,10 +17,10 @@
     },
     "demands": [
         "azureps",
-        "sqlps"
+        "sqlpackage"
     ],
     "minimumAgentVersion": "1.103.0",
-    "instanceNameFormat": "Execute SQL on $(DatabaseName)",
+    "instanceNameFormat": "Deploy Azure SQL DACPAC: $(DacpacFile)",
     "groups": [
         {
             "name": "target",
@@ -32,7 +32,7 @@
             "displayName": "Firewall",
             "isExpanded": false
         }
-    ],    
+    ],
     "inputs": [
         {
             "name": "ConnectedServiceName",
@@ -43,66 +43,21 @@
             "helpMarkDown": "Azure Resource Manager subscription to target for executing SQL"
         },
         {
-            "name": "ScriptType",
-            "type": "pickList",
-            "label": "Type",
-            "defaultValue": "FilePath",
-            "required": true,
-            "helpMarkDown": "Type of the script: File Path, Inline Script or Predefined Script.",
-            "options": {
-                "FilePath": "File Path",
-                "InlineScript": "Inline Script",
-                "PredefinedScript": "Predefined Script"
-            }
-        },
-        {
-            "name": "ScriptPath",
+            "name": "DacpacFiles",
             "type": "filePath",
-            "label": "Script Path",
-            "defaultValue": "",
+            "label": "DACPAC Files",
             "required": true,
-            "visibleRule": "ScriptType = FilePath",
-            "helpMarkDown": "Path of the script to execute. Should be fully qualified path or relative to the default working directory."
-        },
-        {
-            "name": "PredefinedScript",
-            "type": "pickList",
-            "label": "Predefined Script",
-            "defaultValue": "CreateUser",
-            "required": true,
-            "visibleRule": "ScriptType = PredefinedScript",
-            "helpMarkDown": "Predefined script to execute. You can see the required variables for each predefined script on the [wiki](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query).",
-            "options": {
-                "CreateUser": "Create User",
-                "AddRoleMember": "Add Role Member",
-                "CreateDbOwner": "Create Database Owner"
-            }            
-        },
-        {
-            "name": "Variables",
-            "type": "multiLine",
-            "label": "Variables",
             "defaultValue": "",
+            "helpMarkDown": "Location of the DACPAC files on the automation agent or on a UNC path accessible to the automation agent like, \\\\\\\\BudgetIT\\Web\\Deploy\\*.dacpac. Predefined system variables like, $(Agent.ReleaseDirectory) can be also used here."
+        },        
+        {
+            "name": "AdditionalArguments",
+            "type": "string",
+            "label": "Additional SqlPackage.exe Arguments",
             "required": false,
-            "helpMarkDown": "Variables passed to the SQLCMD script with the -v option. Should be formatted like 'Var1=Value1', with one variable per line. It can then be used with the SQLCMD $(Var1) syntax in the script.",
-            "properties": {
-                "resizable": "true",
-                "rows": "2"
-            }
-        },
-        {
-            "name": "InlineScript",
-            "type": "multiLine",
-            "label": "Inline Script",
+            "groupName": "target",
             "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "",
-            "visibleRule": "ScriptType = InlineScript",
-            "properties": {
-                "resizable": "true",
-                "rows": "10",
-                "maxLength": "500"
-            }
+            "helpMarkDown": "Additional SqlPackage.exe arguments that will be applied when creating or updating the Azure SQL Database like, /p:IgnoreAnsiNulls=True /p:IgnoreComments=True.​"
         },
         {
             "name": "ServerName",
@@ -189,7 +144,7 @@
     ],    
     "execution": {
         "PowerShell3": {
-            "target": "ExecuteSql.ps1"
+            "target": "SqlMultiDacpacDeployment.ps1"
         }
     }
 }
