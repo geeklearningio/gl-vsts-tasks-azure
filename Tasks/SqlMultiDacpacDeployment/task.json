@@ -49,16 +49,7 @@
             "required": true,
             "defaultValue": "",
             "helpMarkDown": "Location of the DACPAC files on the automation agent or on a UNC path accessible to the automation agent like, \\\\\\\\BudgetIT\\Web\\Deploy\\*.dacpac. Predefined system variables like, $(Agent.ReleaseDirectory) can be also used here."
-        },        
-        {
-            "name": "AdditionalArguments",
-            "type": "string",
-            "label": "Additional SqlPackage.exe Arguments",
-            "required": false,
-            "groupName": "target",
-            "defaultValue": "",
-            "helpMarkDown": "Additional SqlPackage.exe arguments that will be applied when creating or updating the Azure SQL Database like, /p:IgnoreAnsiNulls=True /p:IgnoreComments=True.​"
-        },
+        },    
         {
             "name": "ServerName",
             "type": "string",
@@ -94,6 +85,24 @@
             "groupName": "target",
             "defaultValue": "",
             "helpMarkDown": "Password for the Azure SQL Server administrator.<br>It can accept variable defined in Build/Release Definitions as '$(passwordVariable').<br>You may mark variable type as 'secret' to secure it."
+        },
+        {
+            "name": "PublishProfile",
+            "type": "filePath",
+            "label": "Publish Profile",
+            "required": false,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Publish profile provides fine-grained control over Azure SQL Database creation or upgrades. Specify the path to the Publish profile XML file on the automation agent or on a UNC share. Predefined system variables like, $(agent.buildDirectory) or $(agent.releaseDirectory) can be also used here."
+        },    
+        {
+            "name": "AdditionalArguments",
+            "type": "string",
+            "label": "Additional SqlPackage.exe Arguments",
+            "required": false,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Additional SqlPackage.exe arguments that will be applied when creating or updating the Azure SQL Database like, /p:IgnoreAnsiNulls=True /p:IgnoreComments=True.​"
         },
         {
             "name": "IpDetectionMethod",

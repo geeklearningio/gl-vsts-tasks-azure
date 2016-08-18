@@ -1,8 +1,6 @@
 [CmdletBinding()]
 param()
 
-Write-Verbose "Youpi!!!"
-
 Trace-VstsEnteringInvocation $MyInvocation
 
 try {
@@ -11,8 +9,9 @@ try {
     $AdditionalArguments = Get-VstsInput -Name AdditionalArguments
     $ServerName = Get-VstsInput -Name ServerName -Require
     $DatabaseName = Get-VstsInput -Name DatabaseName -Require
-    $SqlUsername = Get-VstsInput -Name SqlUsername -Require
-    $SqlPassword = Get-VstsInput -Name SqlPassword -Require
+    $SqlUsername = Get-VstsInput -Name SqlUsername
+    $SqlPassword = Get-VstsInput -Name SqlPassword
+    $PublishProfile = Get-VstsInput -Name PublishProfile
     $IpDetectionMethod = Get-VstsInput -Name IpDetectionMethod -Require
     $StartIpAddress = Get-VstsInput -Name StartIpAddress
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
@@ -30,68 +29,68 @@ try {
 
     $ServerName = $ServerName.ToLower()
     $serverFriendlyName = $ServerName.split(".")[0]
-    Write-Verbose "Server friendly name is $serverFriendlyName"
+    Write-VstsTaskVerbose -Message "Server friendly name is $serverFriendlyName"
 
-    function ThrowIfMultipleFilesOrNoFilePresent($files, $pattern) {
-    }
+    $dacpacFilePaths = Find-VstsFiles -LegacyPattern $DacpacFiles -Verbose
 
-    $DacpacFilePath = Find-VstsFiles -LegacyPattern $DacpacFiles -Verbose
-    Write-Verbose "DACPAC Files = $DacpacFilePath"
-
-    if (!$DacpacFilePath) {
+    if (!$dacpacFilePaths) {
         throw (Get-VstsLocString -Key "No files were found to deploy with search pattern {0}" -ArgumentList $DacpacFiles)
     }
 
-    # Getting start and end IP address for agent machine.
-    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
-    Write-Verbose ($ipAddress | Format-List | Out-String)
-
-    try {
-        # Creating firewall rule for agent on SQL server.
-        $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
-        Write-Verbose ($firewallSettings | Format-List | Out-String)
-
-        $firewallRuleName = $firewallSettings.RuleName
-        $isFirewallConfigured = $firewallSettings.IsConfigured
-
-        $sqlPackagePath = Get-SqlPackagePath
-        Write-Verbose "SqlPackage.exe path = $sqlPackagePath"
-        
-
-        # if ($ScriptType -eq "PredefinedScript") {
-        #     $ScriptType = "FilePath"
-        #     $ScriptPath = "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql"
-        # }
-
-        # $variableParameter = @()
-        # if ($Variables) {
-        #     $variableParameter = ($Variables -split '[\r\n]') |? {$_}
-        # }
-
-        # $workingFolder = Split-Path $ScriptPath
-        # $workingFolderVariable = @("WorkingFolder=$workingFolder")
-        # if ($variableParameter -isnot [system.array]) {
-        #     $variableParameter = @($variableParameter)
-        # }
-
-        # $variableParameter = $variableParameter + $workingFolderVariable
-
-        # if ($ScriptType -eq "FilePath") {
-        #     Write-Verbose "[Azure Call] Executing SQL query $ScriptPath on $DatabaseName with variables $variableParameter"
-        #     Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
-        # }
-        # else {
-        #     Write-Verbose "[Azure Call] Executing inline SQL query on $DatabaseName with variables $variableParameter"
-        #     Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
-        # }
-
-        # Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
-
-    } finally {
-        Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName -isFirewallConfigured $isFirewallConfigured -deleteFireWallRule $DeleteFirewallRule
+    $publishProfilePath = ""
+    if ([string]::IsNullOrWhitespace($PublishProfile) -eq $false -and $PublishProfile -ne $env:SYSTEM_DEFAULTWORKINGDIRECTORY -and $PublishProfile -ne [String]::Concat($env:SYSTEM_DEFAULTWORKINGDIRECTORY, "\")) {
+        $publishProfilePath = Find-VstsFiles -LegacyPattern $PublishProfile
+        if ($publishProfilePath -is [system.array]) {
+            throw (Get-VstsLocString -Key "Found more than one file to deploy with search pattern {0}. There can be only one." -ArgumentList $PublishProfile)
+        }
+        elseif (!$publishProfilePath) {
+            throw (Get-VstsLocString -Key "No files were found to deploy with search pattern {0}" -ArgumentList $PublishProfile)
+        }
     }
 
-    Write-Verbose "Completed Azure SQL Execute Query Task"
+    if ($dacpacFilePaths -isnot [System.Array]) {
+        $dacpacFilePaths = @($dacpacFilePaths)
+    }
+
+    $dacFilesWithVersion = Get-DacpacVersions -dacpacFilePaths $dacpacFilePaths
+
+    $variableParameter = @("DatabaseName='$DatabaseName'")
+    Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number..."
+    $databaseVersion = [Version]((Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlScripts\GetDatabaseVersion.sql" -Database "master" -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose).DatabaseVersion)
+    Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion"
+
+    $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
+    if ($dacFilesToDeploy.Count -eq 0) {
+        Write-Host "Nothing to deploy, the database version ($databaseVersion) is up to date"
+    }
+    else {
+        # Getting start and end IP address for agent machine.
+        $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
+
+        # Creating firewall rule for agent on SQL server.
+        $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
+
+        try {
+            $sqlPackagePath = Get-SqlPackagePath
+
+            foreach ($dacFileToDeploy in $dacFilesToDeploy) {
+                Write-Host "Deploying Version: $($dacFileToDeploy.Name)"
+
+                $scriptArguments = Get-SqlPackageCommandArguments -dacpacFile $dacFileToDeploy.Value -serverName $ServerName -databaseName $DatabaseName `
+                                                                -sqlUsername $SqlUsername -sqlPassword $SqlPassword -publishProfile $publishProfilePath -additionalArguments $AdditionalArguments
+
+                $scriptArgumentsToBeLogged = Get-SqlPackageCommandArguments -dacpacFile $dacFileToDeploy.Value -serverName $ServerName -databaseName $DatabaseName `
+                                                                -sqlUsername $SqlUsername -sqlPassword $SqlPassword -publishProfile $publishProfilePath -additionalArguments $AdditionalArguments -isOutputSecure
+
+                Send-ExecuteCommand -command $sqlPackagePath -arguments $scriptArguments -secureArguments $scriptArgumentsToBeLogged
+                
+                Write-Host "Version $($dacFileToDeploy.Name) deployed" 
+            }
+            
+        } finally {
+            Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
+        }
+    }
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

@@ -17,16 +17,15 @@ function Get-ResourceGroupName {
           [String] [Parameter(Mandatory = $true)] $resourceType)
 
     try {
-        Write-Verbose "[Azure Call] Getting resource details for resource: $resourceName with resource type: $resourceType"
+        Write-VstsTaskVerbose -Message "[Azure Call] Getting resource details for resource: $resourceName with resource type: $resourceType"
         $resourceDetails = (Get-AzureRMResource -ErrorAction Stop) | Where-Object { $_.ResourceName -eq $resourceName -and $_.ResourceType -eq $resourceType } -Verbose
-        Write-Verbose "[Azure Call] Retrieved resource details successfully for resource: $resourceName with resource type: $resourceType"   
+        Write-VstsTaskVerbose -Message "[Azure Call] Retrieved resource details successfully for resource: $resourceName with resource type: $resourceType"   
         $resourceGroupName = $resourceDetails.ResourceGroupName  
-        Write-Verbose "'$resourceName' Resource Group name is: '$resourceGroupName'."
+        Write-VstsTaskVerbose -Message "Resource Group Name for '$resourceName' of type '$resourceType': '$resourceGroupName'."
         return $resourceGroupName
     }
     finally {
         if ([string]::IsNullOrEmpty($resourceGroupName)) {
-            Write-Verbose "[Azure Call] Azure Resource: $resourceName not found"
             throw (Get-VstsLocString -Key AZ_ResourceNotFound0 -ArgumentList $resourceName)
         }
     }

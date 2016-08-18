@@ -194,7 +194,7 @@ function Set-UserAgent_Core {
     try {
         [Microsoft.Azure.Common.Authentication.AzureSession]::ClientFactory.AddUserAgent($UserAgent)
     } catch {
-        Write-Verbose "Set-UserAgent failed with exception message: $_.Exception.Message"
+        Write-VstsTaskVerbose -Message "Set-UserAgent failed with exception message: $_.Exception.Message"
     } finally {
         Trace-VstsLeavingInvocation $MyInvocation
     }

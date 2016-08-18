@@ -31,20 +31,15 @@ try {
 
     $ServerName = $ServerName.ToLower()
     $serverFriendlyName = $ServerName.split(".")[0]
-    Write-Verbose "Server friendly name is $serverFriendlyName"
+    Write-VstsTaskVerbose -Message "Server friendly name is $serverFriendlyName"
 
     # Getting start and end IP address for agent machine.
     $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
-    Write-Verbose ($ipAddress | Format-List | Out-String)
+
+    # Creating firewall rule for agent on SQL server.
+    $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
 
     try {
-        # Creating firewall rule for agent on SQL server.
-        $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
-        Write-Verbose ($firewallSettings | Format-List | Out-String)
-
-        $firewallRuleName = $firewallSettings.RuleName
-        $isFirewallConfigured = $firewallSettings.IsConfigured
-
         if ($ScriptType -eq "PredefinedScript") {
             $ScriptType = "FilePath"
             $ScriptPath = "$PSScriptRoot\SqlPredefinedScripts\$PredefinedScript.sql"
@@ -64,21 +59,19 @@ try {
         $variableParameter = $variableParameter + $workingFolderVariable
 
         if ($ScriptType -eq "FilePath") {
-            Write-Verbose "[Azure Call] Executing SQL query $ScriptPath on $DatabaseName with variables $variableParameter"
+            Write-VstsTaskVerbose -Message "[Azure Call] Executing SQL query $ScriptPath on $DatabaseName with variables $variableParameter"
             Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
         else {
-            Write-Verbose "[Azure Call] Executing inline SQL query on $DatabaseName with variables $variableParameter"
+            Write-VstsTaskVerbose -Message "[Azure Call] Executing inline SQL query on $DatabaseName with variables $variableParameter"
             Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
         }
 
-        Write-Verbose "[Azure Call] SQL query executed on $DatabaseName"
+        Write-VstsTaskVerbose -Message "[Azure Call] SQL query executed on $DatabaseName"
 
     } finally {
-        Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallRuleName -isFirewallConfigured $isFirewallConfigured -deleteFireWallRule $DeleteFirewallRule
+        Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
     }
-
-    Write-Verbose "Completed Azure SQL Execute Query Task"
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

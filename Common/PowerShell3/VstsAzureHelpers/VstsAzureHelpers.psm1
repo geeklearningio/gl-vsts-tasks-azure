@@ -4,7 +4,7 @@ $script:azureRMProfileModule = $null
 
 # Override the DebugPreference.
 if ($global:DebugPreference -eq 'Continue') {
-    Write-Verbose '$OVERRIDING $global:DebugPreference from ''Continue'' to ''SilentlyContinue''.'
+    Write-VstsTaskVerbose -Message '$OVERRIDING $global:DebugPreference from ''Continue'' to ''SilentlyContinue''.'
     $global:DebugPreference = 'SilentlyContinue'
 }
 
@@ -50,7 +50,7 @@ function Initialize-Azure {
 
         # Check the installed Azure Powershell version
         $currentVersion = (Get-Module -Name AzureRM.profile).Version
-        Write-Verbose  "Installed Azure PowerShell version: $currentVersion"
+        Write-VstsTaskVerbose -Message  "Installed Azure PowerShell version: $currentVersion"
 
         $minimumAzureVersion = New-Object System.Version(0, 9, 9)           
         if (-not ($currentVersion -and $currentVersion -gt $minimumAzureVersion)) {
@@ -76,6 +76,10 @@ function Get-AgentIPAddress {
         $iPAddress.EndIPAddress = $IPAddress.StartIPAddress
     }
 
+    Write-VstsTaskVerbose -Message "Agent IP Addresses:"
+    Write-VstsTaskVerbose -Message " Start IP: $($iPAddress.StartIPAddress)"
+    Write-VstsTaskVerbose -Message " End IP: $($iPAddress.EndIPAddress)"
+
     return $iPAddress
 }
 
@@ -90,19 +94,22 @@ function Add-AzureSqlDatabaseServerFirewallRule {
     $azureResourceGroupName = Get-AzureSqlDatabaseServerResourceGroupName -serverName $serverName
 
     try {
-        Write-Verbose "[Azure Call] Creating firewall rule $firewallRuleName on Azure SQL Server: $serverName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Creating firewall rule $firewallRuleName on Azure SQL Server: $serverName"
         New-AzureRMSqlServerFirewallRule -ResourceGroupName $azureResourceGroupName -StartIPAddress $startIp -EndIPAddress $endIp -ServerName $serverName -FirewallRuleName $firewallRuleName -ErrorAction Stop -Verbose
-        Write-Verbose "[Azure Call] Firewall rule $firewallRuleName created on Azure SQL Server: $serverName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Firewall rule $firewallRuleName created on Azure SQL Server: $serverName"
     }
     catch [Hyak.Common.CloudException] {
         $exceptionMessage = $_.Exception.Message.ToString()
-        Write-Verbose "ExceptionMessage: $exceptionMessage"
-
+        Write-VstsTaskVerbose -Message "ExceptionMessage: $exceptionMessage"
         throw (Get-VstsLocString -Key AZ_InvalidIpAddress)
     }
 
     $firewallSettings.IsConfigured = $true
     $firewallSettings.RuleName = $firewallRuleName
+
+    Write-VstsTaskVerbose -Message "Add Azure SQL Database Server Firewall Rule:"
+    Write-VstsTaskVerbose -Message " IsConfigured: $($firewallSettings.IsConfigured)"
+    Write-VstsTaskVerbose -Message " RuleName: $($firewallSettings.RuleName)"
 
     return $firewallSettings
 }
@@ -115,9 +122,9 @@ function Remove-AzureSqlDatabaseServerFirewallRule {
 
     if ($deleteFireWallRule -eq "true" -and $isFirewallConfigured -eq "true") {               
         $azureResourceGroupName = Get-AzureSqlDatabaseServerResourceGroupName -serverName $serverName
-        Write-Verbose "[Azure Call] Deleting firewall rule $firewallRuleName on Azure SQL Server: $serverName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Deleting firewall rule $firewallRuleName on Azure SQL Server: $serverName"
         Remove-AzureRMSqlServerFirewallRule -ResourceGroupName $azureResourceGroupName -ServerName $serverName -FirewallRuleName $firewallRuleName -Force -ErrorAction Stop -Verbose
-        Write-Verbose "[Azure Call] Firewall rule $firewallRuleName deleted on Azure SQL Server: $serverName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Firewall rule $firewallRuleName deleted on Azure SQL Server: $serverName"
     }
 }
 
@@ -135,7 +142,157 @@ function Get-WebAppResourceGroupName {
 
 function Get-SqlPackagePath {
     $sqlPackage = Get-SqlPackageOnTargetMachine 
+    Write-VstsTaskVerbose -Message "SqlPackage Path: '$sqlPackage'"
     return $sqlPackage
+}
+
+function Get-DacpacVersions {
+    param([System.Array] [Parameter(Mandatory = $true)] $dacpacFilePaths)
+
+    $dotnetVersion = [Environment]::Version            
+    if (!($dotnetVersion.Major -ge 4 -and $dotnetversion.Build -ge 30319)) {            
+        throw (Get-VstsLocString -Key "You have not Microsoft .Net Framework 4.5 installed on build agent.")          
+    }
+
+    Add-Type -As System.IO.Compression.FileSystem
+    $dacpacFileExtension = ".dacpac"
+    $dacFilesWithVersion = @{}
+
+    foreach ($dacpacFilePath in $dacpacFilePaths) {
+        if ([System.IO.Path]::GetExtension($dacpacFilePath) -ne $dacpacFileExtension) {
+            throw (Get-VstsLocString -Key "Invalid Dacpac file '{0}' provided" -ArgumentList $dacpacFilePath)
+        }
+
+        $dacMetadataXml = $null
+        $dacVersion = $null
+
+        $zip = [IO.Compression.ZipFile]::OpenRead($dacpacFilePath)
+        $zip.Entries | Where-Object { $_.Name.EndsWith("DacMetadata.xml") } | ForEach-Object {
+            $memoryStream = New-Object System.IO.MemoryStream
+            $file = $_.Open()
+            $file.CopyTo($memoryStream)
+            $file.Dispose()
+            $memoryStream.Position = 0
+            $reader = New-Object System.IO.StreamReader($memoryStream)
+            $dacMetadataXml = $reader.ReadToEnd()
+            $reader.Dispose()
+            $memoryStream.Dispose()
+        }
+
+        $zip.Dispose() 
+        
+        if ($dacMetadataXml -ne $null) {
+            $dacVersion = Select-Xml -XPath "//dac:DacType/dac:Version" -Content $dacMetadataXml -Namespace @{ dac = "http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02" }        
+            $dacFilesWithVersion.Add([Version]($dacVersion.ToString()), $dacpacFilePath)
+        }
+        else {
+            throw (Get-VstsLocString -Key "Invalid Dacpac file '{0}' provided" -ArgumentList $dacpacFile)
+        }
+    }
+
+    $dacFilesWithVersion = $dacFilesWithVersion.GetEnumerator() | Sort-Object Name
+    Write-VstsTaskVerbose -Message "DACPAC files with version:"
+    foreach ($dacFileWithVersion in $dacFilesWithVersion) {
+        Write-VstsTaskVerbose -Message " Version: $($dacFileWithVersion.Name) Path: $($dacFileWithVersion.Value)"
+    }
+
+    return $dacFilesWithVersion
+}
+
+function Send-ExecuteCommand {
+    param([String][Parameter(Mandatory=$true)] $command,
+          [String][Parameter(Mandatory=$true)] $arguments,
+          [String][Parameter(Mandatory=$true)] $secureArguments)
+
+    $errorActionPreferenceRestore = $ErrorActionPreference
+    $ErrorActionPreference="SilentlyContinue"
+
+    $errout = $stdout = ""
+
+    $arguments = $arguments.Replace(';', '`;')
+
+    Write-VstsTaskVerbose -Message "[CMD Call] Executing: & `"$command`" $secureArguments 2>''"
+    $null = Invoke-Expression "& `"$command`" $arguments 2>''" -ErrorVariable errout -OutVariable stdout
+    Write-VstsTaskVerbose -Message "[CMD Call] Executed"
+
+    $ErrorActionPreference = $errorActionPreferenceRestore
+
+    foreach ($out in $stdout) {
+        Write-VstsTaskVerbose -Message $out
+    }
+
+    if ($LastExitCode -gt 0) {
+        foreach ($out in $errout) {
+            Write-VstsTaskError -Message $out                        
+        }
+
+        throw $errout[0].Exception
+    }
+}
+
+function Get-SqlPackageCommandArguments {
+    param([String] $dacpacFile,
+          [String] $serverName,
+          [String] $databaseName,
+          [String] $sqlUsername,
+          [String] $sqlPassword,
+          [String] $connectionString,
+          [String] $publishProfile,
+          [String] $additionalArguments,
+          [switch] $isOutputSecure)
+
+    $ErrorActionPreference = 'Stop'
+    $SqlPackageOptions = @{
+        SourceFile = "/SourceFile:"; 
+        Action = "/Action:"; 
+        TargetServerName = "/TargetServerName:";
+        TargetDatabaseName = "/TargetDatabaseName:";
+        TargetUser = "/TargetUser:";
+        TargetPassword = "/TargetPassword:";
+        TargetConnectionString = "/TargetConnectionString:";
+        Profile = "/Profile:";
+    }
+
+    $dacpacFileExtension = ".dacpac"
+    if ([System.IO.Path]::GetExtension($dacpacFile) -ne $dacpacFileExtension) {
+        throw (Get-VstsLocString -Key "Invalid Dacpac file '{0}' provided" -ArgumentList $dacpacFile)
+    }
+
+    $sqlPackageArguments = @($SqlPackageOptions.SourceFile + "`"$dacpacFile`"")
+    $sqlPackageArguments += @($SqlPackageOptions.Action + "Publish")
+    $sqlPackageArguments += @($SqlPackageOptions.TargetServerName + "`"$serverName`"")
+    if ($databaseName) {
+        $sqlPackageArguments += @($SqlPackageOptions.TargetDatabaseName + "`"$databaseName`"")
+    }
+
+    if ($sqlUsername) {
+        $sqlPackageArguments += @($SqlPackageOptions.TargetUser + "`"$sqlUsername`"")
+        if (-not($sqlPassword)) {
+            throw (Get-VstsLocString -Key "No password specified for the SQL User: '{0}'" -ArgumentList $sqlUserName)
+        }
+
+        if ($isOutputSecure) {
+            $sqlPassword = "********"
+        }
+        else {
+            $sqlPassword = $sqlPassword.Replace('"', '\"')
+        }
+        
+        $sqlPackageArguments += @($SqlPackageOptions.TargetPassword + "`"$sqlPassword`"")
+    }
+
+    if ($publishProfile) {
+        if([System.IO.Path]::GetExtension($publishProfile) -ne ".xml") {
+            throw (Get-VstsLocString -Key "Invalid Publish Profile '{0}' provided" -ArgumentList $publishProfile)
+        }
+
+        $sqlPackageArguments += @($SqlPackageOptions.Profile + "`"$publishProfile`"")
+    }
+
+    $sqlPackageArguments += @("$additionalArguments")
+    $scriptArgument = ($sqlPackageArguments -join " ")
+
+    return $scriptArgument
 }
 
 Export-ModuleMember -Function Initialize-Azure
@@ -145,3 +302,6 @@ Export-ModuleMember -Function Remove-AzureSqlDatabaseServerFirewallRule
 Export-ModuleMember -Function Get-AzureSqlDatabaseServerResourceGroupName
 Export-ModuleMember -Function Get-WebAppResourceGroupName
 Export-ModuleMember -Function Get-SqlPackagePath
+Export-ModuleMember -Function Get-DacpacVersions
+Export-ModuleMember -Function Send-ExecuteCommand
+Export-ModuleMember -Function Get-SqlPackageCommandArguments
