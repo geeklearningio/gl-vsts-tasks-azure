@@ -2,7 +2,7 @@
     "id": "fc7c81bb-92a2-4750-a0c9-d0d88c749ac0",
     "name": "SqlMultiDacpacDeployment",
     "friendlyName": "Azure SQL Database Incremental Deployment",
-    "description": "Deploy an Azure SQL Database using multiple DACPAC and performing incremental deployments based on current DAC version",
+    "description": "Deploy an Azure SQL Database using multiple DACPAC and performing incremental deployments based on current Data-Tier Application version",
     "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Incremental-Deployment) (Version #{Version}#)",    
     "category": "Deploy",
     "visibility": [
@@ -17,10 +17,11 @@
     },
     "demands": [
         "azureps",
-        "sqlpackage"
+        "sqlpackage",
+        "sqlps"
     ],
     "minimumAgentVersion": "1.103.0",
-    "instanceNameFormat": "Deploy Azure SQL DACPAC: $(DacpacFile)",
+    "instanceNameFormat": "Deploy Azure SQL DACPAC: $(DacpacFiles)",
     "groups": [
         {
             "name": "target",
@@ -84,7 +85,7 @@
             "required": false,
             "groupName": "target",
             "defaultValue": "",
-            "helpMarkDown": "Password for the Azure SQL Server administrator.<br>It can accept variable defined in Build/Release Definitions as '$(passwordVariable').<br>You may mark variable type as 'secret' to secure it."
+            "helpMarkDown": "Password for the Azure SQL Server administrator.<br>It can accept variable defined in Build/Release Definitions as '$(PasswordVariable').<br>You may mark variable type as 'secret' to secure it."
         },
         {
             "name": "PublishProfile",
@@ -93,7 +94,7 @@
             "required": false,
             "groupName": "target",
             "defaultValue": "",
-            "helpMarkDown": "Publish profile provides fine-grained control over Azure SQL Database creation or upgrades. Specify the path to the Publish profile XML file on the automation agent or on a UNC share. Predefined system variables like, $(agent.buildDirectory) or $(agent.releaseDirectory) can be also used here."
+            "helpMarkDown": "Publish profile provides fine-grained control over Azure SQL Database creation or upgrades. Specify the path to the Publish profile XML file on the automation agent or on a UNC share. Predefined system variables like, $(Agent.BuildDirectory) or $(Agent.ReleaseDirectory) can be also used here."
         },    
         {
             "name": "AdditionalArguments",

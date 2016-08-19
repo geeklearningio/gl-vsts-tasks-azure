@@ -15,6 +15,7 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 * **[Azure Web App Stop](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Stop)**: Stop an Azure Web App, or one of its slot
 * **[Azure SQL Execute Query](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query)**: Execute a SQL query on an Azure SQL Database
 * **[Azure SQL Database Restore](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Restore)**: Restore an Azure SQL Database to another Azure SQL Database on the same server using the latest point-in-time backup
+* **[Azure SQL Database Incremental Deployment](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Incremental-Deployment)**: Deploy an Azure SQL Database using multiple DACPAC and performing incremental deployments based on current Data-Tier Application version
 
 ## To contribute
 
@@ -24,6 +25,9 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 4. Run `npm run package -- --version <version>` to create the .vsix extension packages (supports multiple environments) that includes the build tasks.
 
 ## Release Notes
+
+> **8-19-2016**
+> - Added: Azure SQL Database Incremental Deployment
 
 > **8-1-2016**
 > - Added: Azure SQL Execute Query
