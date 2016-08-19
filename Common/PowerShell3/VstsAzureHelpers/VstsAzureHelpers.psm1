@@ -95,7 +95,7 @@ function Add-AzureSqlDatabaseServerFirewallRule {
 
     try {
         Write-VstsTaskVerbose -Message "[Azure Call] Creating firewall rule $firewallRuleName on Azure SQL Server: $serverName"
-        New-AzureRMSqlServerFirewallRule -ResourceGroupName $azureResourceGroupName -StartIPAddress $startIp -EndIPAddress $endIp -ServerName $serverName -FirewallRuleName $firewallRuleName -ErrorAction Stop -Verbose
+        $null = New-AzureRMSqlServerFirewallRule -ResourceGroupName $azureResourceGroupName -StartIPAddress $startIp -EndIPAddress $endIp -ServerName $serverName -FirewallRuleName $firewallRuleName -ErrorAction Stop
         Write-VstsTaskVerbose -Message "[Azure Call] Firewall rule $firewallRuleName created on Azure SQL Server: $serverName"
     }
     catch [Hyak.Common.CloudException] {
@@ -123,7 +123,7 @@ function Remove-AzureSqlDatabaseServerFirewallRule {
     if ($deleteFireWallRule -eq "true" -and $isFirewallConfigured -eq "true") {               
         $azureResourceGroupName = Get-AzureSqlDatabaseServerResourceGroupName -serverName $serverName
         Write-VstsTaskVerbose -Message "[Azure Call] Deleting firewall rule $firewallRuleName on Azure SQL Server: $serverName"
-        Remove-AzureRMSqlServerFirewallRule -ResourceGroupName $azureResourceGroupName -ServerName $serverName -FirewallRuleName $firewallRuleName -Force -ErrorAction Stop -Verbose
+        $null = Remove-AzureRMSqlServerFirewallRule -ResourceGroupName $azureResourceGroupName -ServerName $serverName -FirewallRuleName $firewallRuleName -Force -ErrorAction Stop
         Write-VstsTaskVerbose -Message "[Azure Call] Firewall rule $firewallRuleName deleted on Azure SQL Server: $serverName"
     }
 }

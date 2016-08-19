@@ -50,20 +50,20 @@ try {
 
     $dacFilesWithVersion = Get-DacpacVersions -dacpacFilePaths $dacpacFilePaths
 
-    $variableParameter = @("DatabaseName='$DatabaseName'")
-    Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number..."
-    $databaseVersion = [Version]((Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlScripts\GetDatabaseVersion.sql" -Database "master" -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose).DatabaseVersion)
-    Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion"
+    $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
+    $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
 
-    $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
-    if ($dacFilesToDeploy.Count -eq 0) {
-        Write-VstsTaskWarning -Message "Nothing to deploy, the database version ($databaseVersion) is up to date"
-    }
-    else {
-        $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
-        $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
+    try {
+        $variableParameter = @("DatabaseName='$DatabaseName'")
+        Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number..."
+        $databaseVersion = [Version]((Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlScripts\GetDatabaseVersion.sql" -Database "master" -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose).DatabaseVersion)
+        Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion"
 
-        try {
+        $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
+        if ($dacFilesToDeploy.Count -eq 0) {
+            Write-VstsTaskWarning -Message "Nothing to deploy, the database version ($databaseVersion) is up to date"
+        }
+        else {
             $sqlPackagePath = Get-SqlPackagePath
 
             # Always register Data-Tier Application (as this task needs to retrieve later the database version number)
@@ -84,10 +84,9 @@ try {
                 
                 Write-Host "Version $($dacFileToDeploy.Name) deployed" 
             }
-            
-        } finally {
-            Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
         }
+    } finally {
+        Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
     }
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
