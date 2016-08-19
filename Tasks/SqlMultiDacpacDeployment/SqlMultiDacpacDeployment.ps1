@@ -4,7 +4,6 @@ param()
 Trace-VstsEnteringInvocation $MyInvocation
 
 try {
-    # Get inputs.    
     $DacpacFiles = Get-VstsInput -Name DacpacFiles -Require
     $AdditionalArguments = Get-VstsInput -Name AdditionalArguments
     $ServerName = Get-VstsInput -Name ServerName -Require
@@ -17,14 +16,11 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule -Require
 
-    # Initialize Azure.
     Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+    
     Initialize-Azure
+    Initialize-Sqlps
 
-    # Import SQL Powershell cmdlets.
-    Import-Module sqlps
-
-    # Import the loc strings.
     Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
     $ServerName = $ServerName.ToLower()
@@ -64,10 +60,7 @@ try {
         Write-Host "Nothing to deploy, the database version ($databaseVersion) is up to date"
     }
     else {
-        # Getting start and end IP address for agent machine.
         $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
-
-        # Creating firewall rule for agent on SQL server.
         $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
 
         try {

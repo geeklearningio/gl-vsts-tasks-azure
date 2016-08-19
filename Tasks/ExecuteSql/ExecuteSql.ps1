@@ -4,7 +4,6 @@ param()
 Trace-VstsEnteringInvocation $MyInvocation
 
 try {
-    # Get inputs.
     $ScriptType = Get-VstsInput -Name ScriptType -Require
     $ScriptPath = Get-VstsInput -Name ScriptPath
     $PredefinedScript = Get-VstsInput -Name PredefinedScript   
@@ -19,24 +18,18 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule -Require
 
-    # Initialize Azure.
     Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+
     Initialize-Azure
+    Initialize-Sqlps
 
-    # Import SQL Powershell cmdlets.
-    Import-Module sqlps
-
-    # Import the loc strings.
     Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
     $ServerName = $ServerName.ToLower()
     $serverFriendlyName = $ServerName.split(".")[0]
     Write-VstsTaskVerbose -Message "Server friendly name is $serverFriendlyName"
 
-    # Getting start and end IP address for agent machine.
     $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
-
-    # Creating firewall rule for agent on SQL server.
     $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
 
     try {
