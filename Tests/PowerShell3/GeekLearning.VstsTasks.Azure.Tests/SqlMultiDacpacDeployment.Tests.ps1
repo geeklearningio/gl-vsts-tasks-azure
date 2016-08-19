@@ -22,9 +22,15 @@ Describe "SqlMultiDacpacDeployment" {
             Add-VstsInput -name "IpDetectionMethod" -value $config.settings.SqlMultiDacpacDeployment.IpDetectionMethod
             Add-VstsInput -name "DeleteFirewallRule" -value $config.settings.SqlMultiDacpacDeployment.DeleteFirewallRule.ToString()
 
+			$Error.Clear()
+
 			Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose
 
-			$error.Count | Should Be 0
+			foreach ($e in $Error) {
+				Write-Verbose $e
+			}
+
+			$Error.Count | Should Be 0
 		}
 
 		It "Fails because no DACPAC is found" {
@@ -37,9 +43,17 @@ Describe "SqlMultiDacpacDeployment" {
             Add-VstsInput -name "IpDetectionMethod" -value $config.settings.SqlMultiDacpacDeployment.IpDetectionMethod
             Add-VstsInput -name "DeleteFirewallRule" -value $config.settings.SqlMultiDacpacDeployment.DeleteFirewallRule.ToString()
 
+			$Error.Clear()
+
 			Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose
 
-			($error.Count -gt 0) | Should Be $True
+			foreach ($e in $Error) {
+				Write-Verbose $e
+			}
+
+			$Error.Count | Should Be 1
+
+			#($error.Count -gt 0) | Should Be $True
 		}
 	}
 }
