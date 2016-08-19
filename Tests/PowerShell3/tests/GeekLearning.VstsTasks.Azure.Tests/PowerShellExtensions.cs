@@ -73,11 +73,11 @@
                 output.WriteLine("[PowerShell] Warning: " + warning.Message);
             }
 
-            foreach (var information in powerShell.Streams.Information)
-            {
-                output.WriteLine("[PowerShell] Information: " + information.ToString());
-                System.Console.WriteLine("[PowerShell] Information: " + information.ToString());
-            }
+            //foreach (var information in powerShell.Streams.Information)
+            //{
+            //    output.WriteLine("[PowerShell] Information: " + information.ToString());
+            //    System.Console.WriteLine("[PowerShell] Information: " + information.ToString());
+            //}
 
             foreach (var verbose in powerShell.Streams.Verbose)
             {
