@@ -24,8 +24,15 @@ function Get-TestsConfiguration() {
 
 	$here = Split-Path -Parent $invocationCommandPath
 	$appSettings = Get-Content (Join-Path $here "appsettings.json") | ConvertFrom-Json
-	$appDevelopmentSettings = Get-Content (Join-Path $here "appsettings.development.json") | ConvertFrom-Json
-	$settings = ExtendJSON $appSettings $appDevelopmentSettings
+	$appDevelopmentSettingsPath = Join-Path $here "appsettings.development.json"
+
+	if (Test-Path $appDevelopmentSettingsPath) {
+		$appDevelopmentSettings = Get-Content $appDevelopmentSettingsPath | ConvertFrom-Json
+		$settings = ExtendJSON $appSettings $appDevelopmentSettings
+	}
+	else {
+		$settings = $appSettings
+	}
 
 	$tasksFolderPath = Resolve-Path "$here/$($settings.VstsTasksPath)"
 	$scriptName = (Split-Path -Leaf $invocationCommandPath) -replace '\.Tests\.', '.'
@@ -80,7 +87,7 @@ function Add-AzureEndpoint() {
 function Add-EnvironmentVariable() {
 	param(
         [Parameter(Mandatory=$true)][string]$name,
-        [Parameter(Mandatory=$true)][string]$value
+        [Parameter(Mandatory=$false)][string]$value
     )
 
 	$addEnvironmentVariable = "`${env:$name} = '$value'"
@@ -90,7 +97,7 @@ function Add-EnvironmentVariable() {
 function Add-VstsInput() {
 	param(
         [Parameter(Mandatory=$true)][string]$name,
-        [Parameter(Mandatory=$true)][string]$value
+        [Parameter(Mandatory=$false)][string]$value
     )
 
 	Add-EnvironmentVariable -name "INPUT_$name" -value $value
