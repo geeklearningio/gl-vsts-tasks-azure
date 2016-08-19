@@ -13,7 +13,7 @@
                 "StopWebApp": "A3F35BB6-5341-413A-8091-10F93D390BB5",
                 "SwapSlots": "8698E535-D070-4A41-8C0E-4624D6283F05",
                 "ExecuteSql": "A93D571D-F32C-4FE7-A63A-3599DDDD5279",
-                "SqlAzureMultiDacpacDeployment": "fc7c81bb-92a2-4750-a0c9-d0d88c749ac0"
+                "SqlMultiDacpacDeployment": "fc7c81bb-92a2-4750-a0c9-d0d88c749ac0"
             }
         },
         {
@@ -27,7 +27,7 @@
                 "StopWebApp": "4F59C1AE-AA86-4FAA-8E0C-D632C8CC07A7",
                 "SwapSlots": "714D2CD7-B76B-4E1D-BE59-B66C4001A89E",
                 "ExecuteSql": "CF2009AD-2816-4A2B-BBCF-2004C769555B",
-                "SqlAzureMultiDacpacDeployment": "9b319c14-18ab-4e76-84e9-443f6efd5722"
+                "SqlMultiDacpacDeployment": "9b319c14-18ab-4e76-84e9-443f6efd5722"
             }
         },
         {
@@ -41,7 +41,7 @@
                 "StopWebApp": "8E2A112A-F09C-4C9D-A73B-41D94B2389E4",
                 "SwapSlots": "D5DABE39-CC68-4B5A-B068-A248DF24A754",
                 "ExecuteSql": "01450B61-71C8-4AE1-B38D-FB7444C5A87F",
-                "SqlAzureMultiDacpacDeployment": "14d05d66-7359-4996-b54b-0b870c86d22b"
+                "SqlMultiDacpacDeployment": "14d05d66-7359-4996-b54b-0b870c86d22b"
             }
         } 
     ]
