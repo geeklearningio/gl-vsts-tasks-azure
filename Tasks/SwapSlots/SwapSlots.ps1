@@ -31,9 +31,9 @@ try {
         $resourceType = "Microsoft.Web/sites/slots"
     }
 
-    Write-Verbose "[Azure Call] Swapping slot: $resourceName with resource type: $resourceType to $DestinationSlot"
+    Write-VstsTaskVerbose -Message "[Azure Call] Swapping slot: $resourceName with resource type: $resourceType to $DestinationSlot"
     $result = Invoke-AzureRmResourceAction -ResourceGroupName $resourceGroupName -ResourceType $resourceType -ResourceName $resourceName -Action slotsswap -Parameters $parametersObject -ApiVersion 2015-07-01 -Force -Verbose
-    Write-Verbose "[Azure Call] Slot swapped: $resourceName with resource type: $resourceType to $DestinationSlot"
+    Write-VstsTaskVerbose -Message "[Azure Call] Slot swapped: $resourceName with resource type: $resourceType to $DestinationSlot"
 
     $scheme = "http"
     $hostName = $result.Properties.HostNames[0]
@@ -64,9 +64,6 @@ try {
 
         Set-VstsTaskVariable -Name $DestinationUrl -Value $destinationUrlValue
     }
-
-	Write-Verbose "Completed Azure Web App Slots Swap Task"
-
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

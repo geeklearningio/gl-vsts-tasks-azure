@@ -20,15 +20,15 @@ try {
 
     if ($Slot)
     {    
-        Write-Verbose "[Azure Call] Stopping slot: $WebAppName / $Slot"
+        Write-VstsTaskVerbose -Message "[Azure Call] Stopping slot: $WebAppName / $Slot"
         $result = Stop-AzureRmWebAppSlot -ResourceGroupName $resourceGroupName -Name $WebAppName -Slot $Slot -Verbose
-        Write-Verbose "[Azure Call] Slot stopped: $WebAppName / $Slot"
+        Write-VstsTaskVerbose -Message "[Azure Call] Slot stopped: $WebAppName / $Slot"
     }
     else
     {
-        Write-Verbose "[Azure Call] Stopping Web App: $WebAppName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Stopping Web App: $WebAppName"
         $result = Stop-AzureRmWebApp -ResourceGroupName $resourceGroupName -Name $WebAppName -Verbose
-        Write-Verbose "[Azure Call] Web App stopped: $WebAppName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Web App stopped: $WebAppName"
     }
 
     $scheme = "http"
@@ -60,9 +60,6 @@ try {
 
         Set-VstsTaskVariable -Name $StoppedUrl -Value $urlValue
     }
-
-	Write-Verbose "Completed Azure Web App Stop Task"
-
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

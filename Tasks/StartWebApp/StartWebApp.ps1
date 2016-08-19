@@ -19,14 +19,14 @@ try {
     $resourceGroupName = Get-WebAppResourceGroupName -webAppName $WebAppName
 
     if ($Slot) {    
-        Write-Verbose "[Azure Call] Starting slot: $WebAppName / $Slot"
+        Write-VstsTaskVerbose -Message "[Azure Call] Starting slot: $WebAppName / $Slot"
         $result = Start-AzureRmWebAppSlot -ResourceGroupName $resourceGroupName -Name $WebAppName -Slot $Slot -Verbose
-        Write-Verbose "[Azure Call] Slot started: $WebAppName / $Slot"
+        Write-VstsTaskVerbose -Message "[Azure Call] Slot started: $WebAppName / $Slot"
     }
     else {
-        Write-Verbose "[Azure Call] Starting Web App: $WebAppName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Starting Web App: $WebAppName"
         $result = Start-AzureRmWebApp -ResourceGroupName $resourceGroupName -Name $WebAppName -Verbose
-        Write-Verbose "[Azure Call] Web App started: $WebAppName"
+        Write-VstsTaskVerbose -Message "[Azure Call] Web App started: $WebAppName"
     }
 
     $scheme = "http"
@@ -58,9 +58,6 @@ try {
 
         Set-VstsTaskVariable -Name $StartedUrl -Value $urlValue
     }
-
-	Write-Verbose "Completed Azure Web App Start Task"
-
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

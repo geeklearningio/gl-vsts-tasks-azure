@@ -2,14 +2,14 @@
     "manifestVersion": 1,
     "id": "gl-vsts-tasks-azure",
     "name": "Microsoft Azure Build and Release Tasks",
-    "version": "0.0.18",
+    "version": "0.0.0",
     "publisher": "geeklearningio",    
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
         }
     ],    
-    "description": "Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.",
+    "description": "Build and publish your applications on Microsoft Azure using these Build and Release Management tasks.",
     "categories": [
         "Build and release"
     ],
@@ -24,7 +24,8 @@
         "Start",
         "Stop",
         "SQL",
-        "Restore"
+        "Restore",
+        "DACPAC"
     ],
     "screenshots": [
         {

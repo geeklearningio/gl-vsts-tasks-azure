@@ -7,7 +7,7 @@
 
     Trace-VstsEnteringInvocation $MyInvocation
     try {
-        Write-Verbose "Env:PSModulePath: '$env:PSMODULEPATH'"
+        Write-VstsTaskVerbose -Message "Env:PSModulePath: '$env:PSMODULEPATH'"
         if ($PreferredModule -contains 'Azure' -and $PreferredModule -contains 'AzureRM') {
             # Attempt to import Azure and AzureRM.
             $azure = (Import-FromModulePath -Classic:$true) -or (Import-FromSdkPath -Classic:$true)
@@ -60,7 +60,7 @@ function Import-FromModulePath {
         }
 
         # Attempt to resolve the module.
-        Write-Verbose "Attempting to find the module '$name' from the module path."
+        Write-VstsTaskVerbose -Message "Attempting to find the module '$name' from the module path."
         $module = Get-Module -Name $name -ListAvailable | Select-Object -First 1
         if (!$module) {
             return $false
@@ -69,7 +69,7 @@ function Import-FromModulePath {
         # Import the module.
         Write-Host "##[command]Import-Module -Name $($module.Path) -Global"
         $module = Import-Module -Name $module.Path -Global -PassThru
-        Write-Verbose "Imported module version: $($module.Version)"
+        Write-VstsTaskVerbose -Message "Imported module version: $($module.Version)"
 
         if ($Classic) {
             # Store the imported Azure module.
@@ -86,7 +86,7 @@ function Import-FromModulePath {
             # Import and then store the AzureRM.profile module.
             Write-Host "##[command]Import-Module -Name $($profileModule.Path) -Global"
             $script:azureRMProfileModule = Import-Module -Name $profileModule.Path -Global -PassThru
-            Write-Verbose "Imported module version: $($script:azureRMProfileModule.Version)"
+            Write-VstsTaskVerbose -Message "Imported module version: $($script:azureRMProfileModule.Version)"
         }
 
         return $true
@@ -113,12 +113,12 @@ function Import-FromSdkPath {
             }
 
             $path = [System.IO.Path]::Combine($programFiles, $partialPath)
-            Write-Verbose "Checking if path exists: $path"
+            Write-VstsTaskVerbose -Message "Checking if path exists: $path"
             if (Test-Path -LiteralPath $path -PathType Leaf) {
                 # Import the module.
                 Write-Host "##[command]Import-Module -Name $path -Global"
                 $module = Import-Module -Name $path -Global -PassThru
-                Write-Verbose "Imported module version: $($module.Version)"
+                Write-VstsTaskVerbose -Message "Imported module version: $($module.Version)"
 
                 # Store the imported module.
                 if ($Classic) {
