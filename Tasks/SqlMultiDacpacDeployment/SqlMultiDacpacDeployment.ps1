@@ -66,6 +66,11 @@ try {
         try {
             $sqlPackagePath = Get-SqlPackagePath
 
+            # Always register Data-Tier Application (as this task needs to retrieve later the database version number)
+            if (-not ($AdditionalArguments -like "*RegisterDataTierApplication*")) {
+                $AdditionalArguments += " /p:RegisterDataTierApplication=True"
+            }
+
             foreach ($dacFileToDeploy in $dacFilesToDeploy) {
                 Write-Host "Deploying Version: $($dacFileToDeploy.Name)"
 
