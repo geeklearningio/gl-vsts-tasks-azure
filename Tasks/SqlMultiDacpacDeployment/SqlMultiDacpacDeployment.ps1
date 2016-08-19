@@ -57,7 +57,7 @@ try {
 
     $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
     if ($dacFilesToDeploy.Count -eq 0) {
-        Write-Host "Nothing to deploy, the database version ($databaseVersion) is up to date"
+        Write-VstsTaskWarning -Message "Nothing to deploy, the database version ($databaseVersion) is up to date"
     }
     else {
         $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
