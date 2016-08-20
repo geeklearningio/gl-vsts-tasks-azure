@@ -55,9 +55,9 @@ try {
 
     try {
         $variableParameter = @("DatabaseName='$DatabaseName'")
-        Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number... $($Error.Count)"
+        Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number..."
         $databaseVersion = [Version]((Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlScripts\GetDatabaseVersion.sql" -Database "master" -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose).DatabaseVersion)
-        Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion $($Error.Count)"
+        Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion"
 
         $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
         if ($dacFilesToDeploy.Count -eq 0) {
@@ -84,6 +84,9 @@ try {
                 
                 Write-Host "Version $($dacFileToDeploy.Name) deployed" 
             }
+
+            # At the end of the task, any error pushed could be ignored safely
+            $Error.Clear()
         }
     } finally {
         Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
