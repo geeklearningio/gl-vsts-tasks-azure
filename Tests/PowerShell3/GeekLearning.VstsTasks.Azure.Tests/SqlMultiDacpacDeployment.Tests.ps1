@@ -26,11 +26,12 @@ Describe "SqlMultiDacpacDeployment" {
 
 			Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose
 
-			foreach ($e in $Error) {
-				Write-Verbose $e
+			if ($Error.Count -eq 0) {
+				$Error.Count | Should Be 0
 			}
-
-			$Error.Count | Should Be 0
+			else {
+				$Error[0].ToString() | Should Be ""
+			}
 		}
 
 		It "Fails because no DACPAC is found" {
@@ -47,13 +48,7 @@ Describe "SqlMultiDacpacDeployment" {
 
 			Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose
 
-			foreach ($e in $Error) {
-				Write-Verbose $e
-			}
-
 			$Error.Count | Should Be 1
-
-			#($error.Count -gt 0) | Should Be $True
 		}
 	}
 }

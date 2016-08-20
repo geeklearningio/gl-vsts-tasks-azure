@@ -1,5 +1,5 @@
 param(
-    [string]$SourceDir = $env:BUILD_SOURCESDIRECTORY,
+    [string]$SourceDir = "C:\W\GitHub\geeklearningio\gl-vsts-tasks-azure\Tests\PowerShell3\GeekLearning.VstsTasks.Azure.Tests",#$env:BUILD_SOURCESDIRECTORY,
     [string]$TempDir = $env:TEMP
 )
 
@@ -23,4 +23,4 @@ Import-Module $modulePath -DisableNameChecking
  
 $outputFile = Join-Path $SourceDir "TEST-pester.xml"
  
-Invoke-Pester -Path $SourceDir -PassThru -OutputFile $outputFile -OutputFormat NUnitXml -EnableExit
+Invoke-Pester -Path $SourceDir -PassThru -OutputFile $outputFile -OutputFormat NUnitXml
