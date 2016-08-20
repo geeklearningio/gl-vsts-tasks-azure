@@ -55,9 +55,9 @@ try {
 
     try {
         $variableParameter = @("DatabaseName='$DatabaseName'")
-        Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number..."
+        Write-VstsTaskVerbose -Message "[SQL Call] Retrieving $DatabaseName DAC Version Number... $($Error.Count)"
         $databaseVersion = [Version]((Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlScripts\GetDatabaseVersion.sql" -Database "master" -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose).DatabaseVersion)
-        Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion"
+        Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion $($Error.Count)"
 
         $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
         if ($dacFilesToDeploy.Count -eq 0) {
