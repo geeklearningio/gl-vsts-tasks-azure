@@ -20,7 +20,7 @@ try {
     
     Initialize-Azure
     Initialize-Sqlps
-
+    
     Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
     $ServerName = $ServerName.ToLower()

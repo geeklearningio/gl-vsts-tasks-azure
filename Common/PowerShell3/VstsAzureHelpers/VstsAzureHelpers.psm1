@@ -306,9 +306,8 @@ function Initialize-Sqlps {
         # 3>&1 puts warning stream to standard output stream (see https://connect.microsoft.com/PowerShell/feedback/details/297055/capture-warning-verbose-debug-and-host-output-via-alternate-streams)
         # out-null blocks that output, so we don't see the annoying warnings described here: https://www.codykonior.com/2015/05/30/whats-wrong-with-sqlps/ 
         Push-Location
-        Import-Module -Name sqlps -Global -PassThru 3>&1 | Out-Null
+        Import-Module -Name sqlps -Global -PassThru -Cmdlet Invoke-Sqlcmd 3>&1 | Out-Null
         Write-VstsTaskVerbose -Message "SQLPS Module Imported"
-        $Error.Clear()
         Pop-Location
     }
     finally {
