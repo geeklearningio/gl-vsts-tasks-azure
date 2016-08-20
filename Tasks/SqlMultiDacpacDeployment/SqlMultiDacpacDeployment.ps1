@@ -84,10 +84,10 @@ try {
                 
                 Write-Host "Version $($dacFileToDeploy.Name) deployed" 
             }
-
-            # At the end of the task, any error pushed could be ignored safely
-            $Error.Clear()
         }
+
+        # At the end of the task, any error pushed could be ignored safely
+        $Error.Clear()
     } finally {
         Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
     }
