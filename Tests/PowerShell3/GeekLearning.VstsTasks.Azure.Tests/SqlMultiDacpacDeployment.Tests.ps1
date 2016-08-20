@@ -22,16 +22,11 @@ Describe "SqlMultiDacpacDeployment" {
             Add-VstsInput -name "IpDetectionMethod" -value $config.settings.SqlMultiDacpacDeployment.IpDetectionMethod
             Add-VstsInput -name "DeleteFirewallRule" -value $config.settings.SqlMultiDacpacDeployment.DeleteFirewallRule.ToString()
 
-			$Error.Clear()
-
-			Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose
-
-			if ($Error.Count -eq 0) {
-				$Error.Count | Should Be 0
-			}
-			else {
-				$Error[0].ToString() | Should Be ""
-			}
+			$outputVariable = Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose 2>&1 3>&1 4>&1 5>&1 6>&1 | Out-String
+			$outputVariable | Out-File -FilePath "$here/dump.txt" -Force
+			Write-VstsAddAttachment -Type "TestLog" -Name "SqlMultiDacpacDeployment-Runs" -Path "$here/dump.txt"
+			
+			$outputVariable | Should Not BeLike "*task.logissue type=error*"
 		}
 
 		It "Fails because no DACPAC is found" {
@@ -44,11 +39,11 @@ Describe "SqlMultiDacpacDeployment" {
             Add-VstsInput -name "IpDetectionMethod" -value $config.settings.SqlMultiDacpacDeployment.IpDetectionMethod
             Add-VstsInput -name "DeleteFirewallRule" -value $config.settings.SqlMultiDacpacDeployment.DeleteFirewallRule.ToString()
 
-			$Error.Clear()
+			$outputVariable = Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose 2>&1 3>&1 4>&1 5>&1 6>&1 | Out-String
+			$outputVariable | Out-File -FilePath "$here/dump.txt" -Force
+			Write-VstsAddAttachment -Type "TestLog" -Name "SqlMultiDacpacDeployment-Fails because no DACPAC is found" -Path "$here/dump.txt"
 
-			Invoke-VstsTaskScript -ScriptBlock ([scriptblock]::Create(". $($config.targetScriptPath)")) -Verbose
-
-			$Error.Count | Should Be 1
+			$outputVariable | Should BeLike "*task.logissue type=error*"
 		}
 	}
 }

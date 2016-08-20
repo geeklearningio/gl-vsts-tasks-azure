@@ -1,5 +1,5 @@
 param(
-    [string]$SourceDir = "C:\W\GitHub\geeklearningio\gl-vsts-tasks-azure\Tests\PowerShell3\GeekLearning.VstsTasks.Azure.Tests",#$env:BUILD_SOURCESDIRECTORY,
+    [string]$SourceDir = $env:BUILD_SOURCESDIRECTORY,
     [string]$TempDir = $env:TEMP
 )
 

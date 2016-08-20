@@ -250,3 +250,4 @@ ps_modules
 .BuildOutput
 appsettings.development.json
 TEST-pester.xml
+/Tests/PowerShell3/GeekLearning.VstsTasks.Azure.Tests/dump.txt
