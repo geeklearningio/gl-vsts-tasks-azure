@@ -308,6 +308,7 @@ function Initialize-Sqlps {
         Push-Location
         Import-Module -Name sqlps -Global -PassThru 3>&1 | Out-Null
         Write-VstsTaskVerbose -Message "SQLPS Module Imported"
+        $Error.Clear()
         Pop-Location
     }
     finally {
