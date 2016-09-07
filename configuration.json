@@ -8,6 +8,7 @@
             ],
             "DisplayNamesSuffix": "",
             "TaskIds": {
+                "AzCopy" : "ebfc02c8-493b-4a18-9382-910b4979535b",
                 "RestoreSqlDatabaseToSqlDatabase": "56EFEADB-7DF6-4DAC-8163-AF8E07298C8B",
                 "StartWebApp": "DF1611D6-6AEE-40B5-8AF6-143AF94D9F3E",
                 "StopWebApp": "A3F35BB6-5341-413A-8091-10F93D390BB5",
@@ -22,6 +23,7 @@
             "VssExtensionGalleryFlags": [],        
             "DisplayNamesSuffix": " (Preview)",
             "TaskIds": {
+                "AzCopy" : "0c29237d-1bbb-4172-9d54-8ee559104a82",
                 "RestoreSqlDatabaseToSqlDatabase": "9FF8A021-58DA-4386-91DB-728B064D11FB",
                 "StartWebApp": "3543A9E7-FF08-47C5-A8F4-D9FBB5D5F345",
                 "StopWebApp": "4F59C1AE-AA86-4FAA-8E0C-D632C8CC07A7",
@@ -36,6 +38,7 @@
             "VssExtensionGalleryFlags": [],        
             "DisplayNamesSuffix": " (Development)",
             "TaskIds": {
+                "AzCopy" : "c76ec66c-c6ae-4687-a978-b02440bcc8e6",
                 "RestoreSqlDatabaseToSqlDatabase": "AEE6A733-4997-40A0-AA39-D23EFC10BBBC",
                 "StartWebApp": "14118FFB-528E-44CC-9F3C-E9078400AC6F",
                 "StopWebApp": "8E2A112A-F09C-4C9D-A73B-41D94B2389E4",

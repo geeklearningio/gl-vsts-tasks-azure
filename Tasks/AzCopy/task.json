@@ -1,0 +1,206 @@
+{
+    "id": "cf964a85-dfeb-4313-aa53-dad0d5e320e3",
+    "name": "AzCopy",
+    "friendlyName": "Copy files to or from Azure Storage (PREVIEW)",
+    "description": "Copy files to or from Azure Storage",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-files/wiki/AzCopy) (Version #{Version}#)",
+    "category": "Utility",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Geek Learning",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "demands": [
+        "cmd"
+    ],
+    "minimumAgentVersion": "1.91.0",
+    "instanceNameFormat": "Copy files from or to Azure Storage",
+    "groups": [
+        {
+            "name": "source",
+            "displayName": "Source",
+            "isExpanded": true
+        },
+        {
+            "name": "target",
+            "displayName": "Target",
+            "isExpanded": true
+        },
+        {
+            "name": "containerCopyOptions",
+            "displayName": "Container Copy Options",
+            "isExpanded": true
+        }
+    ],
+    "inputs": [
+        {
+            "name": "SourceKind",
+            "type": "radio",
+            "label": "Source Kind",
+            "options": {
+                "FileSystem": "File System",
+                "Storage": "Azure Storage"
+            },
+            "defaultValue": "Storage",
+            "required": true,
+            "group": "source",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "SourcePath",
+            "type": "filePath",
+            "label": "Source Directory",
+            "defaultValue": "",
+            "visibleRule": "SourceKind = FileSystem",
+            "required": true,
+            "group": "source",
+            "helpMarkDown": "Source directory"
+        },
+        {
+            "name": "SourceConnectedServiceName",
+            "type": "connectedService:AzureRM",
+            "label": "Azure RM Subscription",
+            "defaultValue": "",
+            "required": true,
+            "group": "source",
+            "visibleRule": "SourceKind = Storage",
+            "helpMarkDown": "Source Azure Resource Manager subscription"
+        },
+         {
+            "name": "SourceAccount",
+            "type": "pickList",
+            "label": "Source Account Name",
+            "defaultValue": "",
+            "required": true,
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "group": "source",
+            "visibleRule": "SourceKind = Storage",
+            "helpMarkDown": "Enter or Select the name of an existing AzureRM Storage Account"
+        },           
+        {
+            "name": "SourceObject",
+            "type": "string",
+            "label": "Source Container",
+            "defaultValue": "",
+            "required": true,
+            "visibleRule": "SourceKind = Storage",
+            "group": "source",
+            "helpMarkDown": "The name of the container to copy."
+        },
+        {
+            "name": "DestinationKind",
+            "type": "radio",
+            "label": "Copy Root",
+            "options": {
+                "FileSystem": "File System",
+                "Storage": "Azure Storage"
+            },
+            "defaultValue": "Storage",
+            "required": true,
+            "group": "destination",
+            "helpMarkDown": ""
+        },
+
+         {
+            "name": "DestinationPath",
+            "type": "filePath",
+            "label": "Destintion path",
+            "defaultValue": "",
+            "required": true,
+            "group": "destination",
+            "visibleRule": "DestinationKind = FileSystem",
+            "helpMarkDown": "The name of the artifact to create."
+        },
+            {
+            "name": "DestinationConnectedServiceName",
+            "type": "connectedService:AzureRM",
+            "label": "Azure RM Subscription",
+            "defaultValue": "",
+            "required": true,
+            "group": "source",
+            "visibleRule": "DestinationKind = Azure",
+            "helpMarkDown": "Destination Azure Resource Manager subscription"
+        },
+        {
+            "name": "DestinationAccount",
+            "type": "pickList",
+            "label": "Destination Account Name",
+            "defaultValue": "",
+            "required": true,
+            "properties": {
+                "EditableOptions": "True"
+            },
+            "group": "destination",
+            "visibleRule": "DestinationKind = Azure",
+            "helpMarkDown": "Enter or Select the name of an existing AzureRM Storage Account"
+        },            {
+            "name": "DestinationObject",
+            "type": "multiLine",
+            "label": "Destination Container",
+            "defaultValue": "",
+            "required": true,
+            "group": "destination",
+            "visibleRule": "DestinationKind = Azure",
+            "helpMarkDown": "Destination container"
+        },
+       
+        {
+            "name": "Recursive",
+            "type": "boolean",
+            "label": "Recursive copy",
+            "required": true,
+            "group": "containerCopyOptions",
+            "helpMarkDown": "Copy files recursively."
+        },
+        {
+            "name": "Pattern",
+            "type": "string",
+            "label": "Pattern",
+            "defaultValue": "",
+            "required": false,
+            "group": "containerCopyOptions",
+            "helpMarkDown": "Specifies a file pattern that indicates which files to copy."
+        },
+        {
+            "name": "ExcludeNewer",
+            "type": "boolean",
+            "label": "Exclude Newer",
+            "required": false,
+            "group": "containerCopyOptions",
+            "helpMarkDown": "Excludes a newer source resource. The resource will not be copied if the source is the same or newer than destination."
+        },
+        {
+            "name": "ExcludeOlder",
+            "type": "boolean",
+            "label": "Exclude Older",
+            "required": false,
+            "group": "containerCopyOptions",
+            "helpMarkDown": "Excludes an older source resource. The resource will not be copied if the source resource is the same or older than destination."
+        }
+    ],
+    "dataSourceBindings": [
+        {
+            "target": "SourceAccount",
+            "endpointId": "$(ConnectedServiceName)",
+            "dataSourceName": "AzureStorageAccountRM"
+        },
+        {
+            "target": "DestinationAccount",
+            "endpointId": "$(ConnectedServiceName)",
+            "dataSourceName": "AzureStorageAccountRM"
+        }
+    ],
+    "execution": {
+        "Node": {
+            "target": "azCopy.js",
+            "argumentFormat": ""
+        }
+    }
+}

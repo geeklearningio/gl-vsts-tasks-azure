@@ -1,0 +1,10 @@
+{
+  "name": "gl-vsts-tasks-azure",
+  "dependencies": {},
+  "globalDependencies": {
+    "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
+    "node": "registry:dt/node#6.0.0+20160907103612",
+    "q": "registry:dt/q#0.0.0+20160613154756",
+    "xregexp": "registry:dt/xregexp#3.0.0+20160317120654"
+  }
+}
