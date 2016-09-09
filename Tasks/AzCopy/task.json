@@ -27,8 +27,8 @@
             "isExpanded": true
         },
         {
-            "name": "target",
-            "displayName": "Target",
+            "name": "destination",
+            "displayName": "Destination",
             "isExpanded": true
         },
         {
