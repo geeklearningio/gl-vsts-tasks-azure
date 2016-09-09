@@ -124,7 +124,7 @@
             "label": "Azure RM Subscription",
             "defaultValue": "",
             "required": true,
-            "groupName": "source",
+            "groupName": "destination",
             "visibleRule": "DestinationKind = Storage",
             "helpMarkDown": "Destination Azure Resource Manager subscription"
         },
