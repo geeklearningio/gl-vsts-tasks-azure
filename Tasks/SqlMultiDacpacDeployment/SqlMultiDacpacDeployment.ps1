@@ -48,7 +48,7 @@ try {
         $dacpacFilePaths = @($dacpacFilePaths)
     }
 
-    $dacFilesWithVersion = Get-DacpacVersions -dacpacFilePaths $dacpacFilePaths
+    $dacFilesWithVersion = [Array](Get-DacpacVersions -dacpacFilePaths $dacpacFilePaths)
 
     $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
     $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName
