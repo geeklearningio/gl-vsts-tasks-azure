@@ -248,6 +248,16 @@ ModelManifest.xml
 ps_modules
 
 .BuildOutput
+
 appsettings.development.json
-TEST-pester.xml
-/Tests/PowerShell3/GeekLearning.VstsTasks.Azure.Tests/dump.txt
+
+Tests/**/TEST-*.xml
+Tests/**/dump.txt
+Tests/**/*.js
+Tests/**/*.js.map
+Tests/**/*.d.ts
+
+Tasks/**/*.js
+Tasks/**/*.js.map
+Tasks/**/*.d.ts
+Tasks/*/common/**/*.*
