@@ -1,5 +1,6 @@
 import tl = require('vsts-task-lib/task');
 import path = require('path');
+import fs = require('fs-extra');
 import q = require('q');
 import XRegExp = require('xregexp');
 
@@ -27,65 +28,77 @@ var destinationConnectedServiceName = tl.getInput('DestinationConnectedServiceNa
 var destinationAccount = tl.getInput('DestinationAccount');
 var destinationObject = tl.getInput('DestinationObject');
 
-var toolRunner = tl.createToolRunner(path.join(tl.getVariable('%ProgramFiles(x86)%'), 'Microsoft SDKs/Azure/AzCopy/azcopy.exe'));
+var azCopyknownLocations = [
+    path.join(__dirname, '../../azcopy.exe'),
+    path.join(tl.getVariable('%ProgramFiles(x86)%'), 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
+];
 
-q.when()
-    .then(() => {
-        if (sourceKind == "Storage") {
-            return getConnectedServiceCredentials(sourceConnectedServiceName)
-                .then(credentials => {
-                    return getStorageAccount(credentials, sourceAccount);
-                })
-                .then(storageAccount => {
-                    toolRunner.arg('/Source:' + storageAccount.blobEndpoint + '/' + sourceObject);
-                    toolRunner.arg('/SourceKey:' + storageAccount.key);
-                });
-        } else {
-            toolRunner.arg('/Source:' + sourcePath);
-        }
-    })
-    .then(() => {
-        if (destinationKind == "Storage") {
-            return getConnectedServiceCredentials(destinationConnectedServiceName)
-                .then(credentials => {
-                    return getStorageAccount(credentials, destinationAccount);
-                })
-                .then(storageAccount => {
-                    toolRunner.arg('/Dest:' + storageAccount.blobEndpoint + '/' + destinationObject);
-                    toolRunner.arg('/DestKey:' + storageAccount.key);
-                });
-        } else {
-            toolRunner.arg('/Dest:' + destinationPath);
-        }
-    })
-    .then(() => {
-        if (recursive) {
-            toolRunner.arg('/S');
-        }
+var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
+if (azCopy.length) {
 
-        if (pattern) {
-            toolRunner.arg('/Pattern:' + pattern);
-        }
 
-        if (excludeNewer) {
-            toolRunner.arg('/XN');
-        }
+    var toolRunner = tl.createToolRunner(azCopy[0]);
 
-        if (excludeOlder) {
-            toolRunner.arg('/XO');
-        }
-    })
-    .then(() => toolRunner.exec())
-    .then((result) => {
-        if (result) {
-            tl.setResult(tl.TaskResult.Failed, "An error occured during azcopy")
-        } else {
-            tl.setResult(tl.TaskResult.Succeeded, "Files copied successfully")
-        }
-    })
-    .catch(err => {
-        tl.setResult(tl.TaskResult.Failed, err);
-    });
+    q.when()
+        .then(() => {
+            if (sourceKind == "Storage") {
+                return getConnectedServiceCredentials(sourceConnectedServiceName)
+                    .then(credentials => {
+                        return getStorageAccount(credentials, sourceAccount);
+                    })
+                    .then(storageAccount => {
+                        toolRunner.arg('/Source:' + storageAccount.blobEndpoint + '/' + sourceObject);
+                        toolRunner.arg('/SourceKey:' + storageAccount.key);
+                    });
+            } else {
+                toolRunner.arg('/Source:' + sourcePath);
+            }
+        })
+        .then(() => {
+            if (destinationKind == "Storage") {
+                return getConnectedServiceCredentials(destinationConnectedServiceName)
+                    .then(credentials => {
+                        return getStorageAccount(credentials, destinationAccount);
+                    })
+                    .then(storageAccount => {
+                        toolRunner.arg('/Dest:' + storageAccount.blobEndpoint + '/' + destinationObject);
+                        toolRunner.arg('/DestKey:' + storageAccount.key);
+                    });
+            } else {
+                toolRunner.arg('/Dest:' + destinationPath);
+            }
+        })
+        .then(() => {
+            if (recursive) {
+                toolRunner.arg('/S');
+            }
+
+            if (pattern) {
+                toolRunner.arg('/Pattern:' + pattern);
+            }
+
+            if (excludeNewer) {
+                toolRunner.arg('/XN');
+            }
+
+            if (excludeOlder) {
+                toolRunner.arg('/XO');
+            }
+        })
+        .then(() => toolRunner.exec())
+        .then((result) => {
+            if (result) {
+                tl.setResult(tl.TaskResult.Failed, "An error occured during azcopy")
+            } else {
+                tl.setResult(tl.TaskResult.Succeeded, "Files copied successfully")
+            }
+        })
+        .catch(err => {
+            tl.setResult(tl.TaskResult.Failed, err);
+        });
+} else {
+    tl.setResult(tl.TaskResult.Failed, "AzCopy utility was not found, please refer to documentation for installation instructions.")
+}
 
 interface ICachedSubscriptionCredentals {
     name: string, id: string, creds: any
