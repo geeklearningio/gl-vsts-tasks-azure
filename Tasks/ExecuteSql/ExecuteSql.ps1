@@ -25,9 +25,7 @@ try {
 
     Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
-    $ServerName = $ServerName.ToLower()
-    $serverFriendlyName = $ServerName.split(".")[0]
-    Write-VstsTaskVerbose -Message "Server friendly name is $serverFriendlyName"
+    $serverFriendlyName = Get-SqlServerFriendlyName -serverName $ServerName
 
     $ipAddress = Get-AgentIPAddress -startIPAddress $StartIpAddress -endIPAddress $EndIpAddress -ipDetectionMethod $IpDetectionMethod
     $firewallSettings = Add-AzureSqlDatabaseServerFirewallRule -startIP $ipAddress.StartIPAddress -endIP $ipAddress.EndIPAddress -serverName $serverFriendlyName

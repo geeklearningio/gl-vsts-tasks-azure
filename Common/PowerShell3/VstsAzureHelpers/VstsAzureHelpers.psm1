@@ -315,6 +315,20 @@ function Initialize-Sqlps {
     }
 }
 
+function Get-SqlServerFriendlyName {
+    param([String] [Parameter(Mandatory = $true)] $serverName)
+
+    $serverName = $serverName.ToLower()
+    if (-not $serverName.Contains(".database.windows.net")){
+        Write-VstsTaskWarning -Message "Bad task configuration: the ServerName parameter should be given with an Azure SQL Server name, like FabrikamSQL.database.windows.net,1433 or FabrikamSQL.database.windows.net"
+    }
+
+    $serverFriendlyName = $serverName.split(".")[0]
+    Write-VstsTaskVerbose -Message "Server friendly name is $serverFriendlyName" 
+
+    return $serverFriendlyName
+}
+
 Export-ModuleMember -Function Initialize-Azure
 Export-ModuleMember -Function Get-AgentIPAddress
 Export-ModuleMember -Function Add-AzureSqlDatabaseServerFirewallRule
@@ -326,3 +340,4 @@ Export-ModuleMember -Function Get-DacpacVersions
 Export-ModuleMember -Function Send-ExecuteCommand
 Export-ModuleMember -Function Get-SqlPackageCommandArguments
 Export-ModuleMember -Function Initialize-Sqlps
+Export-ModuleMember -Function Get-SqlServerFriendlyName

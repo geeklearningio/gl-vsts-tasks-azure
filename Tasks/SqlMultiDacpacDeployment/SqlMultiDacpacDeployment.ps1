@@ -23,9 +23,7 @@ try {
     
     Import-VstsLocStrings -LiteralPath $PSScriptRoot/Task.json    
 
-    $ServerName = $ServerName.ToLower()
-    $serverFriendlyName = $ServerName.split(".")[0]
-    Write-VstsTaskVerbose -Message "Server friendly name is $serverFriendlyName"
+    $serverFriendlyName = Get-SqlServerFriendlyName -serverName $ServerName
 
     $dacpacFilePaths = Find-VstsFiles -LegacyPattern $DacpacFiles -Verbose
 
