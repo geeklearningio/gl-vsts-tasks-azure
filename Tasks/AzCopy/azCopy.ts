@@ -17,7 +17,7 @@ var sourceKind = tl.getInput('SourceKind');
 var sourcePath = tl.getInput('SourcePath');
 
 var sourceConnectedServiceName = tl.getInput('SourceConnectedServiceName');
-var sourceAccount = tl.getInput('Sourc eAccount');
+var sourceAccount = tl.getInput('SourceAccount');
 var sourceObject = tl.getInput('SourceObject');
 
 var destinationKind = tl.getInput('DestinationKind');

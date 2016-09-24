@@ -71,7 +71,7 @@
             "visibleRule": "SourceKind = Storage",
             "helpMarkDown": "Source Azure Resource Manager subscription"
         },
-         {
+        {
             "name": "SourceAccount",
             "type": "pickList",
             "label": "Source Account Name",
@@ -83,7 +83,7 @@
             "groupName": "source",
             "visibleRule": "SourceKind = Storage",
             "helpMarkDown": "Enter or Select the name of an existing AzureRM Storage Account"
-        },           
+        },
         {
             "name": "SourceObject",
             "type": "string",
@@ -107,8 +107,7 @@
             "groupName": "destination",
             "helpMarkDown": ""
         },
-
-         {
+        {
             "name": "DestinationPath",
             "type": "filePath",
             "label": "Destintion path",
@@ -118,7 +117,7 @@
             "visibleRule": "DestinationKind = FileSystem",
             "helpMarkDown": "The name of the artifact to create."
         },
-            {
+        {
             "name": "DestinationConnectedServiceName",
             "type": "connectedService:AzureRM",
             "label": "Azure RM Subscription",
@@ -140,7 +139,8 @@
             "groupName": "destination",
             "visibleRule": "DestinationKind = Storage",
             "helpMarkDown": "Enter or Select the name of an existing AzureRM Storage Account"
-        },            {
+        },
+        {
             "name": "DestinationObject",
             "type": "multiLine",
             "label": "Destination Container",
@@ -150,7 +150,6 @@
             "visibleRule": "DestinationKind = Storage",
             "helpMarkDown": "Destination container"
         },
-       
         {
             "name": "Recursive",
             "type": "boolean",
