@@ -28,9 +28,11 @@ var destinationConnectedServiceName = tl.getInput('DestinationConnectedServiceNa
 var destinationAccount = tl.getInput('DestinationAccount');
 var destinationObject = tl.getInput('DestinationObject');
 
+var programFiles = tl.getVariable('ProgramFiles(x86)');
+
 var azCopyknownLocations = [
     path.join(__dirname, '../../azcopy.exe'),
-    path.join(tl.getVariable('%ProgramFiles(x86)%'), 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
+    path.join(programFiles ? programFiles : 'C:\\ProgramFiles(x86)', 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
 ];
 
 var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
