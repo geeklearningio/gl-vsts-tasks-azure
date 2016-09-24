@@ -39,7 +39,7 @@ var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
 if (azCopy.length) {
 
 
-    var toolRunner = tl.createToolRunner(azCopy[0]);
+    var toolRunner = tl.tool(azCopy[0]);
 
     q.when()
         .then(() => {
