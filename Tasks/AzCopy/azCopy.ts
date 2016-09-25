@@ -37,18 +37,21 @@ var azCopyknownLocations = [
 
 var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
 if (azCopy.length) {
-
+    
+    tl.debug('AzCopy utility found at path : ' + azCopy[0]);
 
     var toolRunner = tl.tool(azCopy[0]);
 
     q.when()
         .then(() => {
             if (sourceKind == "Storage") {
+                tl.debug("retrieving source account details");
                 return getConnectedServiceCredentials(sourceConnectedServiceName)
                     .then(credentials => {
                         return getStorageAccount(credentials, sourceAccount);
                     })
                     .then(storageAccount => {
+                        tl.debug(storageAccount.blobEndpoint + '/' + sourceObject);
                         toolRunner.arg('/Source:' + storageAccount.blobEndpoint + '/' + sourceObject);
                         toolRunner.arg('/SourceKey:' + storageAccount.key);
                     });
@@ -63,6 +66,7 @@ if (azCopy.length) {
                         return getStorageAccount(credentials, destinationAccount);
                     })
                     .then(storageAccount => {
+                        tl.debug(storageAccount.blobEndpoint + '/' + destinationObject);
                         toolRunner.arg('/Dest:' + storageAccount.blobEndpoint + '/' + destinationObject);
                         toolRunner.arg('/DestKey:' + storageAccount.key);
                     });
