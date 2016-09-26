@@ -4,6 +4,8 @@ import fs = require('fs-extra');
 import q = require('q');
 import XRegExp = require('xregexp');
 
+var connectedServiceCredentialsCache: { [key: string]: ICachedSubscriptionCredentals } = {};
+
 var msRestAzure = require('ms-rest-azure');
 var storageManagementClient = require('azure-arm-storage');
 
@@ -174,7 +176,6 @@ interface ICachedSubscriptionCredentals {
     name: string, id: string, creds: any
 }
 
-var connectedServiceCredentialsCache: { [key: string]: ICachedSubscriptionCredentals } = {};
 
 interface IStorageAccount {
     resourceGroupName: string,
