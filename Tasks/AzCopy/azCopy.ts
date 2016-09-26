@@ -35,46 +35,37 @@ var azCopyknownLocations = [
     path.join(programFiles ? programFiles : 'C:\\ProgramFiles(x86)', 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
 ];
 
-var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
-if (azCopy.length) {
-    
-    tl.debug('AzCopy utility found at path : ' + azCopy[0]);
+(async function execute() {
 
-    var toolRunner = tl.tool(azCopy[0]);
 
-    q.when()
-        .then(() => {
+    try {
+        var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
+        if (azCopy.length) {
+
+            tl.debug('AzCopy utility found at path : ' + azCopy[0]);
+
+            var toolRunner = tl.tool(azCopy[0]);
+
             if (sourceKind == "Storage") {
                 tl.debug("retrieving source account details");
-                return getConnectedServiceCredentials(sourceConnectedServiceName)
-                    .then(credentials => {
-                        return getStorageAccount(credentials, sourceAccount);
-                    })
-                    .then(storageAccount => {
-                        tl.debug(storageAccount.blobEndpoint + '/' + sourceObject);
-                        toolRunner.arg('/Source:' + storageAccount.blobEndpoint + '/' + sourceObject);
-                        toolRunner.arg('/SourceKey:' + storageAccount.key);
-                    });
+                var sourceCredentials = await getConnectedServiceCredentials(sourceConnectedServiceName);
+                var sourceStorageAccount = await getStorageAccount(sourceCredentials, sourceAccount);
+                tl.debug(sourceStorageAccount.blobEndpoint + '/' + sourceObject);
+                toolRunner.arg('/Source:' + sourceStorageAccount.blobEndpoint + '/' + sourceObject);
+                toolRunner.arg('/SourceKey:' + sourceStorageAccount.key);
             } else {
                 toolRunner.arg('/Source:' + sourcePath);
             }
-        })
-        .then(() => {
+
             if (destinationKind == "Storage") {
-                return getConnectedServiceCredentials(destinationConnectedServiceName)
-                    .then(credentials => {
-                        return getStorageAccount(credentials, destinationAccount);
-                    })
-                    .then(storageAccount => {
-                        tl.debug(storageAccount.blobEndpoint + '/' + destinationObject);
-                        toolRunner.arg('/Dest:' + storageAccount.blobEndpoint + '/' + destinationObject);
-                        toolRunner.arg('/DestKey:' + storageAccount.key);
-                    });
+                var destCredentials = await getConnectedServiceCredentials(destinationConnectedServiceName);
+                var destStorageAccount = await getStorageAccount(destCredentials, destinationAccount);
+                tl.debug(destStorageAccount.blobEndpoint + '/' + destinationObject);
+                toolRunner.arg('/Dest:' + destStorageAccount.blobEndpoint + '/' + destinationObject);
+                toolRunner.arg('/DestKey:' + destStorageAccount.key);
             } else {
                 toolRunner.arg('/Dest:' + destinationPath);
             }
-        })
-        .then(() => {
             if (recursive) {
                 toolRunner.arg('/S');
             }
@@ -90,21 +81,22 @@ if (azCopy.length) {
             if (excludeOlder) {
                 toolRunner.arg('/XO');
             }
-        })
-        .then(() => toolRunner.exec())
-        .then((result) => {
+            var result = await toolRunner.exec();
             if (result) {
                 tl.setResult(tl.TaskResult.Failed, "An error occured during azcopy")
             } else {
                 tl.setResult(tl.TaskResult.Succeeded, "Files copied successfully")
             }
-        })
-        .catch(err => {
-            tl.setResult(tl.TaskResult.Failed, err);
-        });
-} else {
-    tl.setResult(tl.TaskResult.Failed, "AzCopy utility was not found, please refer to documentation for installation instructions.")
-}
+            tl.setResult(tl.TaskResult.Failed, "AzCopy utility was not found, please refer to documentation for installation instructions.")
+        } else {
+            tl.setResult(tl.TaskResult.Failed, "AzCopy was not found");
+        }
+    }
+    catch (err) {
+        tl.setResult(tl.TaskResult.Failed, err);
+    }
+})();
+
 
 interface ICachedSubscriptionCredentals {
     name: string, id: string, creds: any
