@@ -1,0 +1,14 @@
+{
+    "vsts" : {
+        "url" : "https://accountname.visualstudio.com",
+        "pat" : "somepat" 
+    },
+    "azure": {
+        "ConnectionName": "A Connection Name",
+        "SubscriptionId": "aguid0000-0000-0000-0000-00000000000",
+        "SubscriptionName": "A Subscription Name",
+        "ServicePrincipalId": "aguid0000-0000-0000-0000-00000000000",
+        "ServicePrincipalkey": "asecretkey",
+        "TenantId": "aguid0000-0000-0000-0000-00000000000"
+    }
+}

@@ -4,6 +4,9 @@ import fs = require('fs-extra');
 import q = require('q');
 import XRegExp = require('xregexp');
 
+import azureEndpointConnection = require('./azureEndpointConnection');
+
+
 var connectedServiceCredentialsCache: { [key: string]: ICachedSubscriptionCredentals } = {};
 
 var msRestAzure = require('ms-rest-azure');
@@ -39,7 +42,7 @@ var azCopyknownLocations = [
 
 var accountIdRegex = XRegExp('/subscriptions/(?<subscriptionId>.*?)/resourceGroups/(?<resourceGroupName>.*?)/providers/Microsoft.Storage/storageAccounts/(?<accountName>.*?)');
 
-function getConnectedServiceCredentials(connectedService: string) {
+function getConnectedServiceCredentials(connectedService: string) : q.Promise<any> {
     var endpointAuth = tl.getEndpointAuthorization(connectedService, true);
     var servicePrincipalId: string = endpointAuth.parameters["serviceprincipalid"];
     var servicePrincipalKey: string = endpointAuth.parameters["serviceprincipalkey"];
@@ -47,25 +50,7 @@ function getConnectedServiceCredentials(connectedService: string) {
     var subscriptionName: string = tl.getEndpointDataParameter(connectedService, "SubscriptionName", true);
     var subscriptionId: string = tl.getEndpointDataParameter(connectedService, "SubscriptionId", true);
 
-
-    if (connectedServiceCredentialsCache[connectedService]) {
-        return q.when(connectedServiceCredentialsCache[connectedService]);
-    } else {
-        var deferal = q.defer<any>();
-
-        msRestAzure.loginWithServicePrincipalSecret(servicePrincipalId, servicePrincipalKey, tenantId, function (err: any, credentials: any) {
-            if (err) {
-                console.log(err);
-                q.reject(err);
-                return;
-            }
-
-            connectedServiceCredentialsCache[connectedService] = { name: subscriptionName, id: subscriptionId, creds: credentials };
-            q.resolve(credentials);
-        });
-
-        return deferal.promise;
-    }
+    return azureEndpointConnection.getConnectedServiceCredentials(connectedService, servicePrincipalId, servicePrincipalKey, tenantId, subscriptionName, subscriptionId);
 }
 
 function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountName: string)
@@ -75,7 +60,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
 
     var client = new storageManagementClient(credentials.creds, credentials.id);
     client.storageAccounts.list(function (err: any, result: any) {
-        if (err) q.reject(err);
+        if (err) deferal.reject(err);
         console.log(result);
         var account = result.value.filter((x: any) => x.name == accountName)[0];
 
@@ -85,13 +70,13 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
 
         client.storageAccounts.getProperties(resourceGroupName, accountName, function (err: any, properties: any) {
             if (err) {
-                q.reject(err)
+                deferal.reject(err)
             } else {
                 client.storageAccounts.listKeys(account.resourceGroupName, accountName, function (err: any, keys: any) {
                     if (err) {
-                        q.reject(err)
+                        deferal.reject(err)
                     } else {
-                        q.resolve({
+                        deferal.resolve({
                             resourceGroupName: resourceGroupName,
                             blobEndpoint: properties.properties.primaryEndpoints.blob,
                             tableEndpoint: properties.properties.primaryEndpoints.table,

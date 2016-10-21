@@ -256,6 +256,7 @@ Tests/**/dump.txt
 Tests/**/*.js
 Tests/**/*.js.map
 Tests/**/*.d.ts
+Tests/Node/settings.json
 
 Tasks/**/*.js
 Tasks/**/*.js.map
