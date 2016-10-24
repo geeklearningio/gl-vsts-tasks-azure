@@ -139,6 +139,8 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                 toolRunner.arg('/XO');
             }
 
+            toolRunner.arg('/Y');
+
             var result = await toolRunner.exec();
             if (result) {
                 tl.setResult(tl.TaskResult.Failed, "An error occured during azcopy")
