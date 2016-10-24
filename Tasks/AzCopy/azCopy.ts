@@ -80,8 +80,8 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                         console.log(keys);
                         deferal.resolve({
                             resourceGroupName: resourceGroupName,
-                            blobEndpoint: properties.properties.primaryEndpoints.blob,
-                            tableEndpoint: properties.properties.primaryEndpoints.table,
+                            blobEndpoint: properties.primaryEndpoints.blob,
+                            tableEndpoint: properties.primaryEndpoints.table,
                             key: keys.keys[0].value
                         });
                     }
