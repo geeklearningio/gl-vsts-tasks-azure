@@ -73,7 +73,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
             if (err) {
                 deferal.reject(err)
             } else {
-                client.storageAccounts.listKeys(account.resourceGroupName, accountName, function (err: any, keys: any) {
+                client.storageAccounts.listKeys(resourceGroupName, accountName, function (err: any, keys: any) {
                     if (err) {
                         deferal.reject(err)
                     } else {
@@ -88,8 +88,6 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                 });
             }
         });
-
-
     });
 
     return deferal.promise;
