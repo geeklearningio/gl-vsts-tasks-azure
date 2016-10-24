@@ -117,7 +117,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                 var destCredentials = await getConnectedServiceCredentials(destinationConnectedServiceName);
                 var destStorageAccount = await getStorageAccount(destCredentials, destinationAccount);
                 tl.debug(destStorageAccount.blobEndpoint + destinationObject);
-                toolRunner.arg('/Dest:' + destStorageAccount.blobEndpoint  + destinationObject);
+                toolRunner.arg('/Dest:' + destStorageAccount.blobEndpoint + destinationObject);
                 toolRunner.arg('/DestKey:' + destStorageAccount.key);
             } else {
                 toolRunner.arg('/Dest:' + destinationPath);
@@ -145,9 +145,8 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
             } else {
                 tl.setResult(tl.TaskResult.Succeeded, "Files copied successfully")
             }
-            tl.setResult(tl.TaskResult.Failed, "AzCopy utility was not found, please refer to documentation for installation instructions.")
         } else {
-            tl.setResult(tl.TaskResult.Failed, "AzCopy was not found");
+            tl.setResult(tl.TaskResult.Failed, "AzCopy utility was not found, please refer to documentation for installation instructions.")
         }
     }
     catch (err) {
