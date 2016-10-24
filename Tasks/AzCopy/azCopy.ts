@@ -42,7 +42,7 @@ var azCopyknownLocations = [
 
 var accountIdRegex = XRegExp('/subscriptions/(?<subscriptionId>.*?)/resourceGroups/(?<resourceGroupName>.*?)/providers/Microsoft.Storage/storageAccounts/(?<accountName>.*?)');
 
-function getConnectedServiceCredentials(connectedService: string) : q.Promise<any> {
+function getConnectedServiceCredentials(connectedService: string): q.Promise<any> {
     var endpointAuth = tl.getEndpointAuthorization(connectedService, true);
     var servicePrincipalId: string = endpointAuth.parameters["serviceprincipalid"];
     var servicePrincipalKey: string = endpointAuth.parameters["serviceprincipalkey"];
@@ -62,13 +62,14 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
     client.storageAccounts.list(function (err: any, result: any) {
         if (err) deferal.reject(err);
         console.log(result);
-        var account = result.value.filter((x: any) => x.name == accountName)[0];
+        var account = result.filter((x: any) => x.name == accountName)[0];
 
         var parsedAccountId = <any>XRegExp.exec(account.id, accountIdRegex);
 
         var resourceGroupName = parsedAccountId.resourceGroupName;
 
         client.storageAccounts.getProperties(resourceGroupName, accountName, function (err: any, properties: any) {
+            console.log(account);
             if (err) {
                 deferal.reject(err)
             } else {
@@ -76,6 +77,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                     if (err) {
                         deferal.reject(err)
                     } else {
+                        console.log(keys);
                         deferal.resolve({
                             resourceGroupName: resourceGroupName,
                             blobEndpoint: properties.properties.primaryEndpoints.blob,
