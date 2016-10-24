@@ -97,7 +97,7 @@
         {
             "name": "DestinationKind",
             "type": "radio",
-            "label": "Copy Root",
+            "label": "Destination Kind",
             "options": {
                 "FileSystem": "File System",
                 "Storage": "Azure Storage"
