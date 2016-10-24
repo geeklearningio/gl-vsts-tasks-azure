@@ -12,6 +12,7 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 * **[Azure SQL Execute Query](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Execute-Query)**: Execute a SQL query on an Azure SQL Database
 * **[Azure SQL Database Restore](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Restore)**: Restore an Azure SQL Database to another Azure SQL Database on the same server using the latest point-in-time backup
 * **[Azure SQL Database Incremental Deployment](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Incremental-Deployment)**: Deploy an Azure SQL Database using multiple DACPAC and performing incremental deployments based on current Data-Tier Application version
+* **[AzCopy](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/AzCopy)**: AzCopy task
 
 ## Steps
 
@@ -24,6 +25,9 @@ After installing the extension, you can add one (or more) of the tasks to a new 
 The [source](https://github.com/geeklearningio/gl-vsts-tasks-azure) for this extension is on GitHub. Take, fork, and extend.
 
 ## Release Notes
+
+> **10-24-2016**
+> - Added: AzCopy Tool Task
 
 > **8-19-2016**
 > - Added: Azure SQL Database Incremental Deployment
