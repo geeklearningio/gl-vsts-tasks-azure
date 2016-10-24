@@ -61,7 +61,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
     var client = new storageManagementClient(credentials.creds, credentials.id);
     client.storageAccounts.list(function (err: any, result: any) {
         if (err) deferal.reject(err);
-        console.log(result);
+        // console.log(result);
         var account = result.filter((x: any) => x.name == accountName)[0];
 
         var parsedAccountId = <any>XRegExp.exec(account.id, accountIdRegex);
@@ -69,7 +69,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
         var resourceGroupName = parsedAccountId.resourceGroupName;
 
         client.storageAccounts.getProperties(resourceGroupName, accountName, function (err: any, properties: any) {
-            console.log(account);
+            // console.log(account);
             if (err) {
                 deferal.reject(err)
             } else {
@@ -77,7 +77,7 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                     if (err) {
                         deferal.reject(err)
                     } else {
-                        console.log(keys);
+                        // console.log(keys);
                         deferal.resolve({
                             resourceGroupName: resourceGroupName,
                             blobEndpoint: properties.primaryEndpoints.blob,
@@ -106,8 +106,8 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
                 tl.debug("retrieving source account details");
                 var sourceCredentials = await getConnectedServiceCredentials(sourceConnectedServiceName);
                 var sourceStorageAccount = await getStorageAccount(sourceCredentials, sourceAccount);
-                tl.debug(sourceStorageAccount.blobEndpoint + '/' + sourceObject);
-                toolRunner.arg('/Source:' + sourceStorageAccount.blobEndpoint + '/' + sourceObject);
+                tl.debug(sourceStorageAccount.blobEndpoint + sourceObject);
+                toolRunner.arg('/Source:' + sourceStorageAccount.blobEndpoint + sourceObject);
                 toolRunner.arg('/SourceKey:' + sourceStorageAccount.key);
             } else {
                 toolRunner.arg('/Source:' + sourcePath);
@@ -116,8 +116,8 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
             if (destinationKind == "Storage") {
                 var destCredentials = await getConnectedServiceCredentials(destinationConnectedServiceName);
                 var destStorageAccount = await getStorageAccount(destCredentials, destinationAccount);
-                tl.debug(destStorageAccount.blobEndpoint + '/' + destinationObject);
-                toolRunner.arg('/Dest:' + destStorageAccount.blobEndpoint + '/' + destinationObject);
+                tl.debug(destStorageAccount.blobEndpoint + destinationObject);
+                toolRunner.arg('/Dest:' + destStorageAccount.blobEndpoint  + destinationObject);
                 toolRunner.arg('/DestKey:' + destStorageAccount.key);
             } else {
                 toolRunner.arg('/Dest:' + destinationPath);
