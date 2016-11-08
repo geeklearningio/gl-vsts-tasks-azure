@@ -1,7 +1,7 @@
 {
     "id": "cf964a85-dfeb-4313-aa53-dad0d5e320e3",
     "name": "AzCopy",
-    "friendlyName": "Copy files to or from Azure Storage (PREVIEW)",
+    "friendlyName": "Azure Copy Files",
     "description": "Copy files to or from Azure Storage",
     "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-files/wiki/AzCopy) (Version #{Version}#)",
     "category": "Utility",
