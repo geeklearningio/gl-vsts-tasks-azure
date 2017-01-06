@@ -20,15 +20,12 @@
     ],
     "minimumAgentVersion": "1.103.0",
     "instanceNameFormat": "Start Azure Web App: $(WebAppName) $(Slot)",
-    "groups": [
-        {
-            "name": "output",
-            "displayName": "Output",
-            "isExpanded": false
-        }
-    ],
-    "inputs": [
-        {
+    "groups": [{
+        "name": "output",
+        "displayName": "Output",
+        "isExpanded": false
+    }],
+    "inputs": [{
             "name": "ConnectedServiceName",
             "type": "connectedService:AzureRM",
             "label": "Azure RM Subscription",
@@ -46,7 +43,7 @@
                 "EditableOptions": "True"
             },
             "helpMarkDown": "Enter or Select the name of an existing AzureRM Web Application"
-        },                       
+        },
         {
             "name": "Slot",
             "type": "string",
@@ -65,13 +62,11 @@
             "helpMarkDown": "Provide a name for the variable for the started url. The variable can be used as $(variableName) to refer to the hosted url of Web App in subsequent tasks like in the PowerShell on Target Machines task."
         }
     ],
-    "dataSourceBindings": [
-        {
-            "target": "WebAppName",
-            "endpointId": "$(ConnectedServiceName)",
-            "dataSourceName": "AzureRMWebAppNames"
-        }
-    ],
+    "dataSourceBindings": [{
+        "target": "WebAppName",
+        "endpointId": "$(ConnectedServiceName)",
+        "dataSourceName": "AzureRMWebAppNames"
+    }],
     "execution": {
         "PowerShell3": {
             "target": "StartWebApp.ps1"

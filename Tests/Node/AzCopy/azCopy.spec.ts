@@ -9,7 +9,7 @@ var auhtorizationHeader = "Basic " + computeDigest;
 
 describe("AzureEndpointConnection", () => {
 
-    it(": should support basic add.", (done) => {
+    it(": should support basic add.", (done: any) => {
         try {
             azureEndpointConnection.getConnectedServiceCredentials(
                 settings.azure.connectionName,

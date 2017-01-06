@@ -1,10 +1,10 @@
 {
     "id": "cf964a85-dfeb-4313-aa53-dad0d5e320e3",
     "name": "AzCopy",
-    "friendlyName": "Azure Copy Files",
+    "friendlyName": "Azure File Copy Extended",
     "description": "Copy files to or from Azure Storage",
     "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-files/wiki/AzCopy) (Version #{Version}#)",
-    "category": "Utility",
+    "category": "Deploy",
     "visibility": [
         "Build",
         "Release"
@@ -20,8 +20,7 @@
     ],
     "minimumAgentVersion": "1.91.0",
     "instanceNameFormat": "Copy files from or to Azure Storage",
-    "groups": [
-        {
+    "groups": [{
             "name": "source",
             "displayName": "Source",
             "isExpanded": true
@@ -37,8 +36,7 @@
             "isExpanded": true
         }
     ],
-    "inputs": [
-        {
+    "inputs": [{
             "name": "SourceKind",
             "type": "radio",
             "label": "Source Kind",
@@ -184,8 +182,7 @@
             "helpMarkDown": "Excludes an older source resource. The resource will not be copied if the source resource is the same or older than destination."
         }
     ],
-    "dataSourceBindings": [
-        {
+    "dataSourceBindings": [{
             "target": "SourceAccount",
             "endpointId": "$(SourceConnectedServiceName)",
             "dataSourceName": "AzureStorageAccountRM"
