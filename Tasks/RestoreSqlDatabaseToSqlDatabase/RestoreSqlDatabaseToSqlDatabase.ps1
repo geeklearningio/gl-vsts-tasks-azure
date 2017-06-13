@@ -26,7 +26,7 @@ try {
     Write-VstsTaskVerbose -Message "[Azure Call] Getting Azure SQL Database details for target $TargetDatabaseName"
     $targetDatabase = Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverFriendlyName -DatabaseName $TargetDatabaseName -ErrorAction SilentlyContinue -Verbose
 
-    if ($targetDatabase){
+    if ($targetDatabase) {
         Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database details got for target $TargetDatabaseName :"
         Write-VstsTaskVerbose -Message ($targetDatabase | Format-List | Out-String)
 
@@ -45,11 +45,25 @@ try {
 
     $date = (Get-Date).AddMinutes(-1)
 
-    Write-VstsTaskVerbose -Message "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName"
-    Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $date -ResourceGroupName $sourceDatabase.ResourceGroupName `
-        -ServerName $serverFriendlyName -TargetDatabaseName $TargetDatabaseName -ResourceId $sourceDatabase.ResourceID `
-        -Edition $sourceDatabase.Edition -ServiceObjectiveName $sourceDatabase.CurrentServiceObjectiveName -ErrorAction Stop -Verbose
-    Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database $SourceDatabaseName restored to $TargetDatabaseName"
+    if ([string]::IsNullOrEmpty($sourceDatabase.ElasticPoolName)) {
+        Write-VstsTaskVerbose -Message "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName (Edition $($sourceDatabase.Edition) $($sourceDatabase.CurrentServiceObjectiveName))"
+
+        Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $date -ResourceGroupName $sourceDatabase.ResourceGroupName `
+            -ServerName $serverFriendlyName -TargetDatabaseName $TargetDatabaseName -ResourceId $sourceDatabase.ResourceID `
+            -Edition $sourceDatabase.Edition -ServiceObjectiveName $sourceDatabase.CurrentServiceObjectiveName -ErrorAction Stop -Verbose
+
+        Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database $SourceDatabaseName restored to $TargetDatabaseName (Edition $($sourceDatabase.Edition) $($sourceDatabase.CurrentServiceObjectiveName))"
+    }
+    else {
+        Write-VstsTaskVerbose -Message "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName (ElasticPool $($sourceDatabase.ElasticPoolName))"
+
+        Restore-AzureRmSqlDatabase -FromPointInTimeBackup -PointInTime $date -ResourceGroupName $sourceDatabase.ResourceGroupName `
+            -ServerName $serverFriendlyName -TargetDatabaseName $TargetDatabaseName -ResourceId $sourceDatabase.ResourceID `
+            -ElasticPoolName $sourceDatabase.ElasticPoolName -ErrorAction Stop -Verbose
+
+        Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database $SourceDatabaseName restored to $TargetDatabaseName (ElasticPool $($sourceDatabase.ElasticPoolName))"
+    }
+
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }
