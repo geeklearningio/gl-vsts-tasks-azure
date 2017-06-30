@@ -3,7 +3,7 @@
     "name": "AzCopy",
     "friendlyName": "Azure File Copy Extended",
     "description": "Copy files to or from Azure Storage",
-    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-files/wiki/AzCopy) (Version #{Version}#)",
+    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/AzCopy) (Version #{Version}#)",
     "category": "Deploy",
     "visibility": [
         "Build",
@@ -152,7 +152,6 @@
             "name": "Recursive",
             "type": "boolean",
             "label": "Recursive copy",
-            "required": true,
             "groupName": "containerCopyOptions",
             "helpMarkDown": "Copy files recursively."
         },
