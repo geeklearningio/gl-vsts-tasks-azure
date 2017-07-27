@@ -8,7 +8,7 @@
         $sqlVersionNumber = 0
     }
 
-	try {
+    try {
         $sqlMsiDacPath, $sqlMsiVersion = Get-HighestVersionSqlPackageWithDacMsiLocation
         $sqlMsiVersionNumber = [decimal] $sqlMsiVersion
     }
@@ -29,7 +29,7 @@
     if (($vsVersionNumber -ge $sqlVersionNumber) -and ($vsVersionNumber -ge $sqlMsiVersionNumber)) {
         $dacPath = $vsDacPath
     }
-	elseif ($sqlVersionNumber -ge $sqlMsiVersionNumber){
+    elseif ($sqlVersionNumber -ge $sqlMsiVersionNumber) {
         $dacPath = $sqlDacPath
     }
     else {
@@ -66,7 +66,7 @@ function Get-RegistryValueIgnoreError {
 
     try {
         $baseKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey($RegistryHive, $RegistryView)
-        $subKey =  $baseKey.OpenSubKey($Key)
+        $subKey = $baseKey.OpenSubKey($Key)
         if ($subKey -ne $null) {
             return $subKey.GetValue($Value)
         }
@@ -117,8 +117,8 @@ function Get-SqlPackageForSqlVersion([int] $majorVersion, [bool] $wow6432Node) {
 }
 
 function Get-HighestVersionSqlPackageWithSqlLocation() {
-    $sqlRegKey = "HKLM:", "SOFTWARE", "Wow6432Node", "Microsoft", "Microsoft SQL Server"-join [System.IO.Path]::DirectorySeparatorChar
-    $sqlRegKey64 = "HKLM:", "SOFTWARE", "Microsoft", "Microsoft SQL Server"-join [System.IO.Path]::DirectorySeparatorChar
+    $sqlRegKey = "HKLM:", "SOFTWARE", "Wow6432Node", "Microsoft", "Microsoft SQL Server" -join [System.IO.Path]::DirectorySeparatorChar
+    $sqlRegKey64 = "HKLM:", "SOFTWARE", "Microsoft", "Microsoft SQL Server" -join [System.IO.Path]::DirectorySeparatorChar
 
     if (-not (Test-Path $sqlRegKey)) {
         $sqlRegKey = $sqlRegKey64
@@ -128,7 +128,7 @@ function Get-HighestVersionSqlPackageWithSqlLocation() {
         return $null, 0
     }
 
-    $keys = Get-Item $sqlRegKey | %{$_.GetSubKeyNames()} 
+    $keys = Get-Item $sqlRegKey | % {$_.GetSubKeyNames()} 
     $versions = Get-SubKeysInFloatFormat $keys | Sort-Object -Descending
 
     Write-VstsTaskVerbose -Message "Sql Versions installed on machine $env:COMPUTERNAME as read from registry: $versions"        
@@ -151,10 +151,43 @@ function Get-HighestVersionSqlPackageWithSqlLocation() {
 }
 
 function Get-HighestVersionSqlPackageWithDacMsiLocation() {
+    $sqlDataTierFrameworkRegKeyWow = "HKLM:", "SOFTWARE", "Wow6432Node", "Microsoft", "Microsoft SQL Server", "Data-Tier Application Framework" -join [System.IO.Path]::DirectorySeparatorChar
+    $sqlDataTierFrameworkRegKey = "HKLM:", "SOFTWARE", "Microsoft", "Microsoft SQL Server", "Data-Tier Application Framework" -join [System.IO.Path]::DirectorySeparatorChar
+
+    if (-not (Test-Path $sqlDataTierFrameworkRegKey)) {
+        $sqlDataTierFrameworkRegKey = $sqlDataTierFrameworkRegKeyWow
+    }
+
+    if ((Test-Path $sqlDataTierFrameworkRegKey)) {
+        $keys = Get-Item $sqlDataTierFrameworkRegKey | % {$_.GetSubKeyNames()} 
+        $versions = Get-SubKeysInFloatFormat $keys | Sort-Object -Descending
+
+        foreach ($majorVersion in $versions) {
+            $sqlInstallRootRegKey = "SOFTWARE", "Microsoft", "Microsoft SQL Server", "Data-Tier Application Framework", "$majorVersion" -join [System.IO.Path]::DirectorySeparatorChar
+            $sqlInstallRootPath64 = Get-RegistryValueIgnoreError LocalMachine "$sqlInstallRootRegKey" "InstallDir" Registry64
+            $sqlInstallRootPath32 = Get-RegistryValueIgnoreError LocalMachine "$sqlInstallRootRegKey" "InstallDir" Registry32
+            if ($sqlInstallRootPath64 -ne $null) {
+                $sqlInstallRootPath = $sqlInstallRootPath64
+                break
+            }
+            if ($sqlInstallRootPath32 -ne $null) {
+                $sqlInstallRootPath = $sqlInstallRootPath32
+                break
+            }
+        }
+
+        $DacInstallPath = [System.IO.Path]::Combine($sqlInstallRootPath, "SqlPackage.exe")
+        
+        if (Test-Path $DacInstallPath) {
+            Write-Verbose "Dac Framework installed with SQL Version $majorVersion found at $DacInstallPath on machine $env:COMPUTERNAME"
+            return $DacInstallPath, $majorVersion
+        }
+    }
+
     $sqlRegKeyWow = "HKLM:", "SOFTWARE", "Wow6432Node", "Microsoft", "Microsoft SQL Server", "DACFramework", "CurrentVersion" -join [System.IO.Path]::DirectorySeparatorChar
     $sqlRegKey = "HKLM:", "SOFTWARE", "Microsoft", "Microsoft SQL Server", "DACFramework", "CurrentVersion" -join [System.IO.Path]::DirectorySeparatorChar
 
-	$sqlKey = "SOFTWARE", "Microsoft", "Microsoft SQL Server", "DACFramework", "CurrentVersion" -join [System.IO.Path]::DirectorySeparatorChar
+    $sqlKey = "SOFTWARE", "Microsoft", "Microsoft SQL Server", "DACFramework", "CurrentVersion" -join [System.IO.Path]::DirectorySeparatorChar
 	
     if (Test-Path $sqlRegKey) {
         $dacVersion = Get-RegistryValueIgnoreError LocalMachine "$sqlKey" "Version" Registry64
@@ -166,36 +199,36 @@ function Get-HighestVersionSqlPackageWithDacMsiLocation() {
         $majorVersionX86 = $dacVersionX86.Substring(0, $dacVersionX86.IndexOf(".")) + "0"
     }
 
-	if ((-not($dacVersion)) -and (-not($dacVersionX86))) {
-	    Write-VstsTaskVerbose -Message "Dac Framework (installed with DAC Framework) not found on machine $env:COMPUTERNAME"   
-	    return $null, 0
-	}    
+    if ((-not($dacVersion)) -and (-not($dacVersionX86))) {
+        Write-VstsTaskVerbose -Message "Dac Framework (installed with DAC Framework) not found on machine $env:COMPUTERNAME"   
+        return $null, 0
+    }    
 
     if ($majorVersionX86 -gt $majorVersion) {
         $majorVersion = $majorVersionX86
     }
 
-	$dacRelativePath = "Microsoft SQL Server", "$majorVersion", "DAC", "bin", "SqlPackage.exe" -join [System.IO.Path]::DirectorySeparatorChar
-	$programFiles = $env:ProgramFiles
-	$programFilesX86 = "${env:ProgramFiles(x86)}"
+    $dacRelativePath = "Microsoft SQL Server", "$majorVersion", "DAC", "bin", "SqlPackage.exe" -join [System.IO.Path]::DirectorySeparatorChar
+    $programFiles = $env:ProgramFiles
+    $programFilesX86 = "${env:ProgramFiles(x86)}"
 
-	if (-not ($programFilesX86 -eq $null)) {
-	    $dacPath = $programFilesX86, $dacRelativePath -join [System.IO.Path]::DirectorySeparatorChar
+    if (-not ($programFilesX86 -eq $null)) {
+        $dacPath = $programFilesX86, $dacRelativePath -join [System.IO.Path]::DirectorySeparatorChar
 
-		if (Test-Path("$dacPath")) {
+        if (Test-Path("$dacPath")) {
             Write-VstsTaskVerbose -Message "Dac Framework (installed with DAC Framework Msi) found on machine $env:COMPUTERNAME at $dacPath"  
             return $dacPath, $majorVersion
-		}		
-	}
+        }		
+    }
 
-	if (-not ($programFiles -eq $null)) {
-	    $dacPath = $programFiles, $dacRelativePath -join [System.IO.Path]::DirectorySeparatorChar
+    if (-not ($programFiles -eq $null)) {
+        $dacPath = $programFiles, $dacRelativePath -join [System.IO.Path]::DirectorySeparatorChar
 
-		if (Test-Path($dacPath)) {
+        if (Test-Path($dacPath)) {
             Write-VstsTaskVerbose -Message "Dac Framework (installed with DAC Framework Msi) found on machine $env:COMPUTERNAME at $dacPath"  
             return $dacPath, $majorVersion
-		}		
-	}
+        }		
+    }
     
     return $null, 0
 }
@@ -216,13 +249,13 @@ function Get-SqlPackageInVSLocation([string] $version) {
         $dacParentDir = [System.IO.Path]::Combine($vsInstallDir, $dacExtensionPath)
 
         if (Test-Path $dacParentDir) {
-            $dacVersionDirs = Get-ChildItem $dacParentDir | Sort-Object @{e={$_.Name -as [int]}} -Descending
+            $dacVersionDirs = Get-ChildItem $dacParentDir | Sort-Object @{e = {$_.Name -as [int]}} -Descending
 
             foreach ($dacVersionDir in $dacVersionDirs) {
                 $dacVersion = $dacVersionDir.Name
                 $dacFullPath = [System.IO.Path]::Combine($dacVersionDir.FullName, "SqlPackage.exe")
 
-                if(Test-Path $dacFullPath -pathtype leaf) {
+                if (Test-Path $dacFullPath -pathtype leaf) {
                     Write-VstsTaskVerbose -Message "Dac Framework installed with Visual Studio found at $dacFullPath on machine $env:COMPUTERNAME"
                     return $dacFullPath, $dacVersion
                 }
@@ -249,7 +282,7 @@ function Get-HighestVersionSqlPackageInVSLocation() {
         return $null, 0
     }
 
-    $keys = Get-Item $vsRegKey | %{$_.GetSubKeyNames()} 
+    $keys = Get-Item $vsRegKey | % {$_.GetSubKeyNames()} 
     $versions = Get-SubKeysInFloatFormat $keys | Sort-Object -Descending 
 
     Write-VstsTaskVerbose -Message "Visual Studio versions found on machine $env:COMPUTERNAME as read from registry: $versions"        
