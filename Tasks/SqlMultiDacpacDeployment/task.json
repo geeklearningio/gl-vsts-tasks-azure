@@ -16,9 +16,7 @@
         "Patch": 0
     },
     "demands": [
-        "azureps",
-        "sqlpackage",
-        "sqlps"
+        "azureps"
     ],
     "minimumAgentVersion": "1.103.0",
     "instanceNameFormat": "Deploy Azure SQL DACPAC: $(DacpacFiles)",
