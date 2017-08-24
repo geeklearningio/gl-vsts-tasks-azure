@@ -48,7 +48,8 @@
 
         $dacPath = $dataToolsRoot + "\lib\net40\sqlpackage.exe"
 
-        throw "Unable to find the location of Dac Framework (SqlPackage.exe) from registry on machine $env:COMPUTERNAME"
+        return $dacPath
+        #throw "Unable to find the location of Dac Framework (SqlPackage.exe) from registry on machine $env:COMPUTERNAME"
     }
     else {
         return $dacPath
