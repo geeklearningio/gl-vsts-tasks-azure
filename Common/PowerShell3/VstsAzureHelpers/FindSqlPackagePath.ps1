@@ -42,11 +42,11 @@
         $archive = $env:BUILD_SOURCESDIRECTORY + "\dataTools.zip"
         $dataToolsRoot = $env:BUILD_SOURCESDIRECTORY + "\dataTools"
 
-        $client.DownloadFile("https://www.nuget.org/api/v2/package/Microsoft.Data.Tools.Msbuild/10.0.61026", $archive);
+        $client.DownloadFile("https://www.nuget.org/api/v2/package/Microsoft.Data.Tools.Msbuild/10.0.61710.120", $archive);
 
         Expand-Archive $archive -DestinationPath $dataToolsRoot
 
-        $dacPath = $dataToolsRoot + "\lib\net40\sqlpackage.exe"
+        $dacPath = $dataToolsRoot + "\lib\net46\sqlpackage.exe"
 
         return $dacPath
         #throw "Unable to find the location of Dac Framework (SqlPackage.exe) from registry on machine $env:COMPUTERNAME"

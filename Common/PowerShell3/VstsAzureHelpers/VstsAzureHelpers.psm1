@@ -308,12 +308,20 @@ function Initialize-Sqlps {
         Push-Location
 
         $sqlModule = Get-Module -ListAvailable | where -Property Name -eq SqlServer
-        if(!$sqlModule) {
-            Install-module -Name SqlServer -Scope CurrentUser -Force
+        $sqlps = Get-Module -ListAvailable | where -Property Name -eq sqlps
+
+        if ($sqlps) {
+            Import-Module -Name sqlps -Global -PassThru -Cmdlet Invoke-Sqlcmd 3>&1 | Out-Null
+            Write-VstsTaskVerbose -Message "SQLPS Module Imported"
+        } else {
+            if(!$sqlModule) {
+                Install-module -Name SqlServer -Scope CurrentUser -Force
+            }
+    
+            Import-Module -Name SqlServer -Global -PassThru -Cmdlet Invoke-Sqlcmd 3>&1 | Out-Null
+            Write-VstsTaskVerbose -Message "SqlServer Module Imported"
         }
 
-        Import-Module -Name SqlServer -Global -PassThru -Cmdlet Invoke-Sqlcmd 3>&1 | Out-Null
-        Write-VstsTaskVerbose -Message "SqlServer Module Imported"
         Pop-Location
     }
     finally {
