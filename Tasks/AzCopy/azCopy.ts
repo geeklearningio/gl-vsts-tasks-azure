@@ -35,6 +35,8 @@ var destinationObject = tl.getInput('DestinationObject');
 
 var programFiles = tl.getVariable('ProgramFiles(x86)');
 
+var additionalArguments = tl.getVariable('Arguments');
+
 var azCopyknownLocations = [
     path.join(__dirname, '../../azcopy.exe'),
     path.join(programFiles ? programFiles : 'C:\\ProgramFiles(x86)', 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
@@ -137,6 +139,10 @@ function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountNa
 
             if (excludeOlder) {
                 toolRunner.arg('/XO');
+            }
+
+            if (additionalArguments) {
+                toolRunner.line(additionalArguments);
             }
 
             toolRunner.arg('/Y');

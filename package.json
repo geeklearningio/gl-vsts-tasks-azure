@@ -4,15 +4,14 @@
   "description": "Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure",
   "main": "gulpfile.js",
   "scripts": {
-    "clean": "node ./BuildScripts/clean.js",
-    "pullsubmodules": "git submodule foreach git pull origin master",
-    "postinstall": "node ./BuildScripts/install.js",
-    "prebuild": "node ./BuildScripts/prebuild.js",
+    "clean": "vsts-build-tools-clean",
+    "postinstall": "vsts-build-tools-install",
+    "prebuild": "vsts-build-tools-prebuild",
     "build": "tsc",
+    "package": "vsts-build-tools-package",
     "build:test": "run-s build test",
-    "package": "node ./BuildScripts/package.js",
     "test": "jasmine JASMINE_CONFIG_PATH=./Tests/Node/jasmine.json",
-    "test:chutzpah": "chutzpah.console ./tests/"
+    "test:chutzpah": "chutzpah.console ./Tests"
   },
   "repository": {
     "type": "git",
@@ -31,7 +30,17 @@
   },
   "homepage": "https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki",
   "devDependencies": {
+    "@types/fs-extra": "^5.0.0",
+    "@types/ini": "^1.3.29",
+    "@types/jasmine": "2.8.4",
+    "@types/node": "^6.0.0",
+    "@types/q": "^1.0.3",
+    "@types/xregexp": "^3.0.29",
     "async": "^2.0.1",
-    "npm-run-all": "2.3.0"
+    "gl-vsts-tasks-build-scripts": "0.4.0-alpha.4",
+    "npm-run-all": "2.3.0",
+    "typescript": "2.6.2",
+    "fs-extra": "5.0.0",
+    "jasmine": "2.8.0"
   }
 }

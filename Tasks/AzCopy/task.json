@@ -34,6 +34,11 @@
             "name": "containerCopyOptions",
             "displayName": "Container Copy Options",
             "isExpanded": true
+        },
+        {
+            "name": "advanced",
+            "displayName": "Additional Options",
+            "isExpanded": true
         }
     ],
     "inputs": [{
@@ -179,6 +184,14 @@
             "required": false,
             "groupName": "containerCopyOptions",
             "helpMarkDown": "Excludes an older source resource. The resource will not be copied if the source resource is the same or older than destination."
+        },
+        {
+            "name": "Arguments",
+            "type": "string",
+            "label": "Additional Arguments",
+            "required": false,
+            "groupName": "advanced",
+            "helpMarkDown": "Appends additional arguments to the generated AzCopy command"
         }
     ],
     "dataSourceBindings": [{
