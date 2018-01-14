@@ -8,6 +8,6 @@
     "vsts-task-lib": "2.1.0",
     "xregexp": "4.0.0",
     "q": "1.5.1",
-    "ms-rest-azure": "^1.14.0"
+    "ms-rest-azure": "^2.5.0"
   }
 }
