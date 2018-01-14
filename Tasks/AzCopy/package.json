@@ -1,13 +1,13 @@
 {
-  "name": "azCopy",
+  "name": "zip",
   "private": true,
   "version": "0.1.0",
   "dependencies": {
-    "azure-arm-storage": "^3.2.0",
+    "azure-arm-storage": "^0.13.4-preview",
     "fs-extra": "5.0.0",
-    "vsts-task-lib": "2.1.0",
+    "vsts-task-lib": "0.9.20",
     "xregexp": "4.0.0",
     "q": "1.5.1",
-    "ms-rest-azure": "^2.5.0"
+    "ms-rest-azure": "^1.14.0"
   }
 }
