@@ -38,7 +38,7 @@ var programFiles = tl.getVariable('ProgramFiles(x86)');
 var additionalArguments = tl.getVariable('Arguments');
 
 var azCopyknownLocations = [
-    path.join(tl.getVariable('Agent.HomeDirectory'), 'externals/azcopy'),
+    path.join(tl.getVariable('Agent.HomeDirectory'), 'externals/azcopy/azcopy.exe'),
     path.join(__dirname, '../../azcopy.exe'),
     path.join(programFiles ? programFiles : 'C:\\ProgramFiles(x86)', 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
 ];
