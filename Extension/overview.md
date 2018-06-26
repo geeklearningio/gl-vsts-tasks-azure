@@ -4,6 +4,8 @@ Visual Studio Team Services Build and Release Management extensions that help yo
 
 [Learn more](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki) about this extension on the wiki!
 
+> Note that we new agents features hence TFS 2015 is not supported.
+
 ## Tasks included
 
 * **[Azure Web App Slots Swap](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Slots-Swap)**: Swap two deployment slots of an Azure Web App
