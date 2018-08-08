@@ -141,6 +141,15 @@
             "helpMarkDown": "Password for the Azure SQL Server administrator.<br>It can accept variable defined in Build/Release Definitions as '$(passwordVariable').<br>You may mark variable type as 'secret' to secure it."
         },
         {
+            "name": "QueryTimeout",
+            "type": "string",
+            "label": "Query Timeout",
+            "required": false,
+            "groupName": "target",
+            "defaultValue": "60",
+            "helpMarkDown": "Number of seconds before the query will time out. Default is 60 seconds."
+        },
+        {
             "name": "IpDetectionMethod",
             "type": "pickList",
             "label": "Specify Firewall Rules Using",

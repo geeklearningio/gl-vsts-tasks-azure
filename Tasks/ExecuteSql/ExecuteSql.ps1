@@ -1,4 +1,4 @@
-[CmdletBinding()]
+eCmdletBinding()]
 param()
 
 Trace-VstsEnteringInvocation $MyInvocation
@@ -13,6 +13,7 @@ try {
     $DatabaseName = Get-VstsInput -Name DatabaseName -Require
     $SqlUsername = Get-VstsInput -Name SqlUsername -Require
     $SqlPassword = Get-VstsInput -Name SqlPassword -Require
+    $QueryTimeout = Get-VstsInput -Name QueryTimeout -Require
     $IpDetectionMethod = Get-VstsInput -Name IpDetectionMethod -Require
     $StartIpAddress = Get-VstsInput -Name StartIpAddress
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
@@ -51,11 +52,11 @@ try {
 
         if ($ScriptType -eq "FilePath") {
             Write-VstsTaskVerbose -Message "[Azure Call] Executing SQL query $ScriptPath on $DatabaseName with variables $variableParameter"
-            Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
+            Invoke-Sqlcmd -InputFile "$ScriptPath" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose -QueryTimeout $QueryTimeout
         }
         else {
             Write-VstsTaskVerbose -Message "[Azure Call] Executing inline SQL query on $DatabaseName with variables $variableParameter"
-            Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose
+            Invoke-Sqlcmd -Query "$InlineScript" -Database $DatabaseName -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose -QueryTimeout $QueryTimeout
         }
 
         Write-VstsTaskVerbose -Message "[Azure Call] SQL query executed on $DatabaseName"
