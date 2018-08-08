@@ -1,4 +1,4 @@
-eCmdletBinding()]
+[CmdletBinding()]
 param()
 
 Trace-VstsEnteringInvocation $MyInvocation
