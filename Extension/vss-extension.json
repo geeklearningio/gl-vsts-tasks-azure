@@ -3,18 +3,18 @@
     "id": "gl-vsts-tasks-azure",
     "name": "Microsoft Azure Build and Release Tasks",
     "version": "0.0.0",
-    "publisher": "geeklearningio",    
+    "publisher": "geeklearningio",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
         }
-    ],    
+    ],
     "description": "Build and publish your applications on Microsoft Azure using these Build and Release Management tasks.",
     "categories": [
         "Build and release"
     ],
     "icons": {
-        "default": "extension-icon.png"        
+        "default": "extension-icon.png"
     },
     "tags": [
         "Azure",
@@ -60,7 +60,7 @@
     "branding": {
         "color": "#008B8B",
         "theme": "dark"
-    },   
+    },
     "files": [
         {
             "path": "Tasks"
