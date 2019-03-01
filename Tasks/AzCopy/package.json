@@ -3,11 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "dependencies": {
-    "azure-arm-storage": "^0.13.4-preview",
+    "azure-arm-storage": "^7.0.0",
     "fs-extra": "5.0.0",
-    "vsts-task-lib": "0.9.20",
-    "xregexp": "4.0.0",
+    "ms-rest-azure": "^2.6.0",
     "q": "1.5.1",
-    "ms-rest-azure": "^1.14.0"
+    "vsts-task-lib": "0.9.20",
+    "xregexp": "4.0.0"
   }
 }
