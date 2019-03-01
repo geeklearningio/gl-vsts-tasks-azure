@@ -2,7 +2,7 @@
 
 # Microsoft Azure Build and Release Tasks
 
-![cistatus](https://geeklearning.visualstudio.com/_apis/public/build/definitions/f841b266-7595-4d01-9ee1-4864cf65aa73/37/badge)
+[![Build status](https://geeklearning.visualstudio.com/gl-github/_apis/build/status/Azure%20Pipelines%20Tasks/gl-vsts-tasks-azure)](https://geeklearning.visualstudio.com/gl-github/_build/latest?definitionId=37)
 
 Visual Studio Team Services Build and Release Management extensions that help you to build and publish your applications on Microsoft Azure.
 

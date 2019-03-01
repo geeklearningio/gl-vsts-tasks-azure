@@ -16,7 +16,7 @@
         "./typings/index.d.ts",
         "./Commom/Node/*.d.ts"
     ],
-    "exclude":[
+    "exclude": [
         "node_modules",
         "Tasks/AzCopy/node_modules",
         "Common",

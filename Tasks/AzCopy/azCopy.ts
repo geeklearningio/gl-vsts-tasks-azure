@@ -1,187 +1,183 @@
-import tl = require('vsts-task-lib/task');
-import path = require('path');
-import fs = require('fs-extra');
-import q = require('q');
-import XRegExp = require('xregexp');
+import { StorageManagementClient } from "azure-arm-storage";
+import fs = require("fs-extra");
+import path = require("path");
+import q = require("q");
+import tl = require("vsts-task-lib/task");
+import { ToolRunner } from "vsts-task-lib/toolrunner";
+import XRegExp = require("xregexp");
+import azureEndpointConnection = require("./azureEndpointConnection");
 
-import azureEndpointConnection = require('./azureEndpointConnection');
+const recursive: boolean = tl.getBoolInput("Recursive");
+const pattern: string = tl.getInput("Pattern");
+const excludeNewer: boolean = tl.getBoolInput("ExcludeNewer");
+const excludeOlder: boolean = tl.getBoolInput("ExcludeOlder");
+const sourceKind: string = tl.getInput("SourceKind");
+const sourcePath: string = tl.getInput("SourcePath");
+const sourceConnectedServiceName: string = tl.getInput("SourceConnectedServiceName");
+const sourceAccount: string = tl.getInput("SourceAccount");
+const sourceObject: string = tl.getInput("SourceObject");
+const destinationKind: string = tl.getInput("DestinationKind");
+const destinationPath: string = tl.getInput("DestinationPath");
+const destinationConnectedServiceName: string = tl.getInput("DestinationConnectedServiceName");
+const destinationAccount: string = tl.getInput("DestinationAccount");
+const destinationObject: string = tl.getInput("DestinationObject");
 
+const programFiles: string = tl.getVariable("ProgramFiles(x86)");
+const additionalArguments: string = tl.getVariable("Arguments");
 
-var connectedServiceCredentialsCache: { [key: string]: ICachedSubscriptionCredentals } = {};
-
-var msRestAzure = require('ms-rest-azure');
-var storageManagementClient = require('azure-arm-storage');
-
-var recursive = tl.getBoolInput('Recursive');
-var pattern = tl.getInput('Pattern');
-var excludeNewer = tl.getBoolInput('ExcludeNewer');
-var excludeOlder = tl.getBoolInput('ExcludeOlder');
-
-var sourceKind = tl.getInput('SourceKind');
-
-var sourcePath = tl.getInput('SourcePath');
-
-var sourceConnectedServiceName = tl.getInput('SourceConnectedServiceName');
-var sourceAccount = tl.getInput('SourceAccount');
-var sourceObject = tl.getInput('SourceObject');
-
-var destinationKind = tl.getInput('DestinationKind');
-
-var destinationPath = tl.getInput('DestinationPath');
-
-var destinationConnectedServiceName = tl.getInput('DestinationConnectedServiceName');
-var destinationAccount = tl.getInput('DestinationAccount');
-var destinationObject = tl.getInput('DestinationObject');
-
-var programFiles = tl.getVariable('ProgramFiles(x86)');
-
-var additionalArguments = tl.getVariable('Arguments');
-
-var azCopyknownLocations = [
-    path.join(tl.getVariable('Agent.HomeDirectory'), 'externals/azcopy/azcopy.exe'),
-    path.join(__dirname, '../../azcopy.exe'),
-    path.join(programFiles ? programFiles : 'C:\\ProgramFiles(x86)', 'Microsoft SDKs/Azure/AzCopy/azcopy.exe')
+const azCopyknownLocations: string[] = [
+    path.join(tl.getVariable("Agent.HomeDirectory"), "externals/azcopy/azcopy.exe"),
+    path.join(__dirname, "../../azcopy.exe"),
+    path.join(programFiles ? programFiles : "C:\\ProgramFiles(x86)", "Microsoft SDKs/Azure/AzCopy/azcopy.exe"),
 ];
 
-var accountIdRegex = XRegExp('/subscriptions/(?<subscriptionId>.*?)/resourceGroups/(?<resourceGroupName>.*?)/providers/Microsoft.Storage/storageAccounts/(?<accountName>.*?)');
+const accountIdRegex: RegExp = XRegExp(
+    "/subscriptions/(?<subscriptionId>.*?)"
+    + "/resourceGroups/(?<resourceGroupName>.*?)"
+    + "/providers/Microsoft.Storage"
+    + "/storageAccounts/(?<accountName>.*?)");
 
 function getConnectedServiceCredentials(connectedService: string): q.Promise<any> {
-    var endpointAuth = tl.getEndpointAuthorization(connectedService, true);
-    var servicePrincipalId: string = endpointAuth.parameters["serviceprincipalid"];
-    var servicePrincipalKey: string = endpointAuth.parameters["serviceprincipalkey"];
-    var tenantId: string = endpointAuth.parameters["tenantid"];
-    var subscriptionName: string = tl.getEndpointDataParameter(connectedService, "SubscriptionName", true);
-    var subscriptionId: string = tl.getEndpointDataParameter(connectedService, "SubscriptionId", true);
+    const endpointAuth: tl.EndpointAuthorization = tl.getEndpointAuthorization(connectedService, true);
+    const servicePrincipalId: string = endpointAuth.parameters.serviceprincipalid;
+    const servicePrincipalKey: string = endpointAuth.parameters.serviceprincipalkey;
+    const tenantId: string = endpointAuth.parameters.tenantid;
+    const subscriptionName: string = tl.getEndpointDataParameter(connectedService, "SubscriptionName", true);
+    const subscriptionId: string = tl.getEndpointDataParameter(connectedService, "SubscriptionId", true);
 
-    return azureEndpointConnection.getConnectedServiceCredentials(connectedService, servicePrincipalId, servicePrincipalKey, tenantId, subscriptionName, subscriptionId);
+    return azureEndpointConnection.getConnectedServiceCredentials(
+        connectedService,
+        servicePrincipalId,
+        servicePrincipalKey,
+        tenantId,
+        subscriptionName,
+        subscriptionId);
 }
 
-function getStorageAccount(credentials: ICachedSubscriptionCredentals, accountName: string)
-    : q.Promise<IStorageAccount> {
+function getStorageAccount(
+    credentials: ICachedSubscriptionCredentals,
+    accountName: string): q.Promise<IStorageAccount> {
+    const deferal: q.Deferred<IStorageAccount> = q.defer<IStorageAccount>();
 
-    var deferal = q.defer<IStorageAccount>();
+    const client: StorageManagementClient = new StorageManagementClient(credentials.creds, credentials.id);
+    client.storageAccounts.list((listError: any, result: any): void => {
+        if (listError) {
+            deferal.reject(listError);
+        }
 
-    var client = new storageManagementClient(credentials.creds, credentials.id);
-    client.storageAccounts.list(function (err: any, result: any) {
-        if (err) deferal.reject(err);
-        // console.log(result);
-        var account = result.filter((x: any) => x.name == accountName)[0];
+        const account: any = result.filter((x: any) => x.name === accountName)[0];
+        const parsedAccountId: any = XRegExp.exec(account.id, accountIdRegex) as any;
+        const resourceGroupName: any = parsedAccountId.resourceGroupName;
 
-        var parsedAccountId = <any>XRegExp.exec(account.id, accountIdRegex);
-
-        var resourceGroupName = parsedAccountId.resourceGroupName;
-
-        client.storageAccounts.getProperties(resourceGroupName, accountName, function (err: any, properties: any) {
-            // console.log(account);
-            if (err) {
-                deferal.reject(err)
-            } else {
-                client.storageAccounts.listKeys(resourceGroupName, accountName, function (err: any, keys: any) {
-                    if (err) {
-                        deferal.reject(err)
-                    } else {
-                        // console.log(keys);
-                        deferal.resolve({
-                            resourceGroupName: resourceGroupName,
-                            blobEndpoint: properties.primaryEndpoints.blob,
-                            tableEndpoint: properties.primaryEndpoints.table,
-                            key: keys.keys[0].value
+        client.storageAccounts.getProperties(
+            resourceGroupName,
+            accountName,
+            (getPropertiesError: any, properties: any): void => {
+                if (getPropertiesError) {
+                    deferal.reject(getPropertiesError);
+                } else {
+                    client.storageAccounts.listKeys(
+                        resourceGroupName,
+                        accountName,
+                        (listKeysError: any, keys: any): void => {
+                            if (listKeysError) {
+                                deferal.reject(listKeysError);
+                            } else {
+                                deferal.resolve({
+                                    blobEndpoint: properties.primaryEndpoints.blob,
+                                    key: keys.keys[0].value,
+                                    resourceGroupName,
+                                    tableEndpoint: properties.primaryEndpoints.table,
+                                });
+                            }
                         });
-                    }
-                });
-            }
-        });
+                }
+            });
     });
 
     return deferal.promise;
 }
 
-(async function execute() {
+(async function execute(): Promise<void> {
     try {
-        var azCopy = azCopyknownLocations.filter(x => fs.existsSync(x));
+        const azCopy: string[] = azCopyknownLocations.filter((x) => fs.existsSync(x));
         if (azCopy.length) {
 
-            tl.debug('AzCopy utility found at path : ' + azCopy[0]);
+            tl.debug("AzCopy utility found at path : " + azCopy[0]);
 
-            var toolRunner = tl.tool(azCopy[0]);
+            const toolRunner: ToolRunner = tl.tool(azCopy[0]);
 
-            if (sourceKind == "Storage") {
+            if (sourceKind === "Storage") {
                 tl.debug("retrieving source account details");
-                var sourceCredentials = await getConnectedServiceCredentials(sourceConnectedServiceName);
-                var sourceStorageAccount = await getStorageAccount(sourceCredentials, sourceAccount);
+                const sourceCredentials: any = await getConnectedServiceCredentials(sourceConnectedServiceName);
+                const sourceStorageAccount: IStorageAccount = await getStorageAccount(sourceCredentials, sourceAccount);
                 tl.debug(sourceStorageAccount.blobEndpoint + sourceObject);
-                toolRunner.arg('/Source:' + sourceStorageAccount.blobEndpoint + sourceObject);
-                toolRunner.arg('/SourceKey:' + sourceStorageAccount.key);
+                toolRunner.arg("/Source:" + sourceStorageAccount.blobEndpoint + sourceObject);
+                toolRunner.arg("/SourceKey:" + sourceStorageAccount.key);
             } else {
-                toolRunner.arg('/Source:' + sourcePath);
+                toolRunner.arg("/Source:" + sourcePath);
             }
 
-            if (destinationKind == "Storage") {
-                var destCredentials = await getConnectedServiceCredentials(destinationConnectedServiceName);
-                var destStorageAccount = await getStorageAccount(destCredentials, destinationAccount);
+            if (destinationKind === "Storage") {
+                const destCredentials: any = await getConnectedServiceCredentials(destinationConnectedServiceName);
+                const destStorageAccount: IStorageAccount = await getStorageAccount(
+                    destCredentials,
+                    destinationAccount);
                 tl.debug(destStorageAccount.blobEndpoint + destinationObject);
-                toolRunner.arg('/Dest:' + destStorageAccount.blobEndpoint + destinationObject);
-                toolRunner.arg('/DestKey:' + destStorageAccount.key);
+                toolRunner.arg("/Dest:" + destStorageAccount.blobEndpoint + destinationObject);
+                toolRunner.arg("/DestKey:" + destStorageAccount.key);
             } else {
-                toolRunner.arg('/Dest:' + destinationPath);
+                toolRunner.arg("/Dest:" + destinationPath);
             }
 
             if (recursive) {
-                toolRunner.arg('/S');
+                toolRunner.arg("/S");
             }
 
             if (pattern) {
-                toolRunner.arg('/Pattern:' + pattern);
+                toolRunner.arg("/Pattern:" + pattern);
             }
 
             if (excludeNewer) {
-                toolRunner.arg('/XN');
+                toolRunner.arg("/XN");
             }
 
             if (excludeOlder) {
-                toolRunner.arg('/XO');
+                toolRunner.arg("/XO");
             }
 
             if (additionalArguments) {
                 toolRunner.line(additionalArguments);
             }
 
-            toolRunner.arg('/Y');
+            toolRunner.arg("/Y");
 
-            var result = await toolRunner.exec();
+            const result: number = await toolRunner.exec();
             if (result) {
-                tl.setResult(tl.TaskResult.Failed, "An error occured during azcopy")
+                tl.setResult(tl.TaskResult.Failed, "An error occured during azcopy");
             } else {
-                tl.setResult(tl.TaskResult.Succeeded, "Files copied successfully")
+                tl.setResult(tl.TaskResult.Succeeded, "Files copied successfully");
             }
         } else {
-            tl.setResult(tl.TaskResult.Failed, "AzCopy utility was not found, please refer to documentation for installation instructions.")
+            tl.setResult(
+                tl.TaskResult.Failed,
+                "AzCopy utility was not found, please refer to documentation for installation instructions.");
         }
-    }
-    catch (err) {
-        tl.debug(err.stack)
+    } catch (err) {
+        tl.debug(err.stack);
         tl.setResult(tl.TaskResult.Failed, err);
     }
 })();
 
-
 interface ICachedSubscriptionCredentals {
-    name: string, id: string, creds: any
+    name: string;
+    id: string;
+    creds: any;
 }
-
 
 interface IStorageAccount {
-    resourceGroupName: string,
-    blobEndpoint: string,
-    tableEndpoint: string,
-    key: string
+    resourceGroupName: string;
+    blobEndpoint: string;
+    tableEndpoint: string;
+    key: string;
 }
-
-
-
-
-// var client = new someAzureServiceClient(credentials, 'your-subscriptionId');
-// client.someOperationGroup.method(param1, param2, function (err, result) {
-//     if (err) console.log(err);
-//     console.log(result);
-// });

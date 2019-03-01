@@ -43,6 +43,7 @@
     "lodash": "^4.17.11",
     "npm-run-all": "2.3.0",
     "tfx-cli": "^0.6.4",
-    "typescript": "2.6.2"
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.1"
   }
 }
