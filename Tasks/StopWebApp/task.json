@@ -2,9 +2,10 @@
     "id": "A3F35BB6-5341-413A-8091-10F93D390BB5",
     "name": "StopWebApp",
     "friendlyName": "Azure Web App Stop",
-    "description": "Stop an Azure Web App, or one of its slot",
-    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Stop) (Version #{Version}#)",    
+    "description": "Deprecated: use the official “Azure App Service Manage” task from Microsoft instead. You can then set the “Action” parameter to 'Stop Azure App Service'.",
+    "helpMarkDown": "",
     "category": "Deploy",
+    "deprecated": true,
     "visibility": [
         "Build",
         "Release"

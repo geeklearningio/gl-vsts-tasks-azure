@@ -2,9 +2,10 @@
     "id": "8698E535-D070-4A41-8C0E-4624D6283F05",
     "name": "SwapSlots",
     "friendlyName": "Azure Web App Slots Swap",
-    "description": "Swap two deployment slots of an Azure Web App",
-    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-Web-App-Slots-Swap) (Version #{Version}#)",
+    "description": "Deprecated: use the official “Azure App Service Manage” task from Microsoft instead. You can then set the “Action” parameter to 'Swap Slots'.",
+    "helpMarkDown": "",
     "category": "Deploy",
+    "deprecated": true,
     "visibility": [
         "Build",
         "Release"
