@@ -40,7 +40,7 @@
     "fs-extra": "5.0.0",
     "gl-vsts-tasks-build-scripts": "0.4.0-alpha.4",
     "jasmine": "2.8.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "npm-run-all": "2.3.0",
     "tfx-cli": "^0.6.4",
     "tslint": "^5.13.1",
