@@ -18,7 +18,7 @@ function Get-ResourceGroupName {
 
     try {
         Write-VstsTaskVerbose -Message "[Azure Call] Getting resource details for resource: $resourceName with resource type: $resourceType"
-        $resourceDetails = (Get-AzureRMResource -ErrorAction Stop) | Where-Object { $_.ResourceName -eq $resourceName -and $_.ResourceType -eq $resourceType } -Verbose
+        $resourceDetails = (Get-AzureRMResource -ErrorAction Stop) | Where-Object { ($_.ResourceName -eq $resourceName -or $_.Name -eq $resourceName) -and $_.ResourceType -eq $resourceType } -Verbose
         Write-VstsTaskVerbose -Message "[Azure Call] Retrieved resource details successfully for resource: $resourceName with resource type: $resourceType"   
         $resourceGroupName = $resourceDetails.ResourceGroupName  
         Write-VstsTaskVerbose -Message "Resource Group Name for '$resourceName' of type '$resourceType': '$resourceGroupName'."
