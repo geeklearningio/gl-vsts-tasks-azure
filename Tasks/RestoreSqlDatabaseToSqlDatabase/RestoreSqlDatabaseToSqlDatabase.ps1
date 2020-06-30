@@ -44,7 +44,7 @@ try {
     Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database details got for source $SourceDatabaseName :"
     Write-VstsTaskVerbose -Message ($sourceDatabase | Format-List | Out-String)
 
-    $date = (Get-Date).AddMinutes(-$PointInTimeWindow)
+    $date = (Get-Date).AddMinutes(-($PointInTimeWindow -as [int]))
 
     if ([string]::IsNullOrEmpty($sourceDatabase.ElasticPoolName)) {
         Write-VstsTaskVerbose -Message "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName (Edition $($sourceDatabase.Edition) $($sourceDatabase.CurrentServiceObjectiveName))"
