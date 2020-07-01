@@ -61,7 +61,7 @@
             "required": true,
             "helpMarkDown": "How many minutes into the past to look for a backup to restore from.",
             "validation": { 
-                  "expression": "isMatch(value,'^\d+$','IgnoreCase')",
+                  "expression": "isMatch(value,'^\\d+$','IgnoreCase')",
                   "message": "Must be an integer."
               }
         }
