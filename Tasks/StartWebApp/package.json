@@ -3,6 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "dependencies": {
-    "vsts-task-sdk": "0.6.4"
+    "azure-pipelines-task-lib": "^2.9.6"
   }
 }

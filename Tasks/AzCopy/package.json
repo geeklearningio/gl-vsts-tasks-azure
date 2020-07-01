@@ -1,13 +1,14 @@
 {
-  "name": "zip",
+  "name": "az-copy",
   "private": true,
   "version": "0.1.0",
   "dependencies": {
-    "azure-arm-storage": "^7.0.0",
-    "fs-extra": "5.0.0",
-    "ms-rest-azure": "^2.6.0",
+    "azure-devops-node-api": "^10.1.1",
+    "azure-pipelines-task-lib": "^2.9.6",
+    "azure-arm-storage": "^8.1.0",
+    "fs-extra": "9.0.1",
+    "ms-rest-azure": "^3.0.0",
     "q": "1.5.1",
-    "vsts-task-lib": "0.9.20",
-    "xregexp": "4.0.0"
+    "xregexp": "4.3.0"
   }
 }

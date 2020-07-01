@@ -1,82 +1,77 @@
 {
-    "id": "56EFEADB-7DF6-4DAC-8163-AF8E07298C8B",
-    "name": "RestoreSqlDatabaseToSqlDatabase",
-    "friendlyName": "Azure SQL Database Restore",
-    "description": "Restore an Azure SQL Database to another Azure SQL Database on the same server using the latest point-in-time backup",
-    "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Restore) (Version #{Version}#)",    
-    "category": "Deploy",
-    "visibility": [
-        "Build",
-        "Release"
-    ],
-    "author": "Geek Learning",
-    "version": {
-        "Major": 0,
-        "Minor": 0,
-        "Patch": 0
+  "id": "56EFEADB-7DF6-4DAC-8163-AF8E07298C8B",
+  "name": "RestoreSqlDatabaseToSqlDatabase",
+  "friendlyName": "Azure SQL Database Restore",
+  "description": "Restore an Azure SQL Database to another Azure SQL Database on the same server using the latest point-in-time backup",
+  "helpMarkDown": "[More Information](https://github.com/geeklearningio/gl-vsts-tasks-azure/wiki/Azure-SQL-Database-Restore) (Version #{Version}#)",
+  "category": "Deploy",
+  "visibility": ["Build", "Release"],
+  "author": "Geek Learning",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "demands": ["azureps"],
+  "minimumAgentVersion": "1.103.0",
+  "instanceNameFormat": "Restore $(SourceDatabaseName) on $(TargetDatabaseName)",
+  "inputs": [
+    {
+      "name": "ConnectedServiceName",
+      "type": "connectedService:AzureRM",
+      "label": "Azure RM Subscription",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Azure Resource Manager subscription to target for executing SQL"
     },
-    "demands": [
-        "azureps"
-    ],
-    "minimumAgentVersion": "1.103.0",
-    "instanceNameFormat": "Restore $(SourceDatabaseName) on $(TargetDatabaseName)",
-    "inputs": [
-        {
-            "name": "ConnectedServiceName",
-            "type": "connectedService:AzureRM",
-            "label": "Azure RM Subscription",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Azure Resource Manager subscription to target for executing SQL"
-        },
-        {
-            "name": "ServerName",
-            "type": "string",
-            "label": "Azure SQL Server Name",
-            "required": true,
-            "defaultValue": "",
-            "helpMarkDown": "Azure SQL Server name like, FabrikamSQL.database.windows.net,1433 or FabrikamSQL.database.windows.net."
-        },
-        {
-            "name": "SourceDatabaseName",
-            "type": "string",
-            "label": "Source Database Name",
-            "required": true,
-            "defaultValue": "",
-            "helpMarkDown": "Name of the source Azure SQL Database from which to restore."
-        },
-        {
-            "name": "TargetDatabaseName",
-            "type": "string",
-            "label": "Target Database Name",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Name of the target Azure SQL Database. If exists, will be deleted prior to restore!"
-        },
-        {
-            "name": "PointInTimeWindow",
-            "type": "string",
-            "label": "Point In Time Window",
-            "defaultValue": "6",
-            "required": true,
-            "helpMarkDown": "How many minutes into the past to look for a backup to restore from.",
-            "validation": { 
-                  "expression": "isMatch(value,'^\d+$','IgnoreCase')",
-                  "message": "Must be an integer."
-              }
-        }
-    ],
-    "sourceDefinitions": [
-        {
-            "target": "IpDetectionMethod",
-            "endpoint": "/_apis/vslabs/ipAddress/ipDetectionMethods",
-            "selector": "jsonpath:$.value[*]",
-            "authKey": "tfs:DevTestLabs"
-        }
-    ],    
-    "execution": {
-        "PowerShell3": {
-            "target": "RestoreSqlDatabaseToSqlDatabase.ps1"
-        }
+    {
+      "name": "ServerName",
+      "type": "string",
+      "label": "Azure SQL Server Name",
+      "required": true,
+      "defaultValue": "",
+      "helpMarkDown": "Azure SQL Server name like, FabrikamSQL.database.windows.net,1433 or FabrikamSQL.database.windows.net."
+    },
+    {
+      "name": "SourceDatabaseName",
+      "type": "string",
+      "label": "Source Database Name",
+      "required": true,
+      "defaultValue": "",
+      "helpMarkDown": "Name of the source Azure SQL Database from which to restore."
+    },
+    {
+      "name": "TargetDatabaseName",
+      "type": "string",
+      "label": "Target Database Name",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Name of the target Azure SQL Database. If exists, will be deleted prior to restore!"
+    },
+    {
+      "name": "PointInTimeWindow",
+      "type": "string",
+      "label": "Point In Time Window",
+      "defaultValue": "6",
+      "required": true,
+      "helpMarkDown": "How many minutes into the past to look for a backup to restore from.",
+      "validation": {
+        "expression": "isMatch(value,'^\\d+$','IgnoreCase')",
+        "message": "Must be an integer."
+      }
     }
+  ],
+  "sourceDefinitions": [
+    {
+      "target": "IpDetectionMethod",
+      "endpoint": "/_apis/vslabs/ipAddress/ipDetectionMethods",
+      "selector": "jsonpath:$.value[*]",
+      "authKey": "tfs:DevTestLabs"
+    }
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "RestoreSqlDatabaseToSqlDatabase.ps1"
+    }
+  }
 }
