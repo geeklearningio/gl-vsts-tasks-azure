@@ -16,7 +16,7 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule -Require
 
-    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
     
     Initialize-Azure
     Initialize-Sqlps
@@ -57,7 +57,7 @@ try {
         $databaseVersion = [Version]((Invoke-Sqlcmd -InputFile "$PSScriptRoot\SqlScripts\GetDatabaseVersion.sql" -Database "master" -ServerInstance $ServerName -EncryptConnection -Username $SqlUsername -Password $SqlPassword -Variable $variableParameter -ErrorAction Stop -Verbose).DatabaseVersion)
         Write-VstsTaskVerbose -Message "[SQL Call] $DatabaseName DAC Version Number retrieved: $databaseVersion"
 
-        $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object {$_.Name -gt $databaseVersion}
+        $dacFilesToDeploy = $dacFilesWithVersion.GetEnumerator() | Where-Object { $_.Name -gt $databaseVersion }
         if ($dacFilesToDeploy.Count -eq 0) {
             Write-VstsTaskWarning -Message "Nothing to deploy, the database version ($databaseVersion) is up to date"
         }
@@ -73,19 +73,21 @@ try {
                 Write-Host "Deploying Version: $($dacFileToDeploy.Name)"
 
                 $scriptArguments = Get-SqlPackageCommandArguments -dacpacFile $dacFileToDeploy.Value -serverName $ServerName -databaseName $DatabaseName `
-                                                                -sqlUsername $SqlUsername -sqlPassword $SqlPassword -publishProfile $publishProfilePath -additionalArguments $AdditionalArguments
+                    -sqlUsername $SqlUsername -sqlPassword $SqlPassword -publishProfile $publishProfilePath -additionalArguments $AdditionalArguments
 
                 $scriptArgumentsToBeLogged = Get-SqlPackageCommandArguments -dacpacFile $dacFileToDeploy.Value -serverName $ServerName -databaseName $DatabaseName `
-                                                                -sqlUsername $SqlUsername -sqlPassword $SqlPassword -publishProfile $publishProfilePath -additionalArguments $AdditionalArguments -isOutputSecure
+                    -sqlUsername $SqlUsername -sqlPassword $SqlPassword -publishProfile $publishProfilePath -additionalArguments $AdditionalArguments -isOutputSecure
 
                 Send-ExecuteCommand -command $sqlPackagePath -arguments $scriptArguments -secureArguments $scriptArgumentsToBeLogged
                 
                 Write-Host "Version $($dacFileToDeploy.Name) deployed" 
             }
         }
-    } finally {
+    }
+    finally {
         Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
     }
-} finally {
+}
+finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

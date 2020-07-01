@@ -11,7 +11,7 @@ try {
     $PointInTimeWindow = Get-VstsInput -Name PointInTimeWindow -Require
 
     # Initialize Azure.
-    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
     Initialize-Azure
 
     # Import SQL Azure Powershell cmdlets.
@@ -44,7 +44,7 @@ try {
     Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database details got for source $SourceDatabaseName :"
     Write-VstsTaskVerbose -Message ($sourceDatabase | Format-List | Out-String)
 
-    $date = (Get-Date).AddMinutes(-($PointInTimeWindow -as [int]))
+    $date = (Get-Date).AddMinutes( - ($PointInTimeWindow -as [int]))
 
     if ([string]::IsNullOrEmpty($sourceDatabase.ElasticPoolName)) {
         Write-VstsTaskVerbose -Message "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName (Edition $($sourceDatabase.Edition) $($sourceDatabase.CurrentServiceObjectiveName))"
@@ -65,6 +65,7 @@ try {
         Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database $SourceDatabaseName restored to $TargetDatabaseName (ElasticPool $($sourceDatabase.ElasticPoolName))"
     }
 
-} finally {
+}
+finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }

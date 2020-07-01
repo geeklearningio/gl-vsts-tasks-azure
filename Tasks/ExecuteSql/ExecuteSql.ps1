@@ -19,7 +19,7 @@ try {
     $EndIpAddress = Get-VstsInput -Name EndIpAddress
     $DeleteFirewallRule = Get-VstsInput -Name DeleteFirewallRule -Require
 
-    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
 
     Initialize-Azure
     Initialize-Sqlps
@@ -39,7 +39,7 @@ try {
 
         $variableParameter = @()
         if ($Variables) {
-            $variableParameter = ($Variables -split '[\r\n]') |? {$_}
+            $variableParameter = ($Variables -split '[\r\n]') | ? { $_ }
         }
 
         $workingFolder = Split-Path $ScriptPath
@@ -61,9 +61,11 @@ try {
 
         Write-VstsTaskVerbose -Message "[Azure Call] SQL query executed on $DatabaseName"
 
-    } finally {
+    }
+    finally {
         Remove-AzureSqlDatabaseServerFirewallRule -serverName $serverFriendlyName -firewallRuleName $firewallSettings.RuleName -isFirewallConfigured $firewallSettings.IsConfigured -deleteFireWallRule $DeleteFirewallRule
     }
-} finally {
+}
+finally {
     Trace-VstsLeavingInvocation $MyInvocation
 }
