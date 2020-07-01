@@ -8,6 +8,7 @@ try {
     $ServerName = Get-VstsInput -Name ServerName -Require
     $SourceDatabaseName = Get-VstsInput -Name SourceDatabaseName -Require
     $TargetDatabaseName = Get-VstsInput -Name TargetDatabaseName -Require
+    $PointInTimeWindow = Get-VstsInput -Name PointInTimeWindow -Require
 
     # Initialize Azure.
     Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers
@@ -43,7 +44,7 @@ try {
     Write-VstsTaskVerbose -Message "[Azure Call] Azure SQL Database details got for source $SourceDatabaseName :"
     Write-VstsTaskVerbose -Message ($sourceDatabase | Format-List | Out-String)
 
-    $date = (Get-Date).AddMinutes(-1)
+    $date = (Get-Date).AddMinutes(-($PointInTimeWindow -as [int]))
 
     if ([string]::IsNullOrEmpty($sourceDatabase.ElasticPoolName)) {
         Write-VstsTaskVerbose -Message "[Azure Call] Restoring Azure SQL Database $SourceDatabaseName to $TargetDatabaseName (Edition $($sourceDatabase.Edition) $($sourceDatabase.CurrentServiceObjectiveName))"

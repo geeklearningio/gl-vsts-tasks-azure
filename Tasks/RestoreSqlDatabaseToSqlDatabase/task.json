@@ -52,6 +52,18 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "Name of the target Azure SQL Database. If exists, will be deleted prior to restore!"
+        },
+        {
+            "name": "PointInTimeWindow",
+            "type": "string",
+            "label": "Point In Time Window",
+            "defaultValue": "6",
+            "required": true,
+            "helpMarkDown": "How many minutes into the past to look for a backup to restore from.",
+            "validation": { 
+                  "expression": "isMatch(value,'^\d+$','IgnoreCase')",
+                  "message": "Must be an integer."
+              }
         }
     ],
     "sourceDefinitions": [
