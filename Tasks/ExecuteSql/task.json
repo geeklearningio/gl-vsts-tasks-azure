@@ -186,6 +186,15 @@
             "groupName": "firewall",
             "defaultValue": "true",
             "helpMarkDown": "If selected, then after the task ends, the IP Addresses specified here are deleted from the 'Allowed IP Addresses' list of the Azure SQL Server's Firewall."
+        },
+        {
+            "name": "AzureEnvironment",
+            "type": "string",
+            "label": "Azure Cloud Environment",
+            "required": false,
+            "groupName": "target",
+            "defaultValue": "",
+            "helpMarkDown": "Azure Cloud Environment name i.e AzureCloud, AzureChinaCloud etc."
         }
     ],
     "sourceDefinitions": [
