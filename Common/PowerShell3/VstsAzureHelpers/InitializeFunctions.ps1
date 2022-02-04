@@ -37,7 +37,9 @@ function Initialize-AzureSubscription {
         [Parameter(Mandatory=$true)]
         $Endpoint,
         [Parameter(Mandatory=$false)]
-        [string]$StorageAccount)
+        [string]$StorageAccount),
+        [Parameter(Mandatory=$true)]
+        $environment
 
     #Set UserAgent for Azure Calls
     Set-UserAgent
@@ -57,7 +59,12 @@ function Initialize-AzureSubscription {
             $additional['CurrentStorageAccountName'] = $StorageAccount
         }
 
-        $environmentName = "AzureCloud"
+        if( $environment) {
+        $environmentName = $environment
+        }
+        else {
+            $environmentName = "AzureCloud"
+        }
         if( $Endpoint.Data.Environment ) {
             $environmentName = $Endpoint.Data.Environment
         }
@@ -87,7 +94,7 @@ function Initialize-AzureSubscription {
         if ($script:azureRMProfileModule) {
             try {
                 Write-Host "##[command]Add-AzureRMAccount -Credential $psCredential"
-                $null = Add-AzureRMAccount -Credential $psCredential
+                $null = Add-AzureRMAccount -Credential $psCredential -Environment $environmentName
             } catch {
                 # Provide an additional, custom, credentials-related error message.
                 Write-VstsTaskError -Message $_.Exception.Message

@@ -32,7 +32,8 @@ function Initialize-Azure {
 
         $endpoint = Get-VstsEndpoint -Name $serviceName -Require
         $storageAccount = Get-VstsInput -Name StorageAccount
-
+        $environment = Get-VstsInput -Name AzureEnvironment
+        
         # Determine which modules are preferred.
         $preferredModules = @( )
         if ($endpoint.Auth.Scheme -eq 'ServicePrincipal') {
@@ -46,7 +47,7 @@ function Initialize-Azure {
 
         # Import/initialize the Azure module.
         Import-AzureModule -PreferredModule $preferredModules
-        Initialize-AzureSubscription -Endpoint $endpoint -StorageAccount $storageAccount
+        Initialize-AzureSubscription -Endpoint $endpoint -StorageAccount $storageAccount -environment $environment
 
         # Check the installed Azure Powershell version
         $currentVersion = (Get-Module -Name AzureRM.profile).Version
